@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "techchallenger"
+version = "0.1.0"
+description = ""
+authors = ["Guillaume Pujol <guill.p.linux@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^1.5.2"
+stringparser = "^0.6"
+astar = "^0.94"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
