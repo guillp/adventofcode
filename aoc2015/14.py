@@ -11,10 +11,10 @@ s = 0
 for line in content.splitlines():
     name, speed, time, rest = parser(line)
     d, m = divmod(N, time + rest)
-    distance = speed*time*d + speed*min(time,m)
+    distance = speed * time * d + speed * min(time, m)
     if distance > s:
         s = distance
-    print(name, distance)
+    #print(name, distance)
 
 print(s)
 

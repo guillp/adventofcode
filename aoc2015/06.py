@@ -1,6 +1,6 @@
 from stringparser import Parser
 
-with open('6.txt', "rt") as finput:
+with open('06.txt', "rt") as finput:
     content = finput.read()
 
 parser = Parser('{} {:d},{:d} through {:d},{:d}')

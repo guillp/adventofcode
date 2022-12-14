@@ -1,6 +1,6 @@
 import json
 
-with open('8.txt', "rt") as finput:
+with open('08.txt', "rt") as finput:
     content = finput.read()
 
 

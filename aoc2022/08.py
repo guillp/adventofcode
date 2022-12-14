@@ -1,6 +1,3 @@
-import math
-from itertools import accumulate
-
 content = """30373
 25512
 65332
@@ -8,8 +5,7 @@ content = """30373
 35390
 """
 
-with open("8.txt", "rt") as finput:
-    content = finput.read()
+with open("08.txt", "rt") as finput: content = finput.read()
 
 lines = content.splitlines()
 grid = {(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line)}

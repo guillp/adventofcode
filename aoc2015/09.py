@@ -2,7 +2,12 @@ from collections import defaultdict
 
 from stringparser import Parser
 
-with open('9.txt', "rt") as finput:
+content = """London to Dublin = 464
+London to Belfast = 518
+Dublin to Belfast = 141
+"""
+
+with open('09.txt', "rt") as finput:
     content = finput.read()
 
 

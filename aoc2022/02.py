@@ -1,4 +1,4 @@
-with open("2.txt", 'rt') as finput:
+with open("02.txt", 'rt') as finput:
     content = finput.readlines()
 
 ROCK, PAPER, SCISSORS = 1, 2, 3

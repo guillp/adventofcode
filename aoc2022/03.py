@@ -8,7 +8,7 @@ ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw
 """
 
-with open("3.txt", 'rt') as finput:
+with open("03.txt", 'rt') as finput:
     content = finput.read()
 
 s = 0

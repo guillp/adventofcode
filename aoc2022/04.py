@@ -1,6 +1,6 @@
 import stringparser
 
-with open("4.txt", "rt") as finput:
+with open("04.txt", "rt") as finput:
     content = finput.read()
 
 parser = stringparser.Parser("{:d}-{:d},{:d}-{:d}")

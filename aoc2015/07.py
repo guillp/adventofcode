@@ -1,6 +1,6 @@
 from functools import cache
 
-with open('7.txt', "rt") as finput:
+with open('07.txt', "rt") as finput:
     content = finput.read()
 
 gates = dict(connection.split(' -> ')[::-1] for connection in content.splitlines())
