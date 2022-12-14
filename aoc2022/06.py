@@ -1,5 +1,4 @@
-with open("6.txt", "rt") as finput:
-    content = finput.read()
+with open("06.txt", "rt") as finput: content = finput.read()
 
 
 for i in range(len(content)-4):

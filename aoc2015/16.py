@@ -36,4 +36,4 @@ for c in ('pomeranians', 'goldfish'):
 for k, v in values.items():
     df = df[(df[k] == v) | df[k].isna()]
 
-print(df)
+print(df.iloc[0].name)

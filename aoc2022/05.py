@@ -1,6 +1,6 @@
 from stringparser import Parser
 
-with open('5.txt', 'rt') as finput:
+with open('05.txt', 'rt') as finput:
     content = finput.read()
 
 

@@ -1,4 +1,4 @@
-from _operator import attrgetter
+from operator import attrgetter
 from dataclasses import dataclass
 
 from stringparser import Parser
@@ -32,8 +32,7 @@ Monkey 3:
     If false: throw to monkey 1
 """
 
-with open('11.txt', 'rt') as finput:
-    content = finput.read()
+with open('11.txt', 'rt') as finput: content = finput.read()
 
 parser = Parser("""Monkey {:d}:
   Starting items: {}

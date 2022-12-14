@@ -7,7 +7,7 @@ D 10
 L 25
 U 20"""
 
-with open("9.txt", "rt") as finput: content = finput.read()
+with open("09.txt", "rt") as finput: content = finput.read()
 
 rope = [0j] * 10
 

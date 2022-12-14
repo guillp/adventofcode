@@ -27,8 +27,7 @@ $ ls
 7214296 k
 """
 
-with open("7.txt", "rt") as finput:
-    content = finput.read()
+with open("07.txt", "rt") as finput: content = finput.read()
 
 
 @dataclass

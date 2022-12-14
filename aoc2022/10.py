@@ -147,8 +147,7 @@ noop
 """
 
 
-with open("10.txt", "rt") as finput:
-    content = finput.read()
+with open("10.txt", "rt") as finput: content = finput.read()
 
 X = 1
 cycles = [X]

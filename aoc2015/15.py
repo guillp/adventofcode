@@ -10,7 +10,7 @@ parser = Parser(
 ingredients = pd.DataFrame(parser(line) for line in content.splitlines()).assign(
     name=lambda df: df.name.str.lower()).set_index('name')
 
-print(ingredients)
+#print(ingredients)
 
 
 def score(**ing: int):

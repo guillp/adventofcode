@@ -1,4 +1,4 @@
-with open("1.txt") as finput:
+with open("01.txt") as finput:
     line = finput.read()
 
 print(line.count("(") - line.count(")"))
