@@ -27,7 +27,8 @@ $ ls
 7214296 k
 """
 
-with open("07.txt", "rt") as finput: content = finput.read()
+with open("07.txt", "rt") as finput:
+    content = finput.read()
 
 
 @dataclass
@@ -64,29 +65,29 @@ class FileSystem:
 
 
 def iter_filesystem(content: str):
-    cwd = Path('/')
+    cwd = Path("/")
     lines = content.splitlines()
     while lines:
         line = lines.pop(0)
-        if line == '$ cd /':
-            cwd = Path('/')
-        elif line == '$ cd ..':
+        if line == "$ cd /":
+            cwd = Path("/")
+        elif line == "$ cd ..":
             cwd = cwd.parent
-        elif line == '$ ls':
+        elif line == "$ ls":
             files = []
             subs = []
             while lines:
-                if lines[0].startswith('$ '):
+                if lines[0].startswith("$ "):
                     break
                 size, name = lines.pop(0).split()
-                if size == 'dir':
+                if size == "dir":
                     subs.append(cwd / name)
                 else:
                     files.append(File(name, int(size)))
 
             yield Directory(cwd, files, subs)
         elif line.startswith("$ cd"):
-            target = line.removeprefix('$ cd ')
+            target = line.removeprefix("$ cd ")
             cwd = cwd / target
         else:
             assert False, line
@@ -101,8 +102,8 @@ for dir, size in fs:
         s += size
 print(s)
 
-free_space = 70000000 - fs.size(Path('/'))
-size_to_free = 30000000-free_space
+free_space = 70000000 - fs.size(Path("/"))
+size_to_free = 30000000 - free_space
 
 for dir, size in sorted(fs, key=itemgetter(1)):
     if size > size_to_free:

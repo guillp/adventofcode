@@ -147,7 +147,8 @@ noop
 """
 
 
-with open("10.txt", "rt") as finput: content = finput.read()
+with open("10.txt", "rt") as finput:
+    content = finput.read()
 
 X = 1
 cycles = [X]
@@ -157,13 +158,20 @@ for line in content.splitlines():
         cycles.append(X)
     if line.startswith("addx"):
         n = int(line.split()[1])
-        cycles.extend([X,X+n])
-        X+=n
+        cycles.extend([X, X + n])
+        X += n
 
 
-print(cycles[19]*20 + cycles[59]*60 + cycles[99]* 100 + cycles[139]*140 + cycles[179]*180 + cycles[219]*220)
+print(
+    cycles[19] * 20
+    + cycles[59] * 60
+    + cycles[99] * 100
+    + cycles[139] * 140
+    + cycles[179] * 180
+    + cycles[219] * 220
+)
 
-pixels = tuple(p%40-1 <= cycles[p] <= p%40 +1 for p in range(240))
+pixels = tuple(p % 40 - 1 <= cycles[p] <= p % 40 + 1 for p in range(240))
 
 for y in range(6):
-    print("".join("#" if pixels[y*40+x] else "." for x in range(40)))
+    print("".join("#" if pixels[y * 40 + x] else "." for x in range(40)))

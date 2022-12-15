@@ -48,7 +48,15 @@ pool = [GameState(51, 9, 50, 500, hard=True)]  # part2
 
 s: GameState | None = None
 while pool:
-    state = min(pool, key=lambda state: (state.boss_health, len(state.used_spells), -state.health, -state.mana))
+    state = min(
+        pool,
+        key=lambda state: (
+            state.boss_health,
+            len(state.used_spells),
+            -state.health,
+            -state.mana,
+        ),
+    )
     pool.remove(state)
 
     if s and state.mana_spent > s.mana_spent:
@@ -96,7 +104,9 @@ while pool:
                     if spell.effect >= 1:
                         spell.effect -= 1
                     else:
-                        new_state.active_spells = tuple(s for s in new_state.active_spells if s != spell)
+                        new_state.active_spells = tuple(
+                            s for s in new_state.active_spells if s != spell
+                        )
 
                 if new_state.boss_health <= 0:
                     if s is None or new_state.mana_spent < s.mana_spent:

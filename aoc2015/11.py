@@ -11,8 +11,9 @@ def validate(password: str) -> bool:
             break
     else:
         return False
-    for c, d in zip(password[i + 2:], password[i + 3:]):
-        if c == d: break
+    for c, d in zip(password[i + 2 :], password[i + 3 :]):
+        if c == d:
+            break
     else:
         return False
     return True
@@ -35,7 +36,8 @@ def rotate(password: str) -> str:
             break
     return bytes(chars[::-1]).decode()
 
-password = 'cqjxjnds'
+
+password = "cqjxjnds"
 
 while not validate(password):
     password = rotate(password)

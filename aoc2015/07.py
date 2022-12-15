@@ -1,9 +1,9 @@
 from functools import cache
 
-with open('07.txt', "rt") as finput:
+with open("07.txt", "rt") as finput:
     content = finput.read()
 
-gates = dict(connection.split(' -> ')[::-1] for connection in content.splitlines())
+gates = dict(connection.split(" -> ")[::-1] for connection in content.splitlines())
 
 
 @cache
@@ -33,6 +33,6 @@ def evaluate(gate):
 
 print(evaluate("a"))
 
-gates['b'] = str(evaluate("a"))
+gates["b"] = str(evaluate("a"))
 evaluate.cache_clear()
 print(evaluate("a"))

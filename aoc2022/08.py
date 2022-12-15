@@ -5,7 +5,8 @@ content = """30373
 35390
 """
 
-with open("08.txt", "rt") as finput: content = finput.read()
+with open("08.txt", "rt") as finput:
+    content = finput.read()
 
 lines = content.splitlines()
 grid = {(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line)}
@@ -46,7 +47,7 @@ for y in range(H):
     for x in range(W):
         h = grid[(x, y)]
         left_score = 0
-        for i in range(1, x+1):
+        for i in range(1, x + 1):
             left_score += 1
             if grid[(x - i, y)] >= h:
                 break
