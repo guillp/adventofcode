@@ -1,9 +1,11 @@
 from stringparser import Parser
 
-with open('14.txt', "rt") as finput:
+with open("14.txt", "rt") as finput:
     content = finput.read()
 
-parser = Parser("{} can fly {:d} km/s for {:d} seconds, but then must rest for {:d} seconds.")
+parser = Parser(
+    "{} can fly {:d} km/s for {:d} seconds, but then must rest for {:d} seconds."
+)
 
 N = 2503
 
@@ -14,7 +16,7 @@ for line in content.splitlines():
     distance = speed * time * d + speed * min(time, m)
     if distance > s:
         s = distance
-    #print(name, distance)
+    # print(name, distance)
 
 print(s)
 

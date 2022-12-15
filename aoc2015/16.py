@@ -1,10 +1,10 @@
 from stringparser import Parser
 import pandas as pd
 
-with open('16.txt', "rt") as finput:
+with open("16.txt", "rt") as finput:
     content = finput.read()
 
-parser = Parser('Sue {}: {}: {:d}, {}: {:d}, {}: {:d}')
+parser = Parser("Sue {}: {}: {:d}, {}: {:d}, {}: {:d}")
 
 aunts = {}
 for line in content.splitlines():
@@ -27,10 +27,10 @@ perfumes: 1""".splitlines():
     obj, q = line.split(": ")
     values[obj] = int(q)
 
-for c in ('cats', 'trees'):
+for c in ("cats", "trees"):
     df = df[(df[c] > values.pop(c)) | df[c].isna()]
 
-for c in ('pomeranians', 'goldfish'):
+for c in ("pomeranians", "goldfish"):
     df = df[(df[c] < values.pop(c)) | df[c].isna()]
 
 for k, v in values.items():

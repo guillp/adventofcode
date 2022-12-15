@@ -32,14 +32,17 @@ Monkey 3:
     If false: throw to monkey 1
 """
 
-with open('11.txt', 'rt') as finput: content = finput.read()
+with open("11.txt", "rt") as finput:
+    content = finput.read()
 
-parser = Parser("""Monkey {:d}:
+parser = Parser(
+    """Monkey {:d}:
   Starting items: {}
   Operation: new = {}
   Test: divisible by {:d}
     If true: throw to monkey {:d}
-    If false: throw to monkey {:d}""")
+    If false: throw to monkey {:d}"""
+)
 
 
 @dataclass
@@ -53,16 +56,18 @@ class Monkey:
 
 
 monkeys = {}
-for monkey in content.split('\n\n'):
-    monkey_no, starting_items, operation, diviser, true_target, false_target = parser(monkey)
-    items = [int(x) for x in starting_items.split(', ')]
+for monkey in content.split("\n\n"):
+    monkey_no, starting_items, operation, diviser, true_target, false_target = parser(
+        monkey
+    )
+    items = [int(x) for x in starting_items.split(", ")]
     monkeys[monkey_no] = Monkey(items, operation, diviser, true_target, false_target)
 
 for i in range(20):
     for monkey_no, monkey in monkeys.items():
         while monkey.items:
             item = monkey.items.pop(0)
-            item = eval(monkey.operation, None, {'old': item})
+            item = eval(monkey.operation, None, {"old": item})
             item //= 3
             if item % monkey.diviser == 0:
                 monkeys[monkey.true_target].items.append(item)
@@ -70,14 +75,16 @@ for i in range(20):
                 monkeys[monkey.false_target].items.append(item)
             monkey.nb_inspections += 1
 
-monkey1, monkey2 = sorted(monkeys.values(), key=attrgetter('nb_inspections'))[-2:]
+monkey1, monkey2 = sorted(monkeys.values(), key=attrgetter("nb_inspections"))[-2:]
 print(monkey1.nb_inspections * monkey2.nb_inspections)
 
 
 monkeys = {}
-for monkey in content.split('\n\n'):
-    monkey_no, starting_items, operation, diviser, true_target, false_target = parser(monkey)
-    items = [int(x) for x in starting_items.split(', ')]
+for monkey in content.split("\n\n"):
+    monkey_no, starting_items, operation, diviser, true_target, false_target = parser(
+        monkey
+    )
+    items = [int(x) for x in starting_items.split(", ")]
     monkeys[monkey_no] = Monkey(items, operation, diviser, true_target, false_target)
 
 modulo = 223092870
@@ -86,7 +93,7 @@ for i in range(10000):
     for monkey_no, monkey in monkeys.items():
         while monkey.items:
             item = monkey.items.pop(0)
-            item = eval(monkey.operation, None, {'old': item})
+            item = eval(monkey.operation, None, {"old": item})
             item %= modulo
             if item % monkey.diviser == 0:
                 monkeys[monkey.true_target].items.append(item)
@@ -94,6 +101,6 @@ for i in range(10000):
                 monkeys[monkey.false_target].items.append(item)
             monkey.nb_inspections += 1
 
-monkey1, monkey2 = sorted(monkeys.values(), key=attrgetter('nb_inspections'))[-2:]
+monkey1, monkey2 = sorted(monkeys.values(), key=attrgetter("nb_inspections"))[-2:]
 print(monkey1, monkey2)
 print(monkey1.nb_inspections * monkey2.nb_inspections)

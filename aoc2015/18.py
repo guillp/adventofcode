@@ -1,8 +1,8 @@
-with open('18.txt', "rt") as finput:
+with open("18.txt", "rt") as finput:
     content = finput.read()
 
 grid = {
-    complex(x, y): c == '#'
+    complex(x, y): c == "#"
     for y, line in enumerate(content.splitlines())
     for x, c in enumerate(line)
 }
@@ -38,7 +38,7 @@ for i in range(100):
 print(sum(grid.values()))
 
 grid2 = {
-    complex(x, y): c == '#'
+    complex(x, y): c == "#"
     for y, line in enumerate(content.splitlines())
     for x, c in enumerate(line)
 }
@@ -72,7 +72,7 @@ def step2(grid: dict[complex, bool]):
 for i in range(100):
     print(i)
     for y in range(SIZE):
-        print("".join("#" if grid2[complex(x, y)] else '.' for x in range(SIZE)))
+        print("".join("#" if grid2[complex(x, y)] else "." for x in range(SIZE)))
     grid2 = step2(grid2)
 
 print(sum(grid2.values()))

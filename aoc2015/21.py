@@ -27,7 +27,8 @@ class Weapon:
     cost: int
 
     def __str__(self):
-        return f'W:{self.damage}/{self.cost}'
+        return f"W:{self.damage}/{self.cost}"
+
 
 @dataclass
 class Armor:
@@ -35,7 +36,8 @@ class Armor:
     cost: int
 
     def __str__(self):
-        return f'A:{self.armor}/{self.cost}'
+        return f"A:{self.armor}/{self.cost}"
+
 
 @dataclass
 class Ring:
@@ -44,20 +46,34 @@ class Ring:
     cost: int
 
     def __str__(self):
-        return f'R:{self.damage}/{self.armor}/{self.cost}'
+        return f"R:{self.damage}/{self.armor}/{self.cost}"
 
 
 weapons = (Weapon(4, 8), Weapon(5, 10), Weapon(6, 25), Weapon(7, 40), Weapon(8, 74))
-armors = (Armor(0, 0), Armor(1, 13), Armor(2, 31), Armor(3, 53), Armor(4, 75), Armor(5, 102))
-rings = (Ring(1, 0, 25), Ring(2, 0, 50), Ring(3, 0, 100), Ring(0, 1, 20), Ring(0, 2, 40), Ring(0, 3, 80))
+armors = (
+    Armor(0, 0),
+    Armor(1, 13),
+    Armor(2, 31),
+    Armor(3, 53),
+    Armor(4, 75),
+    Armor(5, 102),
+)
+rings = (
+    Ring(1, 0, 25),
+    Ring(2, 0, 50),
+    Ring(3, 0, 100),
+    Ring(0, 1, 20),
+    Ring(0, 2, 40),
+    Ring(0, 3, 80),
+)
 
 
 @dataclass
 class Equipment:
     weapon: Weapon
     armor: Armor
-    ring1: Ring|None = None
-    ring2: Ring|None = None
+    ring1: Ring | None = None
+    ring2: Ring | None = None
 
     @property
     def damage(self) -> int:
@@ -89,6 +105,7 @@ class Equipment:
     def __str__(self):
         return f"{self.weapon} {self.armor} {self.ring1} {self.ring2} {self.cost}"
 
+
 def equipments():
     for weapon in weapons:
         for armor in armors:
@@ -99,20 +116,18 @@ def equipments():
                 yield Equipment(weapon, armor, ring1, ring2)
 
 
-
-
 winning_equipments = []
 for equipment in equipments():
     player = Player(100, equipment)
     if player.fight(8, 2):
         winning_equipments.append(equipment)
 
-print(min(winning_equipments, key=attrgetter('cost')))
+print(min(winning_equipments, key=attrgetter("cost")))
 
 loosing_equipments = []
 for equipment in equipments():
     player = Player(100, equipment)
-    if not player.fight(8,2):
+    if not player.fight(8, 2):
         loosing_equipments.append(equipment)
 
-print(max(loosing_equipments, key=attrgetter('cost')))
+print(max(loosing_equipments, key=attrgetter("cost")))

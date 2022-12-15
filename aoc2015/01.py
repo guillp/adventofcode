@@ -10,5 +10,5 @@ for i, c in enumerate(line):
     elif c == ")":
         f -= 1
     if f < 0:
-        print(i+1)
+        print(i + 1)
         break

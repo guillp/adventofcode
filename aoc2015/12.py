@@ -1,11 +1,12 @@
 import json
 
-with open('12.txt', "rt") as finput:
+with open("12.txt", "rt") as finput:
     content = finput.read()
 
 doc = json.loads(content)
 
 print(json.dumps(doc, indent=2))
+
 
 def walk(doc) -> int:
     if isinstance(doc, int):
@@ -20,6 +21,7 @@ def walk(doc) -> int:
         pass
     else:
         assert False, doc
+
 
 s = 0
 
@@ -44,6 +46,7 @@ def walk2(doc) -> int:
         pass
     else:
         assert False, doc
+
 
 s2 = 0
 

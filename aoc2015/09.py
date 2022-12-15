@@ -7,7 +7,7 @@ London to Belfast = 518
 Dublin to Belfast = 141
 """
 
-with open('09.txt', "rt") as finput:
+with open("09.txt", "rt") as finput:
     content = finput.read()
 
 

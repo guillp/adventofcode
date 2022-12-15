@@ -1,11 +1,11 @@
-with open('03.txt', 'rt') as finput:
+with open("03.txt", "rt") as finput:
     content = finput.read()
 
-pos = 0+0j
+pos = 0 + 0j
 grid = {pos: True}
 
 for move in content:
-    if move == '^':
+    if move == "^":
         pos -= 1j
     elif move == "v":
         pos += 1j
@@ -18,11 +18,11 @@ for move in content:
 print(len(grid))
 
 
-pos1 = pos2 = 0+0j
+pos1 = pos2 = 0 + 0j
 grid = {pos1: True}
 
 for move in content[::2]:
-    if move == '^':
+    if move == "^":
         pos1 -= 1j
     elif move == "v":
         pos1 += 1j
@@ -33,7 +33,7 @@ for move in content[::2]:
     grid[pos1] = True
 
 for move in content[1::2]:
-    if move == '^':
+    if move == "^":
         pos2 -= 1j
     elif move == "v":
         pos2 += 1j
@@ -44,4 +44,3 @@ for move in content[1::2]:
     grid[pos2] = True
 
 print(len(grid))
-

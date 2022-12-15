@@ -1,11 +1,11 @@
 from stringparser import Parser
 
-with open('05.txt', 'rt') as finput:
+with open("05.txt", "rt") as finput:
     content = finput.read()
 
 
 def parse(content: str) -> tuple[tuple[list[str]], list[tuple[int, str, str]]]:
-    stacks_str, moves_str = content.split('\n\n')
+    stacks_str, moves_str = content.split("\n\n")
     *stack_contents, stack_names = stacks_str.splitlines()
     stacks = {name: [] for name in stack_names.split()}
     for line in reversed(stack_contents):

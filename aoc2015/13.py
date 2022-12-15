@@ -16,7 +16,7 @@ David would gain 46 happiness units by sitting next to Alice.
 David would lose 7 happiness units by sitting next to Bob.
 David would gain 41 happiness units by sitting next to Carol.
 """
-with open('13.txt', "rt") as finput:
+with open("13.txt", "rt") as finput:
     content = finput.read()
 
 parser = Parser("{} would {} {:d} happiness units by sitting next to {}.")
@@ -41,5 +41,8 @@ best_table = max(permutations(set(gain[0] for gain in gains)), key=score)
 best_score = score(best_table)
 print(best_score)
 
-candidates = {gains[(a, b)] + gains[(b, a)]: (a, b) for a, b in zip(best_table, best_table[1:] + best_table[:1])}
+candidates = {
+    gains[(a, b)] + gains[(b, a)]: (a, b)
+    for a, b in zip(best_table, best_table[1:] + best_table[:1])
+}
 print(best_score - min(candidates))

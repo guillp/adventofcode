@@ -1,21 +1,18 @@
-with open("02.txt", 'rt') as finput:
+with open("02.txt", "rt") as finput:
     content = finput.readlines()
 
 ROCK, PAPER, SCISSORS = 1, 2, 3
 
-LETTERS = {"A": ROCK,
-           "B": PAPER,
-           "C": SCISSORS,
-           "X": ROCK,
-           "Y": PAPER,
-           "Z": SCISSORS,
-           }
-
-WINNERS = {
-    ROCK: SCISSORS,
-    SCISSORS: PAPER,
-    PAPER: ROCK
+LETTERS = {
+    "A": ROCK,
+    "B": PAPER,
+    "C": SCISSORS,
+    "X": ROCK,
+    "Y": PAPER,
+    "Z": SCISSORS,
 }
+
+WINNERS = {ROCK: SCISSORS, SCISSORS: PAPER, PAPER: ROCK}
 
 
 def score(round) -> int:
@@ -26,11 +23,13 @@ def score(round) -> int:
         return 6 + you
     return you
 
+
 rounds = tuple(tuple(LETTERS[x] for x in line.split()) for line in content)
 
 print(sum((score(round) for round in rounds)))
 
 LOSE, DRAW, WIN = 1, 2, 3
+
 
 def score2(round) -> int:
     other, result = round
@@ -42,5 +41,6 @@ def score2(round) -> int:
         for winner, looser in WINNERS.items():
             if other == looser:
                 return winner + 6
+
 
 print(sum((score2(round) for round in rounds)))
