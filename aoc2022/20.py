@@ -7,7 +7,8 @@ content = """1
 4
 """
 
-with open("20.txt") as f: content = f.read()
+with open("20.txt") as f:
+    content = f.read()
 numbers = tuple(int(x) for x in content.splitlines())
 
 
@@ -24,16 +25,13 @@ def mix(numbers: tuple[int], rounds: int = 1) -> tuple[int]:
 def coordinates(numbers: tuple[int]) -> int:
     zero = numbers.index(0)
     m = len(numbers)
-    return numbers[(zero + 1000) % m] + numbers[(zero + 2000) % m] + numbers[(zero + 3000) % m]
+    return (
+        numbers[(zero + 1000) % m]
+        + numbers[(zero + 2000) % m]
+        + numbers[(zero + 3000) % m]
+    )
 
 
 print(coordinates(mix(numbers)))
 
-print(
-    coordinates(
-        mix(
-            tuple(x * 811589153 for x in numbers),
-            10
-        )
-    )
-)
+print(coordinates(mix(tuple(x * 811589153 for x in numbers), 10)))
