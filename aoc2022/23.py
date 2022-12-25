@@ -15,32 +15,52 @@ content = """..............
 ..............
 """
 
-with open("23.txt") as f: content = f.read()
+with open("23.txt") as f:
+    content = f.read()
 
 NORTH, SOUTH, EAST, WEST = -1j, 1j, 1, -1
 
-DIRECTIONS = deque((
-    (NORTH, {NORTH + EAST, NORTH, NORTH + WEST}),
-    (SOUTH, {SOUTH + EAST, SOUTH, SOUTH + WEST}),
-    (WEST, {WEST + NORTH, WEST, WEST + SOUTH}),
-    (EAST, {EAST + NORTH, EAST, EAST + SOUTH}),
-))
+DIRECTIONS = deque(
+    (
+        (NORTH, {NORTH + EAST, NORTH, NORTH + WEST}),
+        (SOUTH, {SOUTH + EAST, SOUTH, SOUTH + WEST}),
+        (WEST, {WEST + NORTH, WEST, WEST + SOUTH}),
+        (EAST, {EAST + NORTH, EAST, EAST + SOUTH}),
+    )
+)
 
 
 @cache
 def elves_at(m: int) -> set[complex]:
     if m == 0:
-        return {complex(x, y) for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c == "#"}
+        return {
+            complex(x, y)
+            for y, line in enumerate(content.splitlines())
+            for x, c in enumerate(line)
+            if c == "#"
+        }
 
     previous_elves = elves_at(m - 1)
 
     directions = DIRECTIONS.copy()
-    directions.rotate(-m+1)
+    directions.rotate(-m + 1)
 
     moves = defaultdict(set)
     new_elves = set()
     for pos in previous_elves:
-        if not any(pos+d in previous_elves for d in (NORTH, NORTH+EAST, EAST, SOUTH+EAST, SOUTH, SOUTH+WEST, WEST, NORTH+WEST)):
+        if not any(
+            pos + d in previous_elves
+            for d in (
+                NORTH,
+                NORTH + EAST,
+                EAST,
+                SOUTH + EAST,
+                SOUTH,
+                SOUTH + WEST,
+                WEST,
+                NORTH + WEST,
+            )
+        ):
             new_elves.add(pos)
             continue
         for direction, tests in directions:
@@ -67,7 +87,11 @@ def print_elves(elves: set[complex]):
     max_y = int(max(pos.imag for pos in elves))
 
     for y in range(min_y, max_y + 1):
-        print("".join("#" if complex(x, y) in elves else "." for x in range(min_x, max_x + 1)))
+        print(
+            "".join(
+                "#" if complex(x, y) in elves else "." for x in range(min_x, max_x + 1)
+            )
+        )
     print()
 
 
@@ -77,13 +101,14 @@ def score(elves: set[complex]) -> int:
     min_y = int(min(pos.imag for pos in elves))
     max_y = int(max(pos.imag for pos in elves))
 
-    return (max_y-min_y+1)*(max_x-min_x+1) - len(elves)
+    return (max_y - min_y + 1) * (max_x - min_x + 1) - len(elves)
 
-#print_elves(elves_at(10))
+
+# print_elves(elves_at(10))
 print(score(elves_at(10)))
 
 i = 1
-while elves_at(i) != elves_at(i+1):
-    i+=1
+while elves_at(i) != elves_at(i + 1):
+    i += 1
 
-print(i+1)
+print(i + 1)

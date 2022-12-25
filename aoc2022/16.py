@@ -15,7 +15,8 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 """
 
-with open('16.txt', 'rt') as finput: content = finput.read()
+with open("16.txt", "rt") as finput:
+    content = finput.read()
 
 parser = Parser("Valve {} ha flow rate={:d}; tunnel lead to valve {}")
 G = {}
@@ -46,15 +47,17 @@ def dfs(pressure, valves_to_open, time, *path):
             )
 
 
-best_pressure, best_path = max(dfs(0, valves_to_open, 30, "AA"),key=itemgetter(0))
+best_pressure, best_path = max(dfs(0, valves_to_open, 30, "AA"), key=itemgetter(0))
 print(best_pressure)
 print(best_path)
 
 s2 = 0
 my_best_path = elephant_best_path = None
-for my_part in itertools.combinations(valves_to_open, len(valves_to_open)//2):
-    my_pressure, my_path = max(dfs(0, set(my_part), 26, "AA"),key=itemgetter(0))
-    elephant_pressure, elephant_path = max(dfs(0, valves_to_open - set(my_part), 26, "AA"),key=itemgetter(0))
+for my_part in itertools.combinations(valves_to_open, len(valves_to_open) // 2):
+    my_pressure, my_path = max(dfs(0, set(my_part), 26, "AA"), key=itemgetter(0))
+    elephant_pressure, elephant_path = max(
+        dfs(0, valves_to_open - set(my_part), 26, "AA"), key=itemgetter(0)
+    )
     if my_pressure + elephant_pressure > s2:
         s2 = my_pressure + elephant_pressure
         my_best_path = my_path
