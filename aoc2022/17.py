@@ -1,10 +1,7 @@
-from functools import cache
-from itertools import cycle
-
-content = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+jets = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
 
 with open("17.txt") as f:
-    content = f.read().strip()
+    jets = f.read().strip()
 
 ROCKS = """####
 
@@ -26,25 +23,8 @@ ROCKS = """####
 """
 
 
-@cache
 def move(rock: frozenset[complex], dir: complex):
     return frozenset(pos + dir for pos in rock)
-
-
-def left(rock: frozenset[complex]) -> int:
-    return int(min(pos.real for pos in rock))
-
-
-def right(rock: frozenset[complex]) -> int:
-    return int(max(pos.real for pos in rock))
-
-
-def top(rock: frozenset[complex]) -> int:
-    return int(min(pos.imag for pos in rock))
-
-
-def bottom(rock: frozenset[complex]) -> int:
-    return int(max(pos.imag for pos in rock))
 
 
 rocks = [
@@ -57,15 +37,13 @@ rocks = [
     for rock_str in ROCKS.strip().split("\n\n")
 ]
 
-jets = cycle(content)
-
 
 def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None):
     top_display = min(
-        top(chamber),
-        top(rock) if rock else 1,
+        min(pos.imag for pos in chamber),
+        min(pos.imag for pos in rock) if rock else 1,
     )
-    for y in range(top_display, bottom(chamber)):
+    for y in range(top_display, 50):
         print(
             "".join(
                 "@"
@@ -82,17 +60,26 @@ def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None)
 def solve(n: int = 2022) -> int:
     chamber = frozenset(complex(i) for i in range(7))
     height = 0
+    jet = 0
+    i = 0
     states = {}
-    for i in range(n):
-        rock = rocks[i % len(rocks)]
+    while i < n:
+        # loop detection, when we end up in a previously known state
+        state = (i % len(rocks), jet, chamber)
+        if state in states:
+            j, h = states[state]
+            loops, remaining = divmod(n - j, i - j)
+            height += (height - h) * (loops - 1)
+            i = n - remaining
 
-        # print_chamber(chamber, rock)
+        rock = rocks[i % len(rocks)]
         while True:
-            push = next(jets)
-            pushed_rock = move(rock, -1 if push == "<" else 1)
+            pushed_rock = move(rock, -1 if jets[jet] == "<" else 1)
+            jet += 1
+            jet %= len(jets)
             if (
-                left(pushed_rock) >= 0
-                and right(pushed_rock) < 7
+                min(pos.real for pos in pushed_rock) >= 0
+                and max(pos.real for pos in pushed_rock) < 7
                 and not pushed_rock & chamber
             ):
                 rock = pushed_rock
@@ -104,18 +91,20 @@ def solve(n: int = 2022) -> int:
                 break
 
         chamber |= rock
-        # keep only the top part of the chamber
-        chamber = frozenset(pos for pos in chamber if pos.imag < 30)
+        # keep only the top part of the chamber, using an arbitrary large value (result from part1)
+        chamber = frozenset(pos for pos in chamber if pos.imag < 3068)
         # calc how much the chamber has raised
-        raised = -top(chamber)
+        raised = -int(min(pos.imag for pos in chamber))
         height += raised
         # put the chamber at 0 level again for the new rock
         chamber = move(chamber, raised * 1j)
 
+        states[state] = (i, height)
+        i += 1
         # print_chamber(chamber)
 
     return height
 
 
-# print_chamber()
 print(solve(2022))
+print(solve(1000000000000))
