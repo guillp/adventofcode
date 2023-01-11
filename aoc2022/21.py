@@ -48,8 +48,8 @@ root = None
 for line in content.splitlines():
     key, val = line.split(": ")
     if key == "root":
-        root = val.replace("+", "-")
-    if key == "humn":
+        root = val.replace("+", "-").replace("*", "-").replace("/", "-")
+    elif key == "humn":
         solved["humn"] = symbols("humn")
     elif val.isdigit():
         solved[key] = int(val)
@@ -64,5 +64,6 @@ while to_solve:
         except NameError:
             pass
 
-
-print(int(solve(eval(root, solved))[0]))
+equation = eval(root, solved)
+print(equation)
+print(int(solve(equation)[0]))
