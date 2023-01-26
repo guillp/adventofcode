@@ -11,7 +11,7 @@ def hire(n: int, squads: list[int]) -> tuple[int, tuple[int]]:
         for total, hired in list(possible_hires.items()):
             possible_hires[total + squad] = hired + (squad,)
 
-    target = (n + sum(squads)) // 2 - n
+    target = (n + sum(squads)) // 2 - n + 1
     while target not in possible_hires:
         target += 1
 
