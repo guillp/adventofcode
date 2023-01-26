@@ -1,16 +1,23 @@
+import sys
+
 n = int(input())
 m = int(input())
 squads = [int(input()) for _ in range(m)]
 
-target = (n + sum(squads)) // 2 - n + 1
 
-def hire(squads: list[int], target: int) -> int:
-    totals = {0}
+def hire(n: int, squads: list[int]) -> tuple[int, tuple[int]]:
+    possible_hires = {0: ()}
     for squad in squads:
-        for total in tuple(totals):
-            totals.add(total + squad)
+        for total, hired in list(possible_hires.items()):
+            possible_hires[total + squad] = hired + (squad,)
 
-    return min(total for total in totals if total >= target)
+    target = (n + sum(squads)) // 2 - n
+    while target not in possible_hires:
+        target += 1
+
+    return target, possible_hires[target]
 
 
-print(hire(squads, target))
+total, hired = hire(n, squads)
+print(total)
+print(hired, file=sys.stderr)
