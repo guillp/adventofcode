@@ -4,24 +4,22 @@ X, Y = (int(x) for x in input().split())
 urdl = input()
 
 
-def solve(X: int, Y: int, urdl: str) -> int|None:
+def solve(X: int, Y: int, urdl: str) -> int | None:
     if X == 0 and Y == 0:
         return 0
 
-    diffs = {
-        0: (0, 0)
-    }
+    diffs = {0: (0, 0)}
 
     # calc the position after each step of the pattern
     for i, c in enumerate(urdl, start=1):
         x, y = diffs[i - 1]
-        if c == 'R':
+        if c == "R":
             x += 1
-        elif c == 'L':
+        elif c == "L":
             x -= 1
-        elif c == 'U':
+        elif c == "U":
             y += 1
-        elif c == 'D':
+        elif c == "D":
             y -= 1
 
         # if target is reached on first pattern
@@ -48,8 +46,8 @@ def solve(X: int, Y: int, urdl: str) -> int|None:
         if modx == mody == 0 and divx == divy:
             N = divx
             # if the pattern creates loops, it may visit the target before the last pattern is finished
-            if (x+dx, y+dy) in revs:
-                return (N-1)*len(urdl) + min(revs[x+dx, y+dy])
+            if (x + dx, y + dy) in revs:
+                return (N - 1) * len(urdl) + min(revs[x + dx, y + dy])
             # otherwise we need N loops plus i steps of the pattern
             return N * len(urdl) + i
 
