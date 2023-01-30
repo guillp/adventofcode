@@ -14,5 +14,8 @@ for number in range(273025, 767253):
 print(len(possible_passwords))
 print(
     len(possible_passwords)
-    - sum(not any(password.count(c) == 2 for c in password) for password in possible_passwords)
+    - sum(
+        not any(password.count(c) == 2 for c in password)
+        for password in possible_passwords
+    )
 )

@@ -16,7 +16,8 @@ lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32"""
 
-with open('21.txt') as f: content = f.read()
+with open("21.txt") as f:
+    content = f.read()
 
 solved = {}
 to_solve = {}

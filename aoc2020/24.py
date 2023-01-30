@@ -22,7 +22,8 @@ eneswnwswnwsenenwnwnwwseeswneewsenese
 neswnwewnwnwseenwseesewsenwsweewe
 wseweeenwnesenwwwswnew"""
 
-with open('24.txt') as f: content = f.read()
+with open("24.txt") as f:
+    content = f.read()
 
 
 def iter_path(path: str) -> Iterable[str]:
@@ -37,7 +38,14 @@ black_tiles = set()
 for line in content.splitlines():
     pos = 0
     for tile in iter_path(line):
-        pos += {"e": -2, "w": 2, "ne": -1 - 1j, "nw": 1 - 1j, "se": -1 + 1j, "sw": 1 + 1j}.get(tile)
+        pos += {
+            "e": -2,
+            "w": 2,
+            "ne": -1 - 1j,
+            "nw": 1 - 1j,
+            "se": -1 + 1j,
+            "sw": 1 + 1j,
+        }.get(tile)
     if pos in black_tiles:
         black_tiles.remove(pos)
     else:
@@ -54,7 +62,14 @@ def tiles_at(day: int) -> set[complex]:
     previous_tiles = tiles_at(day - 1)
     new_tiles = set()
     for black_tile in previous_tiles:
-        if 0 < sum(black_tile + dir in previous_tiles for dir in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)) <= 2:
+        if (
+            0
+            < sum(
+                black_tile + dir in previous_tiles
+                for dir in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)
+            )
+            <= 2
+        ):
             new_tiles.add(black_tile)
 
     min_real = int(min(pos.real for pos in previous_tiles) - 1)
@@ -69,11 +84,16 @@ def tiles_at(day: int) -> set[complex]:
             tile = complex(real, imag)
             if tile in previous_tiles:
                 continue
-            if sum(tile + dir in previous_tiles for dir in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)) == 2:
+            if (
+                sum(
+                    tile + dir in previous_tiles
+                    for dir in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)
+                )
+                == 2
+            ):
                 new_tiles.add(tile)
 
     return new_tiles
 
 
 print(len(tiles_at(100)))
-
