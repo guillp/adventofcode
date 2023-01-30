@@ -18,7 +18,8 @@ content = """        ...#
 10R5L5R10L4R5L5
 """
 
-with open("22.txt") as f:    content = f.read()
+with open("22.txt") as f:
+    content = f.read()
 
 
 def debug(*args, **kwargs):
@@ -40,7 +41,7 @@ UP, RIGHT, DOWN, LEFT = -1j, 1, 1j, -1
 
 
 def part1_wrap(
-        pos: complex, facing: complex, grid: dict[complex, str]
+    pos: complex, facing: complex, grid: dict[complex, str]
 ) -> tuple[complex, complex]:
     next_pos = pos + facing
     while next_pos - facing in grid:
@@ -69,7 +70,7 @@ def face(pos: complex) -> int:
 
 
 def part2_wrap(
-        pos: complex, heading: complex, grid: dict[complex, str]
+    pos: complex, heading: complex, grid: dict[complex, str]
 ) -> tuple[complex, complex]:
     x = int(pos.real) % FACE_SIZE
     y = int(pos.imag) % FACE_SIZE
@@ -91,32 +92,37 @@ def part2_wrap(
         },
         4: {
             UP: (3, RIGHT, complex(FACE_SIZE, FACE_SIZE + x)),
-            LEFT: (1, RIGHT, complex(FACE_SIZE, FACE_SIZE - 1 - y))
+            LEFT: (1, RIGHT, complex(FACE_SIZE, FACE_SIZE - 1 - y)),
         },
         5: {
             RIGHT: (2, LEFT, complex(FACE_SIZE * 3 - 1, FACE_SIZE - 1 - y)),
-            DOWN: (6, LEFT, complex(FACE_SIZE - 1, FACE_SIZE * 3 + x))
+            DOWN: (6, LEFT, complex(FACE_SIZE - 1, FACE_SIZE * 3 + x)),
         },
         6: {
             RIGHT: (5, UP, complex(FACE_SIZE + y, FACE_SIZE * 3 - 1)),
             DOWN: (2, DOWN, complex(FACE_SIZE * 2 + x, 0)),
             LEFT: (1, DOWN, complex(FACE_SIZE + y, 0)),
-        }
+        },
     }[current_face][heading]
 
-    debug(f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}")
+    debug(
+        f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
+    )
     assert next_face == face(
-        next_pos), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
-    assert next_pos in grid, f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
+        next_pos
+    ), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
+    assert (
+        next_pos in grid
+    ), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
     return next_pos, next_heading
 
 
 def follow_path(
-        grid: dict[complex, str],
-        instructions: str,
-        wrap_method: Callable[
-            [complex, complex, dict[complex, str]], tuple[complex, complex]
-        ],
+    grid: dict[complex, str],
+    instructions: str,
+    wrap_method: Callable[
+        [complex, complex, dict[complex, str]], tuple[complex, complex]
+    ],
 ):
     path = grid.copy()
     pos = complex(next(x for x in range(W) if grid.get(complex(x, 0)) == "."), 0)
@@ -144,20 +150,22 @@ def follow_path(
                 heading = next_heading
             elif next_tile == "#":
                 break
-        debug(pos+1+1j, {1: "R", 1j: "D", -1: "L", -1j: "U"}[heading])
+        debug(pos + 1 + 1j, {1: "R", 1j: "D", -1: "L", -1j: "U"}[heading])
         path[pos] = {1: ">", 1j: "v", -1: "<", -1j: "^"}[heading]
     return pos, heading, path
 
 
 def password(pos: complex, heading: complex) -> int:
     return (
-            int(pos.imag + 1) * 1000 + int(pos.real + 1) * 4 + {1: 0, 1j: 1, -1: 2, -1j: 3}[heading]
+        int(pos.imag + 1) * 1000
+        + int(pos.real + 1) * 4
+        + {1: 0, 1j: 1, -1: 2, -1j: 3}[heading]
     )
 
 
 # print(password(*follow_path(grid, instructions, part1_wrap)), flush=True)
 pos, heading, path = follow_path(grid, instructions, part2_wrap)
 for y in range(H):
-    print("".join(path.get(complex(x,y), " ") for x in range(W)))
+    print("".join(path.get(complex(x, y), " ") for x in range(W)))
 
 print(password(pos, heading))

@@ -1,4 +1,5 @@
-with open('01.txt') as f: content = f.read()
+with open("01.txt") as f:
+    content = f.read()
 
 
 def fuel(mass: int) -> int:
