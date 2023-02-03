@@ -20,6 +20,7 @@ for i, ((x, X), (y, Y), (z, Z)) in enumerate(conds):
 
     if not pool:
         print(i)
+        break
 else:
     print(i+1)
 
