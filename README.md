@@ -1,7 +1,1 @@
-Those are my solution codes for [Advent of Code](https://adventofcode.com/), written in Python.
-
-To install the required modules for the solutions to work:
-
-    pip install pandas requests stringparser
-
-
+Those are my solution codes for [Advent of Code](https://adventofcode.com/), and some other coding challenges like [TechChallenger](https://www.techchallenger.fr/), written in Python.
