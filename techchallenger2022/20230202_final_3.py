@@ -43,11 +43,13 @@ def solve(target_area: float) -> float:
     # we need to find X so that the area: X * (y+X*slope/2) is equal to remaining
     # this equation can be written like: (slope/2 * X²) + y*X - mod = 0
     # this is a second degree equation (a*x² + b*x + c == 0), which can be solved
-    # by applying Bhaskara with: a = slope/2 , b = y , c = -mod
+    # by applying Bhaskara with: a = slope/2 , b = y , c = -remaining
     delta = (y**2 + 4 * slope / 2 * remaining) ** 0.5
+    # there are 2 possible values for x
     x1 = (-y + delta) / slope
     x2 = (-y - delta) / slope
-
+    
+    # we take the one that is between 0.0 and 1.0
     return x + x1 if 0 <= x1 < 1 else x2
 
 
