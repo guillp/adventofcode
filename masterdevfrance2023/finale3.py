@@ -34,5 +34,6 @@ else:
                 debug(f"... can do first theme {themes[0][first_theme]} after last_theme {themes[N-1][last_theme]}, adding {s[N-1][last_theme]} possibilities")
                 total += s[N-1][last_theme]
 
-print(total)
+    print(total)
+    
 debug("=========\n")
