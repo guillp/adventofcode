@@ -1,7 +1,4 @@
-import sys
-import time
 from enum import Enum
-from operator import itemgetter
 
 
 class OutputSignal(RuntimeError):
