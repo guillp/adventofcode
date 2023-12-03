@@ -65,6 +65,8 @@ for pos, symbol in symbols.items():
     for origin, length, num in parts:
         if any(origin + d in nbs for d in range(length)):
             adjacent_parts.add((num, origin))
+            if len(adjacent_parts) > 2:
+                break
 
     if len(adjacent_parts) == 2:
         s2 += adjacent_parts.pop()[0] * adjacent_parts.pop()[0]
