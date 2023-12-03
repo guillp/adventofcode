@@ -11,7 +11,7 @@ for line in content.splitlines():
     blue = max(int(x) for x in re.findall(r'(\d+) blue', line))
     if red <= 12 and green <= 13 and blue <= 14:
         s1 += game_id
-    s2 += red*green*blue
+    s2 += red * green * blue
 
 print(s1)
 print(s2)
