@@ -1,18 +1,6 @@
 import re
 from typing import Iterator
 
-content = """\
-467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598.."""
-
 with open('03.txt') as f: content = f.read()
 
 # extract each symbol from input, indexed by position
@@ -59,7 +47,7 @@ for (xs, ys), symbol in symbols.items():
     adjacent_parts = set()
     nbs = tuple(neighbors(xs, ys, 1))
     for (yp, xp), num in parts.items():
-        if yp > ys + 1:  # avoid search parts that are below the symbol
+        if yp > ys + 1:  # avoid searching parts that are below the symbol
             break
         if any((xp + d, yp) in nbs for d in range(len(num))):
             adjacent_parts.add((num, xp, yp))
