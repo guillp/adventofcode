@@ -54,20 +54,20 @@ hand2bid = {
     Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
 }
 
-s = 0
-print(sorted(hand2bid))
-for rank, hand in enumerate(sorted(hand2bid)):
-    s += (rank + 1) * hand2bid[hand]
-
-print(s)
+print(
+    sum(
+        (rank + 1) * hand2bid[hand]
+        for rank, hand in enumerate(sorted(hand2bid))
+    )
+)
 
 
 class JokerHand(Hand):
-    def __init__(self, cards: str):
+    def __init__(self, cards: str) -> None:
         self.cards = cards
         counts = Counter(cards)
         jokers = counts["J"]
-        if jokers != 5: # add jokers to the most frequent other card
+        if jokers != 5:  # add jokers to the most frequent other card
             del counts["J"]
             most_frequent_card, most_frequent_count = counts.most_common(1)[0]
             counts[most_frequent_card] += jokers
@@ -91,12 +91,14 @@ class JokerHand(Hand):
 
 
 jokerhand2bid = {
-    JokerHand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
+    JokerHand(card): int(x)
+    for line in content.splitlines()
+    for card, x in [line.split()]
 }
 
-s = 0
-print(sorted(jokerhand2bid))
-for rank, hand in enumerate(sorted(jokerhand2bid)):
-    s += (rank + 1) * jokerhand2bid[hand]
-
-print(s)
+print(
+    sum(
+        (rank + 1) * jokerhand2bid[hand]
+        for rank, hand in enumerate(sorted(jokerhand2bid))
+    )
+)
