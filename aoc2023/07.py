@@ -1,4 +1,7 @@
 from collections import Counter
+from dataclasses import dataclass, field
+from enum import IntEnum
+from typing import ClassVar
 
 content = """\
 32T3K 765
@@ -7,87 +10,73 @@ KK677 28
 KTJJT 220
 QQQJA 483
 """
-# with open('07.txt') as f: content = f.read()
 
-(
-    HIGH_CARD,
-    PAIR,
-    TWO_PAIR,
-    THREE_OF__KIND,
-    FULL_HOUSE,
-    FOUR_OF_A_KIND,
-    FIVE_OF_A_KIND,
-) = (1, 2, 3, 4, 5, 6, 7)
+with open('07.txt') as f: content = f.read()
 
 
+class Rank(IntEnum):
+    HIGH_CARD = 1
+    PAIR = 2
+    TWO_PAIR = 3
+    THREE_OF__KIND = 4
+    FULL_HOUSE = 5
+    FOUR_OF_A_KIND = 6
+    FIVE_OF_A_KIND = 7
+
+
+@dataclass(frozen=True, slots=True, order=True)
 class Hand:
-    def __init__(self, cards: str):
-        self.cards = cards
-        match Counter(cards).most_common():
-            case ((_, 5)):
-                rank = FIVE_OF_A_KIND
+    cards: str = field(compare=False)
+    rank: Rank = field(init=False)
+    order: tuple[int] = field(init=False)
+
+    cards_order: ClassVar[str] = "23456789TJQKA"
+
+    @property
+    def counts(self) -> Counter[str]:
+        return Counter(self.cards)
+
+    def __post_init__(self) -> None:
+        match self.counts.most_common():
+            case ((_, 5), ):
+                rank = Rank.FIVE_OF_A_KIND
             case ((_, 4), (_, 1)):
-                rank = FOUR_OF_A_KIND
+                rank = Rank.FOUR_OF_A_KIND
             case ((_, 3), (_, 2)):
-                rank = FULL_HOUSE
+                rank = Rank.FULL_HOUSE
             case ((_, 3), (_, 1), (_, 1)):
-                rank = THREE_OF__KIND
+                rank = Rank.THREE_OF__KIND
             case ((_, 2), (_, 2), (_, 1)):
-                rank = TWO_PAIR
+                rank = Rank.TWO_PAIR
             case ((_, 2), *_):
-                rank = PAIR
+                rank = Rank.PAIR
             case _:
-                rank = HIGH_CARD
-        self.rank = rank
-        self.order = tuple("23456789TJQKA".index(card) for card in cards)
-
-    def __gt__(self, other) -> bool:
-        if self.rank == other.rank:
-            return self.order > other.order
-        return self.rank > other.rank
-
-    def __repr__(self):
-        return f"{self.cards} ({self.rank})"
+                rank = Rank.HIGH_CARD
+        object.__setattr__(self, 'rank', rank)
+        object.__setattr__(self, 'order', tuple(self.cards_order.index(card) for card in self.cards))
 
 
 hand2bid = {
     Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
 }
+print(sorted(hand2bid))
 
-print(
-    sum(
-        (rank + 1) * hand2bid[hand]
-        for rank, hand in enumerate(sorted(hand2bid))
-    )
-)
+print(sum((rank) * hand2bid[hand] for rank, hand in enumerate(sorted(hand2bid), start=1)))
 
 
+@dataclass(frozen=True)
 class JokerHand(Hand):
-    def __init__(self, cards: str) -> None:
-        self.cards = cards
-        counts = Counter(cards)
+    cards_order: ClassVar[str] = "J23456789TQKA"
+
+    @property
+    def counts(self) -> Counter[str]:
+        counts = Counter(self.cards)
         jokers = counts["J"]
         if jokers != 5:  # add jokers to the most frequent other card
             del counts["J"]
             most_frequent_card, most_frequent_count = counts.most_common(1)[0]
             counts[most_frequent_card] += jokers
-        match counts.most_common():
-            case ((_, 5)):
-                rank = FIVE_OF_A_KIND
-            case ((_, 4), (_, 1)):
-                rank = FOUR_OF_A_KIND
-            case ((_, 3), (_, 2)):
-                rank = FULL_HOUSE
-            case ((_, 3), (_, 1), (_, 1)):
-                rank = THREE_OF__KIND
-            case ((_, 2), (_, 2), (_, 1)):
-                rank = TWO_PAIR
-            case ((_, 2), *_):
-                rank = PAIR
-            case _:
-                rank = HIGH_CARD
-        self.rank = rank
-        self.order = tuple("J23456789TQKA".index(card) for card in cards)
+        return counts
 
 
 jokerhand2bid = {
@@ -95,10 +84,5 @@ jokerhand2bid = {
     for line in content.splitlines()
     for card, x in [line.split()]
 }
-
-print(
-    sum(
-        (rank + 1) * jokerhand2bid[hand]
-        for rank, hand in enumerate(sorted(jokerhand2bid))
-    )
-)
+print(sorted(jokerhand2bid))
+print(sum((rank) * jokerhand2bid[hand] for rank, hand in enumerate(sorted(jokerhand2bid), start=1)))
