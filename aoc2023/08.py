@@ -26,8 +26,7 @@ for i, instruction in enumerate(cycle(instructions), start=1):
         print(i)
         break
 
-start_positions = tuple(pos for pos in G if pos[-1] == 'A')
-positions = {pos: (pos, None, None) for pos in start_positions}
+positions = {pos: (pos, None, None) for pos in G if pos[-1] == 'A'}
 
 for i, instruction in enumerate(cycle(instructions), start=1):
     for start_pos, (current_pos, ttz, loop) in positions.items():
