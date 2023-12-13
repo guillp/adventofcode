@@ -28,11 +28,9 @@ def find_mirror(pattern: str, part2: bool = False) -> int:
 
     # vertical
     for x in range(1, W):
-        l = min(x, W - x)
-
         errors = 0
         for y in range(H):
-            for i in range(l):
+            for i in range(min(x, W - x)):
                 left = x - 1 - i
                 right = x + i
                 if not lines[y][left] == lines[y][right]:
@@ -45,11 +43,9 @@ def find_mirror(pattern: str, part2: bool = False) -> int:
 
     # horizontal
     for y in range(1, H):
-        l = min(y, H - y)
-
         errors = 0
         for x in range(W):
-            for i in range(l):
+            for i in range(min(y, H - y)):
                 up = y - 1 - i
                 down = y + i
                 if not lines[up][x] == lines[down][x]:
