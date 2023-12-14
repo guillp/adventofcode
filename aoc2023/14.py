@@ -80,11 +80,11 @@ def part2(content: str) -> int:
         grid = roll(grid, W, H)  # east
         grid = rotate(grid, W)
 
-        if grid in states:
+        try:
             j = states.index(grid)  # loop found
             k = (1000000000 - j) % (i - j) + j
             return get_load(states[k], H, W)
-        else:
+        except ValueError:
             states.append(grid)
 
 
