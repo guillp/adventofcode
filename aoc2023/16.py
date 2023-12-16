@@ -25,7 +25,7 @@ class Direction(Enum):
     WEST = -1, 0
 
 
-def continue_path(grid: dict[Point, str], cell: Point, direction: Direction) -> set[Point]:
+def continue_path(grid: dict[Point, str], cell: Point, direction: Direction) -> int:
     paths = {(cell, direction)}
     pool = {(cell, direction)}
     while pool:
