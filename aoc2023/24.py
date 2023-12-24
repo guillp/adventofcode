@@ -45,7 +45,7 @@ assert part1(test_content, area_min=7, area_max=28) == 2
 print(part1(content, area_min=200000000000000, area_max=400000000000000))
 
 
-from z3 import Solver, Int, sat
+from z3 import Solver, Int, sat, Ints
 
 
 def part2(content: str) -> int:
@@ -56,26 +56,22 @@ def part2(content: str) -> int:
 
     # use Z3, it is the closest thing to magic!
     s = Solver()
-    # the coordinates we are looking for
-    xt = Int('x')
-    yt = Int('y')
-    zt = Int('z')
-    # the throw velocity
-    vxt = Int('vx')
-    vyt = Int('vy')
-    vzt = Int('vz')
+    # the coordinates and throw velocity we are looking for
+    xt, yt, zt, vxt, vyt, vzt = Ints("x y z vx vy vz")
 
+    # add the constraint that must be met for each hail
     for i, (x, y, z, vx, vy, vz) in enumerate(hails):
-        time = Int(f't{i}')
+        time = Int(f"t{i}")
         s.add(
-            xt+time*vxt == x+vx*time,
-            yt+time*vyt == y+vy*time,
-            zt+time*vzt == z+vz*time,
+            xt + time * vxt == x + vx * time,
+            yt + time * vyt == y + vy * time,
+            zt + time * vzt == z + vz * time,
         )
 
+    # let Z3 deduce everything
     if s.check() == sat:
         m = s.model()
-        return m[xt].as_long()+m[yt].as_long()+m[zt].as_long()
+        return m[xt].as_long() + m[yt].as_long() + m[zt].as_long()
 
 
 assert part2(test_content) == 47
