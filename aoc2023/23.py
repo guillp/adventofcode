@@ -69,21 +69,15 @@ def part1(content: str) -> int:
 
 
 def part2(content: str) -> int:
-    lines = (
-        content.replace(">", ".")
-        .replace("<", ".")
-        .replace("^", ".")
-        .replace("v", ".")
-        .splitlines()
-    )
+    lines = content.splitlines()
     H = len(lines)
     start_pos = complex(lines[0].index("."), 0)
     target_pos = complex(lines[-1].index("."), H - 1)
     grid = {
-        complex(x, y): c
+        complex(x, y)
         for y, line in enumerate(lines)
         for x, c in enumerate(line)
-        if c == "."
+        if c != "#"
     }
 
     # turn the labyrinth into a graph using a quick DFS
@@ -124,7 +118,7 @@ def part2(content: str) -> int:
                 if l + steps > longest:
                     longest = l + steps
                     longest_path = path + (next_pos,)
-                    #print(longest, longest_path)
+                    # print(longest, longest_path)
             else:
                 pool.append((l + steps, path + (next_pos,)))
 
