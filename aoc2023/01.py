@@ -1,6 +1,7 @@
 import regex
 
-with open('01.txt') as f: content = f.read()
+with open("01.txt") as f:
+    content = f.read()
 
 s = 0
 for line in content.splitlines():
@@ -12,7 +13,17 @@ for line in content.splitlines():
 
 print(s)
 
-d = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
+d = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+}
 
 s2 = 0
 for line in content.splitlines():

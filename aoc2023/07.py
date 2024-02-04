@@ -11,7 +11,8 @@ KTJJT 220
 QQQJA 483
 """
 
-with open('07.txt') as f: content = f.read()
+with open("07.txt") as f:
+    content = f.read()
 
 
 class Rank(IntEnum):
@@ -38,7 +39,7 @@ class Hand:
 
     def __post_init__(self) -> None:
         match self.counts.most_common():
-            case ((_, 5), ):
+            case ((_, 5),):
                 rank = Rank.FIVE_OF_A_KIND
             case ((_, 4), (_, 1)):
                 rank = Rank.FOUR_OF_A_KIND
@@ -52,13 +53,13 @@ class Hand:
                 rank = Rank.PAIR
             case _:
                 rank = Rank.HIGH_CARD
-        object.__setattr__(self, 'rank', rank)
-        object.__setattr__(self, 'order', tuple(self.cards_order.index(card) for card in self.cards))
+        object.__setattr__(self, "rank", rank)
+        object.__setattr__(
+            self, "order", tuple(self.cards_order.index(card) for card in self.cards)
+        )
 
 
-hand2bid = {
-    Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
-}
+hand2bid = {Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]}
 print(sorted(hand2bid))
 
 print(sum((rank) * hand2bid[hand] for rank, hand in enumerate(sorted(hand2bid), start=1)))
@@ -80,9 +81,7 @@ class JokerHand(Hand):
 
 
 jokerhand2bid = {
-    JokerHand(card): int(x)
-    for line in content.splitlines()
-    for card, x in [line.split()]
+    JokerHand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
 }
 print(sorted(jokerhand2bid))
 print(sum((rank) * jokerhand2bid[hand] for rank, hand in enumerate(sorted(jokerhand2bid), start=1)))

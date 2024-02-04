@@ -13,7 +13,8 @@ test_content = r"""
 ..//.|....
 """.strip()
 
-with open('16.txt') as f: content = f.read()
+with open("16.txt") as f:
+    content = f.read()
 
 type Point = tuple[int, int]
 
@@ -52,13 +53,19 @@ def continue_path(grid: dict[Point, str], cell: Point, direction: Direction) -> 
             case "|":  # splitter
                 match direction:
                     case Direction.EAST | Direction.WEST:
-                        pool |= {(next_cell, Direction.NORTH), (next_cell, Direction.SOUTH)}
+                        pool |= {
+                            (next_cell, Direction.NORTH),
+                            (next_cell, Direction.SOUTH),
+                        }
                     case Direction.NORTH | Direction.SOUTH:
                         pool |= {(next_cell, direction)}
             case "-":  # splitter
                 match direction:
                     case Direction.NORTH | Direction.SOUTH:
-                        pool |= {(next_cell, Direction.EAST), (next_cell, Direction.WEST)}
+                        pool |= {
+                            (next_cell, Direction.EAST),
+                            (next_cell, Direction.WEST),
+                        }
                     case Direction.EAST | Direction.WEST:
                         pool |= {(next_cell, direction)}
             case "\\":  # mirror

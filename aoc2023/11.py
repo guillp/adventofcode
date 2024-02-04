@@ -15,23 +15,30 @@ content = """\
 #...#.....
 """
 
-with open('11.txt') as f: content = f.read()
+with open("11.txt") as f:
+    content = f.read()
 
 lines = content.splitlines()
 H = len(lines)
 W = len(lines[0])
-galaxies = tuple((x, y) for y in range(len(lines)) for x in range(len(lines[0])) if lines[y][x] == "#")
+galaxies = tuple(
+    (x, y) for y in range(len(lines)) for x in range(len(lines[0])) if lines[y][x] == "#"
+)
 
 
 def expand(galaxies: tuple[tuple[int, int]], H: int, W: int, d: int):
     x_shift = y_shift = 0
     for x in range(W):
         if not any(galaxy[0] == x + x_shift for galaxy in galaxies):
-            galaxies = tuple((gx + d, gy) if gx >= x + x_shift else (gx, gy) for (gx, gy) in galaxies)
+            galaxies = tuple(
+                (gx + d, gy) if gx >= x + x_shift else (gx, gy) for (gx, gy) in galaxies
+            )
             x_shift += d
     for y in range(H):
         if not any(galaxy[1] == y + y_shift for galaxy in galaxies):
-            galaxies = tuple((gx, gy + d) if gy >= y + y_shift else (gx, gy) for (gx, gy) in galaxies)
+            galaxies = tuple(
+                (gx, gy + d) if gy >= y + y_shift else (gx, gy) for (gx, gy) in galaxies
+            )
             y_shift += d
 
     return galaxies
