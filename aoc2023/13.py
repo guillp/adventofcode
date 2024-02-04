@@ -16,7 +16,8 @@ content = """\
 #....#..#
 """
 
-with open('13.txt') as f: content = f.read()
+with open("13.txt") as f:
+    content = f.read()
 
 patterns = content.split("\n\n")
 

@@ -26,11 +26,8 @@ def solve(positions: str, groups: tuple[int]) -> int:
 
     if not groups and "#" not in positions:
         return 1
-    if (
-        sum(groups) > len(positions)
-        or not groups and "#" in positions
-    ):
-        return 0 # fail fast on impossible cases
+    if sum(groups) > len(positions) or not groups and "#" in positions:
+        return 0  # fail fast on impossible cases
 
     s = 0
     if "." not in positions[: groups[0]]:  # the next group fits

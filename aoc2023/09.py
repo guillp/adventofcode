@@ -6,13 +6,14 @@ content = """\
 10 13 16 21 30 45
 """
 
-with open('09.txt') as f: content = f.read()
+with open("09.txt") as f:
+    content = f.read()
 
 
 def predict(*numbers: int) -> tuple[int, int]:
     diffs = [tuple(numbers)]
     for i in count(1):
-        diff = tuple(b-a for a,b in zip(diffs[i-1], diffs[i-1][1:]))
+        diff = tuple(b - a for a, b in zip(diffs[i - 1], diffs[i - 1][1:]))
         if all(d == 0 for d in diff):
             break
         diffs.append(diff)

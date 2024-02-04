@@ -1,21 +1,25 @@
 import re
 from typing import Iterator
 
-with open('03.txt') as f: content = f.read()
+with open("03.txt") as f:
+    content = f.read()
 
 # extract each symbol from input, indexed by position
 symbols = {
     (x, y): c
     for y, line in enumerate(content.splitlines())
     for x, c in enumerate(line)
-    if c != '.' and not c.isdigit()
+    if c != "." and not c.isdigit()
 }
 
 # extract all numbers, indexed by position
 numbers = {
-    (match.start(), y): match.group()  # note: not converting to int here in case some number contain a leading 0
+    (
+        match.start(),
+        y,
+    ): match.group()
     for y, line in enumerate(content.splitlines())
-    for match in re.finditer(r'\d+', line)
+    for match in re.finditer(r"\d+", line)
 }
 
 
@@ -41,7 +45,7 @@ print(s)
 
 s2 = 0
 for (xs, ys), symbol in symbols.items():
-    if symbol != '*':
+    if symbol != "*":
         continue
 
     adjacent_parts = set()
@@ -51,8 +55,8 @@ for (xs, ys), symbol in symbols.items():
             break
         if any((xp + d, yp) in nbs for d in range(len(num))):
             adjacent_parts.add((num, xp, yp))
-            if len(adjacent_parts) > 2:  # avoid continuing the search when there are already 3 adjacent parts
-                break
+            if len(adjacent_parts) > 2:
+                break  # avoid continuing the search when there are already 3 adjacent parts
 
     if len(adjacent_parts) == 2:
         s2 += int(adjacent_parts.pop()[0]) * int(adjacent_parts.pop()[0])

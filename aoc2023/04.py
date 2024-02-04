@@ -1,4 +1,5 @@
-with open('04.txt') as f: content = f.read()
+with open("04.txt") as f:
+    content = f.read()
 
 
 def score_card(card: str) -> tuple[int, int]:

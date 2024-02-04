@@ -132,9 +132,7 @@ lines = content.splitlines()
 
 assert lines[0].startswith("seeds: ")
 seed_spec = tuple(int(x) for x in lines.pop(0).removeprefix("seeds: ").split())
-seed_ranges = [
-    (start, length) for start, length in zip(seed_spec[::2], seed_spec[1::2])
-]
+seed_ranges = [(start, length) for start, length in zip(seed_spec[::2], seed_spec[1::2])]
 
 
 def check_seed(seed: int) -> bool:
@@ -181,11 +179,7 @@ for location in count():
             fertilizer2soil(
                 water2fertilizer(
                     light2water(
-                        temperature2light(
-                            humidity2temperature(
-                                location2humidity(location)
-                            )
-                        )
+                        temperature2light(humidity2temperature(location2humidity(location)))
                     )
                 )
             )

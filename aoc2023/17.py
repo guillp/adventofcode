@@ -24,9 +24,7 @@ def solve(content: str, min_straigth: int = 1, max_straigth: int = 3):
     lines = content.splitlines()
     H = len(lines)
     W = len(lines[0])
-    grid = {
-        (x, y): int(loss) for y, line in enumerate(lines) for x, loss in enumerate(line)
-    }
+    grid = {(x, y): int(loss) for y, line in enumerate(lines) for x, loss in enumerate(line)}
 
     start = (0, 0)
     target = (W - 1, H - 1)
