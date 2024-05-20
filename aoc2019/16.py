@@ -1,11 +1,8 @@
-with open('16.txt') as f: content = f.read()
-
-
 def fft_sum(signal: tuple[int], i: int):
     s = 0
     for j in range(i + 1):
-        s += sum(signal[i + j::(i + 1) * 4])
-        s -= sum(signal[i + (i + 1) * 2 + j::(i + 1) * 4])
+        s += sum(signal[i + j :: (i + 1) * 4])
+        s -= sum(signal[i + (i + 1) * 2 + j :: (i + 1) * 4])
     return s
 
 
@@ -25,6 +22,9 @@ def fft(signal: str, n: int) -> str:
 
 assert fft("12345678", 4) == "01029498"
 
+with open("16.txt") as f:
+    content = f.read()
+
 print(fft(content, 100)[:8])
 
 offset = int(content[:7])
@@ -36,7 +36,7 @@ def fast_fft(signal: str, offset: int, phases: int) -> str:
     # for any offset > len(signal)/2, the pattern is just offset 0 and the rest of 1
     # so calculating next phase value for such offset is just the sum of all next values
     r = [int(x) for x in signal[offset:]]
-    for phase in range(phases):
+    for _ in range(phases):
         # to make it even faster, well sum each value from the end back to offset
         s = 0
         for i in range(1, len(signal) - offset + 1):

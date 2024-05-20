@@ -1,7 +1,4 @@
-import sys
-import time
 from enum import Enum
-from operator import itemgetter
 
 
 class OutputSignal(RuntimeError):
@@ -130,47 +127,37 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-with open("13.txt") as f:
-    content = f.read()
-computer = Computer(content)
+def part1(content: str) -> int:
+    computer = Computer(content)
+
+    output = computer.run_until_halt()
+    assert len(output) % 3 == 0
+
+    screen = {}
+    for i in range(0, len(output), 3):
+        x, y, z = output[i : i + 3]
+        screen[int(x), int(y)] = z
+    return sum(v == 2 for v in screen.values())
 
 
-output = computer.run_until_halt()
-assert len(output) % 3 == 0
-
-
-EMPTY = 0
-WALL = 1
-BLOCK = 2
-PADDLE = 3
-BALL = 4
-
-LEFT = -1
-CENTER = 0
-RIGHT = 1
-
-screen = {}
-for i in range(0, len(output), 3):
-    x, y, z = output[i : i + 3]
-    screen[int(x), int(y)] = z
-print(sum(v == BLOCK for v in screen.values()))
-
-
-def parse(output: list[int]) -> tuple[dict[tuple[int, int], int], int]:
+def part2(content: str) -> int:
+    # let's add some walls all around the paddle
+    content_cheated = content.replace(
+        "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1",
+        "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
+    )
+    computer = Computer(content_cheated)
+    computer.instructions[0] = 2
+    output = computer.run_until_halt(0)
     screen = {}
     for i in range(0, len(output), 3):
         x, y, z = output[i : i + 3]
         screen[x, y] = z
-    score = 0
-    if (-1, 0) in screen:
-        score = screen.pop((-1, 0))
+    return screen.pop((-1, 0))
 
-    return screen, score
 
-# let's add some walls all around the paddle
-content_cheated = content.replace("1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1", "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1")
-computer = Computer(content_cheated)
-computer.instructions[0] = 2
-output = computer.run_until_halt(0)
-screen, score = parse(output)
-print(score)
+with open("13.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))

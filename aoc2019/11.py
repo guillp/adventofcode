@@ -1,9 +1,5 @@
-import sys
 from enum import Enum
 
-
-with open("11.txt") as f:
-    content = f.read()
 
 BLACK = 0
 WHITE = 1
@@ -55,7 +51,6 @@ class Computer:
         opcode = instruction[3:]
         modes = tuple(x for x in instruction[:3][::-1])
         self.pointer += 1
-        # nb_params = {"01": 3, "02": 3, "03": 2, "04": 1, "05": 2, "06": 2, "07": 3, "08": 3, "09": 1}.get(opcode, 0)
         return opcode, modes
 
     def next(self):
@@ -121,43 +116,53 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-pos, heading = 0, 1j
-hull = {}
-computer = Computer(content)
-while True:
-    try:
-        paint = computer.run(hull.get(pos, BLACK))
-    except StopIteration:
-        break
-    hull[pos] = paint  # paint hull
-    turn = computer.run()
-    heading *= 1j if turn == 0 else -1j  # turn
-    pos += heading  # move forward
+def part1(content: str) -> int:
+    pos, heading = 0j, 1j
+    hull = {}
+    computer = Computer(content)
+    while True:
+        try:
+            paint = computer.run(hull.get(pos, BLACK))
+        except StopIteration:
+            break
+        hull[pos] = paint  # paint hull
+        turn = computer.run()
+        heading *= 1j if turn == 0 else -1j  # turn
+        pos += heading  # move forward
 
-print(len(hull))
+    return len(hull)
 
-pos, heading = 0, -1j
-hull2 = {}
-computer = Computer(content)
-while True:
-    try:
-        paint = computer.run(hull2.get(pos, WHITE))
-    except StopIteration:
-        break
-    hull2[pos] = paint  # paint hull
-    turn = computer.run()
-    heading *= 1j if turn == RIGHT else -1j  # turn
-    pos += heading  # move forward
 
-x_min = min(int(pos.real) for pos in hull2)
-x_max = max(int(pos.real) for pos in hull2)
-y_min = min(int(pos.imag) for pos in hull2)
-y_max = max(int(pos.imag) for pos in hull2)
+def part2(content: str):
+    pos, heading = 0, -1j
+    hull2 = {}
+    computer = Computer(content)
+    while True:
+        try:
+            paint = computer.run(hull2.get(pos, WHITE))
+        except StopIteration:
+            break
+        hull2[pos] = paint  # paint hull
+        turn = computer.run()
+        heading *= 1j if turn == RIGHT else -1j  # turn
+        pos += heading  # move forward
 
-for y in range(y_min, y_max + 1):
-    print(
-        " ".join(
-            " " if hull2.get(complex(x, y), BLACK) == BLACK else "#"
-            for x in range(x_min, x_max + 1)
+    x_min = min(int(pos.real) for pos in hull2)
+    x_max = max(int(pos.real) for pos in hull2)
+    y_min = min(int(pos.imag) for pos in hull2)
+    y_max = max(int(pos.imag) for pos in hull2)
+
+    for y in range(y_min, y_max + 1):
+        print(
+            " ".join(
+                " " if hull2.get(complex(x, y), BLACK) == BLACK else "#"
+                for x in range(x_min, x_max + 1)
+            )
         )
-    )
+
+
+with open("11.txt") as f:
+    content = f.read()
+
+print(part1(content))
+part2(content)

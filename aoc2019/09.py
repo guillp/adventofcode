@@ -46,7 +46,6 @@ class Computer:
         opcode = instruction[3:]
         modes = tuple(x for x in instruction[:3][::-1])
         self.pointer += 1
-        # nb_params = {"01": 3, "02": 3, "03": 2, "04": 1, "05": 2, "06": 2, "07": 3, "08": 3, "09": 1}.get(opcode, 0)
         return opcode, modes
 
     def next(self):
@@ -134,5 +133,5 @@ assert Computer("109, 1, 203, 2, 204, 2, 99", 999).run() == 999
 with open("09.txt") as f:
     content = f.read()
 
-print(Computer(content, 1).run_until_halt())
-print(Computer(content, 2).run_until_halt())
+print(Computer(content, 1).run_until_halt()[0])
+print(Computer(content, 2).run_until_halt()[0])

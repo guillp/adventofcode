@@ -1,4 +1,3 @@
-import sys
 from collections import defaultdict
 from enum import Enum
 from itertools import product
@@ -130,48 +129,58 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
+PULLED = 1
+
+
+def solve(content: str):
+    pulled = set()
+    for x, y in product(range(50), repeat=2):
+        computer = Computer(content)
+        if computer.run(x, y) == PULLED:
+            pulled.add((x, y))
+
+    part1 = len(pulled)
+
+    # the tractor beam is delimited by 2 lines passing by origin
+    # get the 2 quotients that define the line slopes
+    low = min(y / x for x, y in pulled if x > 0)
+    high = max(y / x for x, y in pulled if x > 0)
+
+    # TODO: some trigonometry to delimit the area to search for such a diagonal
+
+    def search():
+        x = 50
+        s = defaultdict(set)
+        while True:
+            for y in range(int(low * x - 2), int(high * x + 3)):
+                computer = Computer(content)
+                if computer.run(x, y) == PULLED:
+                    pulled.add((x, y))
+                    s[x + y].add((x, y))
+                    if len(s[x + y]) == 100:
+                        return s[x + y]
+            x += 1
+
+    diagonal = search()
+    xmin = min(x for x, y in diagonal)
+    xmax = xmin + 100
+    ymin = min(y for x, y in diagonal)
+    ymax = ymin + 100
+    part2 = xmin * 10000 + ymin
+
+    for y in range(ymin - 50, ymax + 50):
+        print(
+            "".join(
+                "X" if (x, y) in diagonal else "#" if (x, y) in pulled else "."
+                for x in range(xmin - 50, xmax + 50)
+            )
+        )
+
+    return part1, part2
+
+
 with open("19.txt") as f:
     content = f.read()
 
-STATIONNARY = 0
-PULLED = 1
 
-pulled = set()
-for x, y in product(range(50), repeat=2):
-    computer = Computer(content)
-    if computer.run(x, y) == PULLED:
-        pulled.add((x, y))
-
-print(len(pulled))
-
-# the tractor beam is delimited by 2 lines passing by origin
-# get the 2 quotients that define the line slopes
-low = min(y / x for x, y in pulled if x > 0)
-high = max(y / x for x, y in pulled if x > 0)
-
-
-# TODO: some trigonometry to delimit the area to search for such a diagonal
-
-def search():
-    x = 50
-    s = defaultdict(set)
-    while True:
-        for y in range(int(low * x - 2), int(high * x + 3)):
-            computer = Computer(content)
-            if computer.run(x, y) == PULLED:
-                pulled.add((x, y))
-                s[x + y].add((x, y))
-                if len(s[x + y]) == 100:
-                    return s[x + y]
-        x += 1
-
-
-diagonal = search()
-xmin = min(x for x, y in diagonal)
-xmax = xmin + 100
-ymin = min(y for x, y in diagonal)
-ymax = ymin + 100
-print(xmin * 10000 + ymin)
-
-for y in range(ymin - 50, ymax + 50):
-    print("".join('X' if (x, y) in diagonal else "#" if (x, y) in pulled else "." for x in range(xmin - 50, xmax + 50)))
+print(solve(content))
