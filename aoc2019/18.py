@@ -1,5 +1,5 @@
 from functools import cache
-from heapq import heappush, heappop
+from heapq import heapify, heappush, heappop
 
 
 def part1(content: str) -> int:
@@ -39,13 +39,14 @@ def part1(content: str) -> int:
                 G.setdefault(key_or_gate, {})
                 required_gates = {gate.lower() for gate in traversed if gate.isupper()}
                 # if a distance has been recorded already, make sure we keep the best one
-                # this is required because
+                # this is required because of the multiple possible path around the start position
                 if G[key_or_gate].get(start_symbol, (None, float("inf")))[1] > len(
                     path
                 ):
-                    G[key_or_gate][start_symbol] = G[start_symbol][
-                        key_or_gate
-                    ] = required_gates, len(path)
+                    G[key_or_gate][start_symbol] = G[start_symbol][key_or_gate] = (
+                        required_gates,
+                        len(path),
+                    )
 
             elif key_or_gate.isupper():  # is a gate
                 pool.append(
@@ -78,12 +79,6 @@ def part1(content: str) -> int:
         return best
 
     return solve("@", all_keys)
-
-
-with open("18.txt") as f:
-    content = f.read()
-
-print(part1(content))
 
 
 assert (
@@ -142,3 +137,161 @@ assert (
     )
     == 81
 )
+
+
+with open("18.txt") as f:
+    content = f.read()
+
+print(part1(content))
+
+
+def part2(content: str) -> int:
+    lines = content.splitlines()
+
+    grid = {
+        complex(x, y): c
+        for y, line in enumerate(lines)
+        for x, c in enumerate(line)
+        if c != "#"
+    }
+
+    # adjust the area around the single entrance
+    if content.count("@") == 1:
+        start_pos = next(pos for pos, c in grid.items() if c == "@")
+        assert (
+            grid[start_pos - 1]
+            == grid[start_pos + 1]
+            == grid[start_pos - 1]
+            == grid[start_pos - 1j]
+            == grid[start_pos + 1j]
+            == "."
+        )
+        del grid[start_pos]
+        del grid[start_pos + 1]
+        del grid[start_pos - 1]
+        del grid[start_pos - 1j]
+        del grid[start_pos + 1j]
+        grid[start_pos + 1 + 1j] = "@"
+        grid[start_pos + 1 - 1j] = "@"
+        grid[start_pos - 1 + 1j] = "@"
+        grid[start_pos - 1 - 1j] = "@"
+
+    start_positions = [pos for pos, c in grid.items() if c == "@"]
+
+    def dfs(start_pos) -> dict[str, dict[str, tuple[set[str], int]]]:
+        G = {"@": {}}
+        pool = [(0, "@", "", (start_pos,))]
+        while pool:
+            steps, start_symbol, traversed, path = pool.pop()
+            current_pos = path[-1]
+            for d in (1, 1j, -1, -1j):
+                next_pos = current_pos + d
+                if next_pos not in grid or next_pos in path:
+                    continue  # don't go off grid or loop
+                key_or_gate = grid[next_pos]
+                if key_or_gate.islower():  # is a key
+                    if key_or_gate not in G:
+                        pool.append((0, key_or_gate, "", (next_pos,)))
+                    pool.append(
+                        (
+                            steps + 1,
+                            start_symbol,
+                            traversed,
+                            path + (next_pos,),
+                        )
+                    )
+                    G.setdefault(key_or_gate, {})
+                    required_gates = {
+                        gate.lower() for gate in traversed if gate.isupper()
+                    }
+                    G[key_or_gate][start_symbol] = G[start_symbol][key_or_gate] = (
+                        required_gates,
+                        len(path),
+                    )
+
+                elif key_or_gate.isupper():  # is a gate
+                    pool.append(
+                        (
+                            steps + 1,
+                            start_symbol,
+                            traversed + key_or_gate,
+                            path + (next_pos,),
+                        )
+                    )
+                else:  # is just a step
+                    pool.append(
+                        (steps + 1, start_symbol, traversed, path + (next_pos,))
+                    )
+
+        return G
+
+    graphs = [dfs(start_pos) for start_pos in start_positions]
+    all_keys = frozenset(c for graph in graphs for c in graph if c.islower())
+
+    sorted_costs = sorted(
+        cost for graph in graphs for d in graph.values() for _, cost in d.values()
+    )
+    pool = [(len(all_keys), 0, (0, 0, 0, 0), ("@", "@", "@", "@"), all_keys)]
+    heapify(pool)
+    best = None
+    while pool:
+        nb_missing_keys, current_cost, steps, positions, missing_keys = heappop(pool)
+        if (
+            best is not None
+            and current_cost + sum(sorted_costs[:nb_missing_keys]) >= best
+        ):
+            continue
+
+        for next_key in missing_keys:
+            for i, G in enumerate(graphs):
+                current_pos = positions[i]
+                if current_pos in G and next_key in G[current_pos]:
+                    required_keys, cost = G[current_pos][next_key]
+                    if required_keys & missing_keys:
+                        continue
+                    if len(missing_keys) == 1:
+                        if best is None or sum(steps) + cost < best:
+                            best = sum(steps) + cost
+                    heappush(
+                        pool,
+                        (
+                            nb_missing_keys - 1,
+                            current_cost + cost,
+                            tuple(
+                                s if j != i else s + cost for j, s in enumerate(steps)
+                            ),
+                            tuple(
+                                p if j != i else next_key
+                                for j, p in enumerate(positions)
+                            ),
+                            missing_keys - {next_key},
+                        ),
+                    )
+    return best
+
+
+assert (
+    part2("""\
+#######
+#a.#Cd#
+##...##
+##.@.##
+##...##
+#cB#Ab#
+#######""")
+    == 8
+)
+
+assert (
+    part2("""\
+#############
+#DcBa.#.GhKl#
+#.###@#@#I###
+#e#d#####j#k#
+###C#@#@###J#
+#fEbA.#.FgHi#
+#############""")
+    == 32
+)
+
+print(part2(content))

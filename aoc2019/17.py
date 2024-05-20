@@ -1,6 +1,3 @@
-with open("17.txt") as f:
-    content = f.read()
-
 from enum import Enum
 
 
@@ -8,8 +5,10 @@ class OutputSignal(RuntimeError):
     def __init__(self, value: int):
         self.value = value
 
+
 class InputSignal(RuntimeError):
     pass
+
 
 class ParamMode(str, Enum):
     POSITION = "0"
@@ -44,6 +43,7 @@ class Computer:
         else:
             assert False, f"Unknown mode {mode}"
         self.instructions[dest] = value
+
     def jump(self, target: int, condition: bool = True) -> None:
         if condition:
             self.pointer = target
@@ -139,6 +139,9 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
+with open("17.txt") as f:
+    content = f.read()
+
 computer = Computer(content)
 
 output = computer.run_until_halt()
@@ -173,34 +176,51 @@ TURN_LEFT = "L"
 
 
 def dfs():
-    pos = next(p for p, c in grid.items() if c in "^v<>")
-    dir = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}.get(grid[pos])
-    pool = [(pos, dir, set(grid) - {pos}, ())]
+    positions = next(p for p, c in grid.items() if c in "^v<>")
+    directions = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}.get(grid[positions])
+    pool = [(positions, directions, set(grid) - {positions}, ())]
     while pool:
         pool.sort(key=lambda x: len(x[2]))
-        pos, dir, remaining, path = pool.pop()
+        positions, directions, remaining, path = pool.pop()
         if remaining:
             for action, turn in {TURN_RIGHT: 1j, TURN_LEFT: -1j}.items():
-                if grid.get(pos + turn * dir) == "#" and pos + turn * dir in remaining:
-                    pool.append((pos, turn * dir, remaining, path + (action,)))
+                if (
+                    grid.get(positions + turn * directions) == "#"
+                    and positions + turn * directions in remaining
+                ):
+                    pool.append(
+                        (positions, turn * directions, remaining, path + (action,))
+                    )
 
             steps = 0
             new_remaining = set(remaining)
-            while grid.get(pos + steps * dir + dir) == "#":
+            while grid.get(positions + steps * directions + directions) == "#":
                 steps += 1
-                new_remaining -= {pos + steps * dir}
-                if grid[pos + steps * dir] in intersections:
+                new_remaining -= {positions + steps * directions}
+                if grid[positions + steps * directions] in intersections:
                     pool.append(
-                        (pos + steps * dir, dir, new_remaining, path + (steps,))
+                        (
+                            positions + steps * directions,
+                            directions,
+                            new_remaining,
+                            path + (steps,),
+                        )
                     )
             if steps > 0:
-                pool.append((pos + steps * dir, dir, new_remaining, path + (steps,)))
+                pool.append(
+                    (
+                        positions + steps * directions,
+                        directions,
+                        new_remaining,
+                        path + (steps,),
+                    )
+                )
         else:
             return path
 
 
 path = ",".join(str(x) for x in dfs())
-#print(path)
+# print(path)
 # MANUALLY INSPECT FOR REPEATING FUNCTIONS
 
 A = "R,10,R,8,L,10,L,10"
@@ -210,7 +230,7 @@ C = "L,10,R,10,L,6"
 main = "A,B,B,A,C,B,C,C,B,A"
 
 instructions = f"{main}\n{A}\n{B}\n{C}\nn\n"
-#print(instructions)
+# print(instructions)
 inputs = [ord(c) for c in instructions]
 computer2 = Computer(content)
 computer2.instructions[0] = 2
