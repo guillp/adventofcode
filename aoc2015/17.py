@@ -1,23 +1,18 @@
+from collections.abc import Iterator
 from itertools import combinations
 
-with open("17.txt", "rt") as finput:
-    content = finput.read()
 
-TARGET = 150
-containers = tuple(sorted(int(x) for x in content.splitlines()))
-print(containers)
+def solve(content: str) -> Iterator[int]:
+    TARGET = 150
+    containers = tuple(sorted(int(x) for x in content.splitlines()))
 
-print(
-    sum(
-        sum(comb) == 150
-        for i in range(len(containers))
-        for comb in combinations(containers, i)
-    )
-)
-m = min(
-    i
-    for i in range(len(containers))
-    for comb in combinations(containers, i)
-    if sum(comb) == 150
-)
-print(sum(sum(comb) == 150 for comb in combinations(containers, m)))
+    yield sum(sum(comb) == TARGET for i in range(len(containers)) for comb in combinations(containers, i))
+    m = min(i for i in range(len(containers)) for comb in combinations(containers, i) if sum(comb) == TARGET)
+    yield sum(sum(comb) == TARGET for comb in combinations(containers, m))
+
+
+with open("17.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)

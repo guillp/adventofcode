@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+import re
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import Any
 
 
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=True, eq=False)
 class Spell:
     name: str
     cost: int
@@ -13,8 +16,10 @@ class Spell:
     mana: int = 0
     effect: int = 0
 
-    def __eq__(self, other):
-        return self.name == other.name
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Spell):
+            return self.name == other.name
+        return super().__eq__(other)
 
 
 spells = (
@@ -32,9 +37,9 @@ class GameState:
     boss_damage: int
     health: int
     mana: int
-    active_spells: tuple[Spell] = ()
-    used_spells: tuple[Spell] = ()
-    previous_states: tuple[GameState] = ()
+    active_spells: tuple[Spell, ...] = ()
+    used_spells: tuple[Spell, ...] = ()
+    previous_states: tuple[GameState, ...] = ()
     hard: bool = False
 
     @property
@@ -42,46 +47,45 @@ class GameState:
         return sum(spell.cost for spell in self.used_spells)
 
 
-# pool = [GameState(14, 8, 10, 250)]  # test
-# pool = [GameState(51, 9, 50, 500)]  # part1
-pool = [GameState(51, 9, 50, 500, hard=True)]  # part2
+def solve(content: str, part2: bool = False) -> int:
+    hit_points, damage = map(int, re.findall(r"\d+", content, re.MULTILINE))
+    pool = [GameState(hit_points, damage, 50, 500, hard=part2)]
 
-s: GameState | None = None
-while pool:
-    state = min(
-        pool,
-        key=lambda state: (
-            state.boss_health,
-            len(state.used_spells),
-            -state.health,
-            -state.mana,
-        ),
-    )
-    pool.remove(state)
+    s: GameState | None = None
+    while pool:
+        state = min(
+            pool,
+            key=lambda state: (
+                state.boss_health,
+                len(state.used_spells),
+                -state.health,
+                -state.mana,
+            ),
+        )
+        pool.remove(state)
 
-    if s and state.mana_spent > s.mana_spent:
-        continue
-
-    if state.hard:
-        state.health -= 1
-        if state.health <= 0:
+        if s and state.mana_spent > s.mana_spent:
             continue
 
-    # apply active effects
-    for spell in state.active_spells[::]:
-        state.health += spell.health
-        state.mana += spell.mana
-        state.boss_health -= spell.damage
+        if state.hard:
+            state.health -= 1
+            if state.health <= 0:
+                continue
 
-        if spell.effect > 1:
-            spell.effect -= 1
-        else:
-            state.active_spells = tuple(s for s in state.active_spells if s != spell)
+        # apply active effects
+        for spell in state.active_spells[::]:
+            state.health += spell.health
+            state.mana += spell.mana
+            state.boss_health -= spell.damage
 
-    # cast all possible spells, leading to new states
-    for spell in spells:
-        if spell not in state.active_spells:
-            if spell.cost < state.mana:
+            if spell.effect > 1:
+                spell.effect -= 1
+            else:
+                state.active_spells = tuple(s for s in state.active_spells if s != spell)
+
+        # cast all possible spells, leading to new states
+        for spell in spells:
+            if spell not in state.active_spells and spell.cost < state.mana:
                 new_state = deepcopy(state)
                 new_state.mana -= spell.cost
                 if spell.effect:
@@ -104,9 +108,7 @@ while pool:
                     if spell.effect >= 1:
                         spell.effect -= 1
                     else:
-                        new_state.active_spells = tuple(
-                            s for s in new_state.active_spells if s != spell
-                        )
+                        new_state.active_spells = tuple(s for s in new_state.active_spells if s != spell)
 
                 if new_state.boss_health <= 0:
                     if s is None or new_state.mana_spent < s.mana_spent:
@@ -116,5 +118,13 @@ while pool:
                     if new_state.health > 0:
                         pool.append(new_state)
 
-print(s)
-print(s.mana_spent)
+    if s is None:
+        raise ValueError("Solution not found!")
+    return s.mana_spent
+
+
+with open("22.txt") as f:
+    content = f.read()
+
+print(solve(content))
+print(solve(content, part2=True))

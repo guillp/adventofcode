@@ -1,61 +1,66 @@
-from stringparser import Parser
-import pandas as pd
-
-with open("15.txt", "rt") as finput:
-    content = finput.read()
-
-parser = Parser(
-    "{name}: capacity {capacity:d}, durability {durability:d}, flavor {flavor:d}, texture {texture:d}, calories {calories:d}"
-)
-
-ingredients = (
-    pd.DataFrame(parser(line) for line in content.splitlines())
-    .assign(name=lambda df: df.name.str.lower())
-    .set_index("name")
-)
-
-# print(ingredients)
+import re
+from collections.abc import Iterator
+from math import prod
 
 
-def score(**ing: int):
-    s = pd.Series(0, index=ingredients.columns)
-    for name, quantity in ing.items():
-        s += ingredients.loc[name.lower()] * quantity
-
-    s = s.apply(lambda x: max(x, 0))
-    del s["calories"]
-    return s.prod()
-
-
-print(
-    max(
-        score(butterscotch=bu, candy=ca, chocolate=ch, sprinkles=100 - bu - ca - ch)
-        for bu in range(100)
-        for ca in range(100 - bu)
-        for ch in range(100 - bu - ca)
-    )
-)
-
-
-def score_with_500_cal(**ing: int):
-    s = pd.Series(0, index=ingredients.columns)
-    for name, quantity in ing.items():
-        s += ingredients.loc[name.lower()] * quantity
-
-    s = s.apply(lambda x: max(x, 0))
-    if s["calories"] != 500:
-        return 0
-    del s["calories"]
-    return s.prod()
-
-
-print(
-    max(
-        score_with_500_cal(
-            butterscotch=bu, candy=ca, chocolate=ch, sprinkles=100 - bu - ca - ch
+def iter_ingredients(content: str) -> Iterator[tuple[str, tuple[int, int, int, int, int]]]:
+    for name, capacity, durability, flavor, texture, calories in re.findall(
+        r"(\w+?): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)",
+        content,
+        re.MULTILINE,
+    ):
+        yield (
+            name,
+            (
+                int(capacity),
+                int(durability),
+                int(flavor),
+                int(texture),
+                int(calories),
+            ),
         )
-        for bu in range(100)
-        for ca in range(100 - bu)
-        for ch in range(100 - bu - ca)
-    )
-)
+
+
+def score(
+    ingredients: dict[str, tuple[int, int, int, int, int]],
+    quantities: dict[str, int],
+    part2: bool = False,
+) -> int:
+    totals = [0] * 5
+    for name, properties in ingredients.items():
+        for i, x in enumerate(properties):
+            totals[i] += x * quantities[name]
+
+    totals = [max(t, 0) for t in totals]
+    calories = totals.pop(-1)
+    if part2 and calories != 500:
+        return 0
+    return prod(totals)
+
+
+def solve(content: str) -> Iterator[int]:
+    ingredients = dict(iter_ingredients(content))
+
+    for part2 in (False, True):
+        yield max(
+            score(
+                ingredients,
+                {
+                    "Butterscotch": bu,
+                    "Candy": ca,
+                    "Chocolate": ch,
+                    "Sprinkles": 100 - bu - ca - ch,
+                },
+                part2=part2,
+            )
+            for bu in range(100)
+            for ca in range(100 - bu)
+            for ch in range(100 - bu - ca)
+        )
+
+
+with open("15.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)

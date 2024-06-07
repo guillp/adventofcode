@@ -1,45 +1,38 @@
-content = """inc a
-jio a, +2
-tpl a
-inc a
-"""
+def solve(content: str, part2: bool = False) -> int:
+    registers = {"a": 0, "b": 0}
+    if part2:
+        registers["a"] = 1
 
-with open("23.txt", "rt") as finput:
+    i = 0
+
+    instructions = content.splitlines()
+
+    while i < len(instructions):
+        match instructions[i].split():
+            case "hlf", reg:
+                registers[reg] //= 2
+            case "tpl", reg:
+                registers[reg] *= 3
+            case "inc", reg:
+                registers[reg] += 1
+            case "jmp", offset:
+                i += int(offset) - 1
+            case "jie", reg, offset:
+                if registers[reg.strip(",")] % 2 == 0:
+                    i += int(offset) - 1
+            case "jio", reg, offset:
+                if registers[reg.strip(",")] == 1:
+                    i += int(offset) - 1
+            case err:
+                assert False, err
+
+        i += 1
+
+    return registers["b"]
+
+
+with open("23.txt") as finput:
     content = finput.read()
 
-registers = {"a": 1, "b": 0}
-
-i = 0
-
-instructions = content.splitlines()
-
-while i < len(instructions):
-    line = instructions[i]
-    if line.startswith("hlf"):
-        register = line.split()[1]
-        registers[register] //= 2
-    elif line.startswith("tpl"):
-        register = line.split()[1]
-        registers[register] *= 3
-    elif line.startswith("inc"):
-        register = line.split()[1]
-        registers[register] += 1
-    elif line.startswith("jmp"):
-        offset = int(line.split()[1])
-        i += offset - 1
-    elif line.startswith("jie"):
-        register, offset = line.split()[1:3]
-        register = register.strip(",")
-        offset = int(offset)
-        if registers[register] % 2 == 0:
-            i += offset - 1
-    elif line.startswith("jio"):
-        register, offset = line.split()[1:3]
-        register = register.strip(",")
-        offset = int(offset)
-        if registers[register] == 1:
-            i += offset - 1
-
-    i += 1
-
-print(registers)
+print(solve(content))
+print(solve(content, part2=True))

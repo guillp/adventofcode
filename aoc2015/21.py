@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import re
+from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import combinations
-from operator import attrgetter
 
 
 @dataclass
@@ -10,7 +11,7 @@ class Player:
     health: int
     equipment: Equipment
 
-    def fight(self, damage, armor) -> bool:
+    def fight(self, damage: int, armor: int) -> bool:
         h = o = self.health
         while h > 0 and o > 0:
             o -= max(self.equipment.damage - armor, 1)
@@ -19,6 +20,7 @@ class Player:
                 return True
             if h <= 0:
                 return False
+        assert False
 
 
 @dataclass
@@ -26,17 +28,17 @@ class Weapon:
     damage: int
     cost: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"W:{self.damage}/{self.cost}"
 
 
 @dataclass
 class Armor:
-    armor: int
+    value: int
     cost: int
 
-    def __str__(self):
-        return f"A:{self.armor}/{self.cost}"
+    def __str__(self) -> str:
+        return f"A:{self.value}/{self.cost}"
 
 
 @dataclass
@@ -45,7 +47,7 @@ class Ring:
     armor: int
     cost: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"R:{self.damage}/{self.armor}/{self.cost}"
 
 
@@ -86,7 +88,7 @@ class Equipment:
 
     @property
     def defense(self) -> int:
-        a = self.armor.armor
+        a = self.armor.value
         if self.ring1:
             a += self.ring1.armor
         if self.ring2:
@@ -102,11 +104,11 @@ class Equipment:
             c += self.ring2.cost
         return c
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.weapon} {self.armor} {self.ring1} {self.ring2} {self.cost}"
 
 
-def equipments():
+def equipments() -> Iterator[Equipment]:
     for weapon in weapons:
         for armor in armors:
             yield Equipment(weapon, armor)
@@ -116,18 +118,24 @@ def equipments():
                 yield Equipment(weapon, armor, ring1, ring2)
 
 
-winning_equipments = []
-for equipment in equipments():
-    player = Player(100, equipment)
-    if player.fight(8, 2):
-        winning_equipments.append(equipment)
+def solve(content: str) -> Iterator[int]:
+    hit_points, damage, armor = map(int, re.findall(r"\d+", content, re.MULTILINE))
 
-print(min(winning_equipments, key=attrgetter("cost")))
+    winning_equipments = []
+    loosing_equipments = []
+    for equipment in equipments():
+        player = Player(hit_points, equipment)
+        if player.fight(damage, armor):
+            winning_equipments.append(equipment)
+        else:
+            loosing_equipments.append(equipment)
 
-loosing_equipments = []
-for equipment in equipments():
-    player = Player(100, equipment)
-    if not player.fight(8, 2):
-        loosing_equipments.append(equipment)
+    yield min(eq.cost for eq in winning_equipments)
+    yield max(eq.cost for eq in loosing_equipments)
 
-print(max(loosing_equipments, key=attrgetter("cost")))
+
+with open("21.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)

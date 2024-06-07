@@ -1,19 +1,26 @@
 import hashlib
+from collections.abc import Iterator
 
-secret = b"ckczppom"
 
-
-def md5(secret, i) -> str:
+def md5hash(secret: bytes, i: int) -> str:
     return hashlib.md5(secret + str(i).encode()).hexdigest()
 
 
-i = 0
-while not md5(secret, i).startswith("0" * 5):
-    i += 1
+def solve(content: str) -> Iterator[int]:
+    secret = content.encode()
 
-print(i)
+    i = 0
+    while not md5hash(secret, i).startswith("0" * 5):
+        i += 1
+    yield i
 
-while not md5(secret, i).startswith("0" * 6):
-    i += 1
+    while not md5hash(secret, i).startswith("0" * 6):
+        i += 1
 
-print(i)
+    yield i
+
+
+secret = "ckczppom"
+
+for part in solve(secret):
+    print(part)

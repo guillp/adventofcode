@@ -1,45 +1,59 @@
-from stringparser import Parser
+import re
+from collections.abc import Iterator
 
-with open("14.txt", "rt") as finput:
-    content = finput.read()
 
-parser = Parser(
-    "{} can fly {:d} km/s for {:d} seconds, but then must rest for {:d} seconds."
-)
+def iter_reindeers(content: str) -> Iterator[tuple[str, tuple[int, int, int]]]:
+    for name, speed, time, rest in re.findall(
+        r"^(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.",
+        content,
+        re.MULTILINE,
+    ):
+        yield name, (int(speed), int(time), int(rest))
 
-N = 2503
 
-s = 0
-for line in content.splitlines():
-    name, speed, time, rest = parser(line)
-    d, m = divmod(N, time + rest)
-    distance = speed * time * d + speed * min(time, m)
-    if distance > s:
-        s = distance
-    # print(name, distance)
+def solve(content: str, seconds: int = 2503) -> Iterator[int]:
+    reindeers = dict(iter_reindeers(content))
 
-print(s)
+    part1 = 0
+    for speed, time, rest in reindeers.values():
+        d, m = divmod(seconds, int(time) + int(rest))
+        distance = int(speed) * int(time) * d + int(speed) * min(int(time), m)
+        if distance > part1:
+            part1 = distance
 
-reindeers = {}
-for line in content.splitlines():
-    name, speed, time, rest = parser(line)
-    reindeers[name] = (speed, time, rest)
+    yield part1
 
-state = {name: 0 for name in reindeers}
-scores = {name: 0 for name in reindeers}
+    state = {name: 0 for name in reindeers}
+    scores = {name: 0 for name in reindeers}
 
-for i in range(2503):
-    max_dist = 0
-    for name, distance in state.items():
-        speed, time, rest = reindeers[name]
-        d, m = divmod(i, time + rest)
-        if m < time:
-            distance += speed
-        state[name] = distance
-        if distance > max_dist:
-            max_dist = distance
-    for name, distance in state.items():
-        if distance == max_dist:
-            scores[name] += 1
+    for i in range(seconds):
+        max_dist = 0
+        for name, distance in state.items():
+            speed, time, rest = reindeers[name]
+            d, m = divmod(i, time + rest)
+            if m < time:
+                distance += speed
+            state[name] = distance
+            if distance > max_dist:
+                max_dist = distance
+        for name, distance in state.items():
+            if distance == max_dist:
+                scores[name] += 1
 
-print(max(scores.values()))
+    yield max(scores.values())
+
+
+assert tuple(
+    solve(
+        """\
+Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
+Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.""",
+        1000,
+    )
+) == (1120, 689)
+
+with open("14.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)
