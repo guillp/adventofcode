@@ -1,20 +1,16 @@
 import json
 
-with open("08.txt", "rt") as finput:
-    content = finput.read()
+
+def part1(content: str) -> int:
+    return sum(len(line) - len(eval(line)) for line in content.splitlines())
 
 
-s = 0
-
-for line in content.splitlines():
-    s += len(line) - len(eval(line))
-
-print(s)
+def part2(content: str) -> int:
+    return sum(len(json.dumps(line)) - len(line) for line in content.splitlines())
 
 
-s2 = 0
-for line in content.splitlines():
-    s2 += len(json.dumps(line)) - len(line)
+with open("08.txt") as f:
+    content = f.read()
 
-
-print(s2)
+print(part1(content))
+print(part2(content))

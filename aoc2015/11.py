@@ -1,17 +1,17 @@
 def validate(password: str) -> bool:
     if "i" in password or "o" in password or "l" in password:
         return False
-    for a, b, c in zip(password, password[1:], password[2:]):
+    for a, b, c in zip(password, password[1:], password[2:], strict=False):
         if ord(a) + 1 == ord(b) == ord(c) - 1:
             break
     else:
         return False
-    for i, (a, b) in enumerate(zip(password, password[1:])):
+    for i, (a, b) in enumerate(zip(password, password[1:], strict=False)):
         if a == b:
             break
     else:
         return False
-    for c, d in zip(password[i + 2 :], password[i + 3 :]):
+    for c, d in zip(password[i + 2 :], password[i + 3 :], strict=False):
         if c == d:
             break
     else:
@@ -37,14 +37,20 @@ def rotate(password: str) -> str:
     return bytes(chars[::-1]).decode()
 
 
+def solve(password: str) -> str:
+    while not validate(password):
+        password = rotate(password)
+
+    return password
+
+
+assert solve("abcdefgh") == "abcdffaa"
+assert solve("ghijklmn") == "ghjaabcc"
+
 password = "cqjxjnds"
 
-while not validate(password):
-    password = rotate(password)
+part1 = solve(password)
+part2 = solve(rotate(part1))
 
-print(password)
-password = rotate(password)
-while not validate(password):
-    password = rotate(password)
-
-print(password)
+print(part1)
+print(part2)

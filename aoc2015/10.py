@@ -1,6 +1,5 @@
-content = "1321131112"
-
 import re
+from collections.abc import Iterator
 
 
 def look_and_say(s: str) -> str:
@@ -8,13 +7,18 @@ def look_and_say(s: str) -> str:
     return "".join(f"{len(group)}{group[0]}" for group in groups)
 
 
-for i in range(40):
-    content = look_and_say(content)
+def solve(content: str) -> Iterator[int]:
+    for _ in range(40):
+        content = look_and_say(content)
 
-print(len(content))
+    yield len(content)
+
+    for _ in range(10):
+        content = look_and_say(content)
+
+    yield len(content)
 
 
-for i in range(10):
-    content = look_and_say(content)
-
-print(len(content))
+content = "1321131112"
+for part in solve(content):
+    print(part)

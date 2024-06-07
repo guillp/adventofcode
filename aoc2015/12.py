@@ -1,14 +1,9 @@
 import json
-
-with open("12.txt", "rt") as finput:
-    content = finput.read()
-
-doc = json.loads(content)
-
-print(json.dumps(doc, indent=2))
+from collections.abc import Iterable
+from typing import Any
 
 
-def walk(doc) -> int:
+def walk(doc: Any) -> Iterable[int]:
     if isinstance(doc, int):
         yield doc
     elif isinstance(doc, dict):
@@ -18,20 +13,17 @@ def walk(doc) -> int:
         for v in doc:
             yield from walk(v)
     elif isinstance(doc, str):
-        pass
+        pass  # ignore strings
     else:
         assert False, doc
 
 
-s = 0
-
-for i in walk(doc):
-    s += i
-
-print(s)
+def part1(content: str) -> int:
+    doc = json.loads(content)
+    return sum(n for n in walk(doc))
 
 
-def walk2(doc) -> int:
+def walk2(doc: Any) -> Iterable[int]:
     if isinstance(doc, int):
         yield doc
     elif isinstance(doc, dict):
@@ -43,14 +35,31 @@ def walk2(doc) -> int:
         for v in doc:
             yield from walk2(v)
     elif isinstance(doc, str):
-        pass
+        pass  # ignore strings
     else:
         assert False, doc
 
 
-s2 = 0
+def part2(content: str) -> int:
+    doc = json.loads(content)
+    return sum(n for n in walk2(doc))
 
-for i in walk2(doc):
-    s2 += i
 
-print(s2)
+assert part1("[1,2,3]") == 6
+assert part1('{"a":2,"b":4}') == 6
+assert part1("[[[3]]]") == 3
+assert part1('{"a":{"b":4},"c":-1}') == 3
+assert part1('{"a":[-1,1]}') == 0
+assert part1("[]") == 0
+assert part1("{}") == 0
+
+assert part2("[1,2,3]") == 6
+assert part2('[1,{"c":"red","b":2},3]') == 4
+assert part2('{"d":"red","e":[1,2,3,4],"f":5}') == 0
+assert part2('[1,"red",5]') == 6
+
+with open("12.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))

@@ -1,4 +1,8 @@
-def codes():
+import re
+from typing import Iterator
+
+
+def codes() -> Iterator[int]:
     code = 20151125
     while True:
         yield code
@@ -6,12 +10,13 @@ def codes():
         code %= 33554393
 
 
-row = 2947
-column = 3029
+def solve(content: str) -> int:
+    row, column = map(int, re.findall(r"\d+", content))
+    target = sum(n for n in range(row + column - 1)) + column - 1
 
-target = sum(n for n in range(row + column - 1)) + column - 1
+    return next(code for i, code in enumerate(codes()) if i == target)
 
-for i, code in enumerate(codes()):
-    if i == target:
-        print(code)
-        break
+
+with open("25.txt") as f:
+    content = f.read()
+print(solve(content))

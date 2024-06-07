@@ -1,38 +1,34 @@
-import pandas as pd
-
-with open("05.txt", "rt") as finput:
-    content = finput.read()
-
-df = pd.Series(content.splitlines()).to_frame("string")
+from itertools import pairwise
 
 
 def is_nice(s: str) -> bool:
     return (
         sum(letter in "aeiou" for letter in s) >= 3
-        and any(a == b for a, b in zip(s, s[1:]))
+        and any(a == b for a, b in pairwise(s))
         and not any(seq in s for seq in ("ab", "cd", "pq", "xy"))
     )
 
 
-df["part1"] = df.string.apply(is_nice)
-
-print(df.part1.sum())
-
-
-def cond1(s: str) -> str:
-    for i in range(len(s) - 1):
-        if s[i : i + 2] in s[:i] or s[i : i + 2] in s[i + 2 :]:
-            return s[i : i + 2]
+def part1(content: str) -> int:
+    words = content.splitlines()
+    return sum(is_nice(word) for word in words)
 
 
-def cond2(s: str) -> str:
-    for a, b in zip(s, s[2:]):
-        if a == b:
-            return a
+def cond1(s: str) -> bool:
+    return any(s[i : i + 2] in s[:i] or s[i : i + 2] in s[i + 2 :] for i in range(len(s) - 1))
 
 
-df["cond1"] = df.string.apply(cond1)
-df["cond2"] = df.string.apply(cond2)
-df["part2"] = ~df.cond1.isna() & ~df.cond2.isna()
+def cond2(s: str) -> bool:
+    return any(a == b for a, b in zip(s, s[2:]))
 
-print(df.part2.sum())
+
+def part2(content: str) -> int:
+    words = content.splitlines()
+    return sum(cond1(word) and cond2(word) for word in words)
+
+
+with open("05.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))
