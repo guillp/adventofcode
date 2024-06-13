@@ -1,4 +1,7 @@
-def blacklist(ranges: tuple[tuple[int, int]], bl: int, br: int):
+from collections.abc import Iterator
+
+
+def blacklist(ranges: tuple[tuple[int, int], ...], bl: int, br: int) -> Iterator[tuple[int, int]]:
     for rl, rr in ranges:
         assert rl <= rr
         if bl <= rl <= br < rr:  # overlap on the left
@@ -16,17 +19,17 @@ def blacklist(ranges: tuple[tuple[int, int]], bl: int, br: int):
             assert False
 
 
-def solve(content: str, max: int = 2**32 - 1) -> tuple[int, int]:
-    ranges = [(0, max)]
+def solve(content: str, max_: int = 2**32 - 1) -> Iterator[int]:
+    ranges: tuple[tuple[int, int], ...] = ((0, max_),)
     for line in content.splitlines():
         blacklist_left, blacklist_right = (int(x) for x in line.split("-"))
         ranges = tuple(blacklist(ranges, blacklist_left, blacklist_right))
 
-    part1 = min(ranges)[0]
-    part2 = sum(right - left + 1 for left, right in ranges)
-    return part1, part2
+    yield min(ranges)[0]
+    yield sum(right - left + 1 for left, right in ranges)
 
 
 with open("20.txt") as f:
     content = f.read()
-print(*solve(content, 2**32 - 1))
+for part in solve(content):
+    print(part)

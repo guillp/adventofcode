@@ -1,14 +1,4 @@
-test_content = """\
-ULL
-RRDDD
-LURDL
-UUUUD
-"""
-
-with open("02.txt") as f: content = f.read()
-
-
-def part1(content: str, part2: bool = False) -> str:
+def solve(content: str, part2: bool = False) -> str:
     if not part2:
         grid = {
             (-1, -1): "1",
@@ -45,9 +35,11 @@ def part1(content: str, part2: bool = False) -> str:
         for c in line:
             match c:
                 case "U":
-                    if (x, y - 1) in grid: y -= 1
+                    if (x, y - 1) in grid:
+                        y -= 1
                 case "D":
-                    if (x, y + 1) in grid: y += 1
+                    if (x, y + 1) in grid:
+                        y += 1
                 case "L":
                     if (x - 1, y) in grid:
                         x -= 1
@@ -59,7 +51,19 @@ def part1(content: str, part2: bool = False) -> str:
     return code
 
 
-assert part1(test_content) == "1985"
-print(part1(content))
-assert part1(test_content, part2=True) == "5DB3"
-print(part1(content, part2=True))
+test_content = """\
+ULL
+RRDDD
+LURDL
+UUUUD
+"""
+
+assert solve(test_content) == "1985"
+assert solve(test_content, part2=True) == "5DB3"
+
+
+with open("02.txt") as f:
+    content = f.read()
+
+print(solve(content))
+print(solve(content, part2=True))

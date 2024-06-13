@@ -1,7 +1,7 @@
 content = "11100010111110100"
 
 
-def dragon_curve(content: str, length=272) -> str:
+def dragon_curve(content: str, length: int = 272) -> str:
     if len(content) >= length:
         return content[:length]
 
@@ -11,11 +11,12 @@ def dragon_curve(content: str, length=272) -> str:
 def checksum(content: str) -> str:
     if len(content) % 2 == 1:
         return content
-    return checksum("".join("01"[a == b] for a, b in zip(content[::2], content[1::2])))
+    return checksum("".join("01"[a == b] for a, b in zip(content[::2], content[1::2], strict=False)))
 
 
 def solve(content: str, length: int = 272) -> str:
     return checksum(dragon_curve(content, length))
+
 
 assert dragon_curve("10000", 23) == "10000011110010000111110"
 assert checksum("10000011110010000111") == "01100"

@@ -1,15 +1,10 @@
 import re
 from itertools import permutations
 
-with open("22.txt") as f:
-    content = f.read()
-
 
 def part1(content: str) -> int:
     nodes = [
-        tuple(int(x) for x in re.findall(r"\d+", line))
-        for line in content.splitlines()
-        if line.startswith("/dev/grid")
+        tuple(int(x) for x in re.findall(r"\d+", line)) for line in content.splitlines() if line.startswith("/dev/grid")
     ]
     return sum(
         1
@@ -25,15 +20,12 @@ def part1(content: str) -> int:
     )
 
 
-print(part1(content))
-
-
-def print_grid(G, W, H):
+def print_grid(G: dict[tuple[int, int], str], W:int, H: int) -> None:
     for y in range(H):
         print("".join(G[x, y] for x in range(W)))
 
 
-def move(G, direction):
+def move(G: dict[tuple[int, int], str], direction: str) -> None:
     x, y = next((x, y) for ((x, y), c) in G.items() if c == "_")
     dx = dy = 0
     if direction == "UP":
@@ -54,9 +46,7 @@ def part2(content: str) -> int:
         if not line.startswith("/dev/grid"):
             continue
         x, y, size, used, _, _ = (int(x) for x in re.findall(r"\d+", line))
-        G[x, y] = (
-            "X" if x == y == 0 else "_" if used < 50 else "#" if used > 100 else "."
-        )
+        G[x, y] = "X" if x == y == 0 else "_" if used < 50 else "#" if used > 100 else "."
         x_max = max(x_max, x)
         y_max = max(y_max, y)
 
@@ -78,7 +68,11 @@ def part2(content: str) -> int:
         move(G, "RIGHT")
     print_grid(G, W, H)
 
+    return 6 + 6 + 22 + 35 * 5
 
-    return 6+6+22+35*5
 
+with open("22.txt") as f:
+    content = f.read()
+
+print(part1(content))
 print(part2(content))

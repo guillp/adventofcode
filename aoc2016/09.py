@@ -1,5 +1,5 @@
 import re
-from typing import Iterable
+from collections.abc import Iterable
 
 
 def decompress(data: str) -> Iterable[str]:
@@ -47,8 +47,6 @@ def decompress2(data: str) -> Iterable[int]:
             data = ""
 
 
-assert (
-    sum(decompress2("(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN")) == 445
-)
+assert sum(decompress2("(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN")) == 445
 
 print(sum(decompress2(content)))
