@@ -1,25 +1,14 @@
-# traveling-salesman
-from collections import defaultdict
-from heapq import heappop, heappush, heapify
+from collections.abc import Callable, Iterator
 from itertools import count
 from operator import itemgetter
-from typing import Callable, Any, Iterator
-
-test_content = """\
-###########
-#0.1.....2#
-#.#######.#
-#4.......3#
-###########
-"""
 
 
 def flood_fill(
-    grid: dict[complex, dict[complex, int]],
+    grid: dict[complex, str],
     start: complex,
     is_interesting: Callable[[str], bool],
-) -> Iterator[tuple[complex, int]]:
-    seen = set()
+) -> Iterator[tuple[str, int]]:
+    seen: set[complex] = set()
     phase = {start}
     walkables = frozenset(grid)
     for i in count(1):
@@ -41,24 +30,7 @@ def flood_fill(
             break
 
 
-def parse_grid(content: str, walls="#") -> tuple[dict[complex, str], int, int]:
-    lines = content.splitlines()
-    H = len(lines)
-    W = len(lines[0])
-
-    grid = {
-        complex(x, y): c
-        for y, line in enumerate(lines)
-        for x, c in enumerate(line)
-        if c not in walls
-    }
-
-    return grid, W, H
-
-
-def grid_to_graph(
-    grid: dict[complex, str], paths: str = "."
-) -> dict[complex, dict[complex, int]]:
+def grid_to_graph(grid: dict[complex, str], paths: str = ".") -> dict[str, dict[str, int]]:
     G = {}
     points = {pos: cell for pos, cell in grid.items() if cell not in paths}
     for pos, cell in points.items():
@@ -66,33 +38,49 @@ def grid_to_graph(
     return G
 
 
-def traveling_salesman(
-    G: dict[complex, dict[complex, int]], *start_positions: complex, back_to_origin: bool=False
+def solve(
+    content: str,
+    part2: bool = False,
 ) -> int:
+    grid = {complex(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c != "#"}
+    G = grid_to_graph(grid)
     targets = frozenset(G)
-    pool = [(0, (pos,)) for pos in start_positions]
-    best = float('inf')
+    pool: list[tuple[int, tuple[str, ...]]] = [(0, ("0",))]
+    best = None
     while pool:
         pool.sort(key=itemgetter(0))
         cost, visited = pool.pop()
-        if cost >= best:
+        if best is not None and cost >= best:
             continue
-        remaining = targets-set(visited)
+        remaining = targets - set(visited)
         if not remaining:
-            if back_to_origin:
+            if part2:
                 cost += G[visited[-1]][visited[0]]
-            best = min(best, cost)
+            if best is None or cost < best:
+                best = cost
         else:
             for next_target in targets.difference(visited):
                 next_cost = G[visited[-1]][next_target]
-                pool.append((cost+next_cost, visited + (next_target,)))
+                pool.append((cost + next_cost, visited + (next_target,)))
 
+    if best is None:
+        raise ValueError("Solution not found!")
     return best
+
+
+test_content = """\
+###########
+#0.1.....2#
+#.#######.#
+#4.......3#
+###########
+"""
+
+assert solve(test_content) == 14
 
 
 with open("24.txt") as f:
     content = f.read()
-grid, W, H = parse_grid(content)
-G = grid_to_graph(grid)
-print(traveling_salesman(G, "0"))
-print(traveling_salesman(G, "0", back_to_origin=True))
+
+print(solve(content))
+print(solve(content, part2=True))

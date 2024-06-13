@@ -1,17 +1,8 @@
-test_content = """\
-cpy 41 a
-inc a
-inc a
-dec a
-jnz a 2
-dec a
-"""
+def solve(content: str, part2: bool = False) -> int:
+    registers = {"a": 0, "b": 0, "c": 0}
+    if part2:
+        registers["c"] = 1
 
-with open('12.txt') as f: content = f.read()
-
-
-def execute(content: str, a: int = 0, b: int = 0, c: int = 0) -> int:
-    registers = {"a": a, "b": b, "c": c}
     instructions = content.splitlines()
     i = 0
     while i < len(instructions):
@@ -26,15 +17,25 @@ def execute(content: str, a: int = 0, b: int = 0, c: int = 0) -> int:
             case "dec", x:
                 registers[x] -= 1
             case "jnz", x, y:
-                if x in registers:
-                    x = registers[x]
-                if x != 0:
+                if registers[x] if x.isalpha() else int(x) != 0:
                     i += int(y) - 1
         i += 1
 
     return registers["a"]
 
 
-assert execute(test_content) == 42
-print(execute(content))
-print(execute(content, c=1))
+test_content = """\
+cpy 41 a
+inc a
+inc a
+dec a
+jnz a 2
+dec a
+"""
+
+with open("12.txt") as f:
+    content = f.read()
+
+assert solve(test_content) == 42
+print(solve(content))
+print(solve(content, part2=True))

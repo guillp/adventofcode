@@ -38,22 +38,25 @@ def display(screen: Screen) -> None:
         print("".join("#" if screen.get((x, y), False) else "." for x in range(WIDTH)))
 
 
-screen = {}
+def solve(content: str) -> tuple[int, Screen]:
+    screen: Screen = {}
+    for instruction in content.splitlines():
+        match instruction.split():
+            case "rect", ab:
+                a, b = map(int, ab.split("x"))
+                screen = rect(a, b, screen)
+            case "rotate", "column", y, "by", b:
+                a = int(y.split("=")[1])
+                screen = rotate_column(a, int(b), screen)
+            case "rotate", "row", x, "by", b:
+                a = int(x.split("=")[1])
+                screen = rotate_row(a, int(b), screen)
+    return sum(screen.values()), screen
+
 
 with open("08.txt") as f:
     content = f.read()
 
-for instruction in content.splitlines():
-    if instruction.startswith("rect"):
-        a, b = (int(x) for x in instruction.split(" ")[1].split("x"))
-        screen = rect(a, b, screen)
-    elif instruction.startswith("rotate column"):
-        a, b = (int(x) for x in instruction.split("=")[1].split(" by "))
-        screen = rotate_column(a, b, screen)
-    elif instruction.startswith("rotate row"):
-        a, b = (int(x) for x in instruction.split("=")[1].split(" by "))
-        screen = rotate_row(a, b, screen)
-
-
-print(sum(screen.values()))
-display(screen)
+part1, part2 = solve(content)
+print(part1)
+display(part2)
