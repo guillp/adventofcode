@@ -20,7 +20,7 @@ def part1(content: str) -> int:
     )
 
 
-def print_grid(G: dict[tuple[int, int], str], W:int, H: int) -> None:
+def print_grid(G: dict[tuple[int, int], str], W: int, H: int) -> None:
     for y in range(H):
         print("".join(G[x, y] for x in range(W)))
 
