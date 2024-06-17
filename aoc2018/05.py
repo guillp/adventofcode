@@ -1,8 +1,6 @@
 import string
 from itertools import pairwise
 
-test_content = "dabAcCaCBAcCcaDA"
-
 
 def part1(content: str) -> int:
     d = {i: c for i, c in enumerate(content)}
@@ -11,14 +9,7 @@ def part1(content: str) -> int:
         for i, j in pairwise(d.keys()):
             a = d[i]
             b = d[j]
-            if (
-                a.islower()
-                and b.isupper()
-                and a.upper() == b
-                or a.isupper()
-                and b.islower()
-                and a.lower() == b
-            ):
+            if a.islower() and b.isupper() and a.upper() == b or a.isupper() and b.islower() and a.lower() == b:
                 del d[i]
                 del d[j]
                 break
@@ -34,6 +25,8 @@ def part2(content: str) -> int:
 
     return min(check(letter) for letter in string.ascii_lowercase)
 
+
+test_content = "dabAcCaCBAcCcaDA"
 
 assert part1(test_content) == 10
 assert part2(test_content) == 4
