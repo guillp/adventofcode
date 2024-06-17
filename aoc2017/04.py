@@ -1,16 +1,5 @@
-
 def part1(content: str) -> int:
-    return sum(
-        1
-        for line in content.splitlines()
-        if len(set(line.split())) == len(line.split())
-    )
-
-
-
-assert part1("aa bb cc dd ee") == 1
-assert part1("aa bb cc dd aa") == 0
-assert part1("aa bb cc dd aaa") == 1
+    return sum(1 for line in content.splitlines() if len(set(line.split())) == len(line.split()))
 
 
 def part2(content: str) -> int:
@@ -21,6 +10,9 @@ def part2(content: str) -> int:
     )
 
 
+assert part1("aa bb cc dd ee") == 1
+assert part1("aa bb cc dd aa") == 0
+assert part1("aa bb cc dd aaa") == 1
 
 assert part2("abcde fghij") == 1
 assert part2("abcde xyz ecdab") == 0
