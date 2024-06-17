@@ -1,15 +1,5 @@
 from itertools import combinations
 
-test_content = """\
-5 1 9 5
-7 5 3
-2 4 6 8"""
-
-test_content2 = """\
-5 9 2 8
-9 4 7 3
-3 8 6 5
-"""
 
 def solve(content: str) -> tuple[int, int]:
     part1 = part2 = 0
@@ -22,10 +12,24 @@ def solve(content: str) -> tuple[int, int]:
     return part1, part2
 
 
-assert solve(test_content)[0] == 18
-assert solve(test_content2)[1] == 9
+assert (
+    solve("""\
+5 1 9 5
+7 5 3
+2 4 6 8""")[0]
+    == 18
+)
+assert (
+    solve("""\
+5 9 2 8
+9 4 7 3
+3 8 6 5
+""")[1]
+    == 9
+)
 
 with open("02.txt") as f:
     content = f.read()
 
-print(*solve(content), sep="\n")
+for part in solve(content):
+    print(part)

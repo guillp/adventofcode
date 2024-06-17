@@ -1,11 +1,3 @@
-test_content = """\
-0
-3
-0
-1
--3
-"""
-
 def part1(content: str) -> int:
     jumps = [int(x) for x in content.splitlines()]
     i = step = 0
@@ -30,10 +22,21 @@ def part2(content: str) -> int:
         i += 1
     return i
 
+
+test_content = """\
+0
+3
+0
+1
+-3
+"""
+
+
 assert part1(test_content) == 5
-assert part2(test_content)
+assert part2(test_content) == 10
 
 
-with open("05.txt") as f: content = f.read()
+with open("05.txt") as f:
+    content = f.read()
 print(part1(content))
 print(part2(content))

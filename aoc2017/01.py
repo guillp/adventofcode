@@ -1,7 +1,5 @@
 def solve(content: str, offset: int = 1) -> int:
-    return sum(
-        int(a) for a, b in zip(content, content[offset:] + content[:offset]) if a == b
-    )
+    return sum(int(a) for a, b in zip(content, content[offset:] + content[:offset], strict=False) if a == b)
 
 
 assert solve("1122") == 3
