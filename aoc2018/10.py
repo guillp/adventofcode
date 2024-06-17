@@ -1,5 +1,23 @@
 import re
+from collections.abc import Iterator
 from itertools import count
+
+
+def solve(content: str) -> Iterator[str | int]:
+    xs, ys, dxs, dys = zip(*[[int(x) for x in re.findall(r"-?\d+", line)] for line in content.strip().splitlines()])
+
+    for i in count():
+        height = max(ys) - min(ys)
+        xs = tuple(x + dx for x, dx in zip(xs, dxs))
+        ys = tuple(y + dy for y, dy in zip(ys, dys))
+
+        if max(ys) - min(ys) > height:
+            stars = [(x - dx, y - dy) for x, y, dx, dy in zip(xs, ys, dxs, dys)]
+            for y in range(min(ys), max(ys)):
+                yield "".join("#" if (x, y) in stars else "." for x in range(min(xs), max(xs)))
+            yield i
+            return
+
 
 test_content = """position=< 9,  1> velocity=< 0,  2>
 position=< 7,  0> velocity=<-1,  0>
@@ -34,24 +52,7 @@ position=<14,  7> velocity=<-2,  0>
 position=<-3,  6> velocity=< 2, -1>
 """
 
-def part1(content: str) -> str:
-    xs, ys, dxs, dys = zip(*[[int(x) for x in re.findall(r'-?\d+', line)] for line in content.strip().splitlines()])
-
-    for i in count():
-        height = max(ys)-min(ys)
-        xs = [x + dx for x, dx in zip(xs, dxs)]
-        ys = [y + dy for y, dy in zip(ys, dys)]
-
-        if max(ys)-min(ys) > height:
-            stars = [(x-dx, y-dy) for x, y, dx, dy in zip(xs, ys, dxs, dys)]
-            print(f"After {i} seconds:")
-            for y in range(min(ys), max(ys)):
-                print("".join("#" if (x, y) in stars else "." for x in range(min(xs), max(xs))))
-            print()
-            return
-
-part1(test_content)
-
-with open('10.txt') as f:
+with open("10.txt") as f:
     content = f.read()
-part1(content)
+for line in solve(content):
+    print(line)

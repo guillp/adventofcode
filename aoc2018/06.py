@@ -1,19 +1,11 @@
 from collections import defaultdict
 
-test_content = """\
-1, 1
-1, 6
-8, 3
-3, 4
-5, 5
-8, 9"""
 
-
-def manhattan(x1, y1, x2, y2):
+def manhattan(x1: int, y1: int, x2: int, y2: int) -> int:
     return abs(x1 - x2) + abs(y2 - y1)
 
 
-def solve(content: str, dist: int) -> tuple[int, int]:
+def solve(content: str, dist: int = 10000) -> tuple[int, int]:
     grid = {tuple(int(x) for x in line.split(", ")) for line in content.splitlines()}
     left = min(x for x, _ in grid)
     right = max(x for x, _ in grid)
@@ -40,9 +32,19 @@ def solve(content: str, dist: int) -> tuple[int, int]:
     return part1, part2
 
 
-assert solve(test_content, 32) == (17, 16)
+assert solve(
+    """\
+1, 1
+1, 6
+8, 3
+3, 4
+5, 5
+8, 9""",
+    32,
+) == (17, 16)
 
 with open("06.txt") as f:
     content = f.read()
 
-print(solve(content, 10000))
+for part in solve(content):
+    print(part)

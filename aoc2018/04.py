@@ -1,6 +1,41 @@
 import re
 from collections import defaultdict
-from datetime import datetime, timedelta, time
+from datetime import datetime, time, timedelta
+
+
+def parse(content: str) -> dict[int, dict[time, int]]:
+    current_guard = None
+    guards: dict[int, dict[time, int]] = {}
+    for line in sorted(content.splitlines()):
+        match [int(x) for x in re.findall(r"(\d+)", line)]:
+            case _, _, _, _, _, guard:
+                current_guard = guard
+            case year, month, day, hour, minute if "falls asleep" in line:
+                asleep_time = datetime(year=year, month=month, day=day, hour=hour, minute=minute)
+            case year, month, day, hour, minute if "wakes up" in line and current_guard is not None:
+                awake_time = datetime(year=year, month=month, day=day, hour=hour, minute=minute)
+                while asleep_time < awake_time:
+                    guards.setdefault(current_guard, defaultdict(int))
+                    guards[current_guard][asleep_time.time()] += 1
+                    asleep_time += timedelta(minutes=1)
+            case _:
+                breakpoint()
+
+    return guards
+
+
+def part1(content: str) -> int:
+    guards = parse(content)
+    most_asleep_guard = max(guards, key=lambda g: sum(guards[g].values()))
+    most_asleep_minute = max(guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute])
+    return most_asleep_guard * most_asleep_minute.minute
+
+
+def part2(content: str) -> int:
+    guards = parse(content)
+    most_asleep_guard = max(guards, key=lambda g: max(guards[g].values()))
+    most_asleep_minute = max(guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute])
+    return most_asleep_guard * most_asleep_minute.minute
 
 
 test_content = """\
@@ -22,49 +57,6 @@ test_content = """\
 [1518-11-05 00:45] falls asleep
 [1518-11-05 00:55] wakes up
 """
-
-
-def parse(content: str) -> dict[int, dict[time, int]]:
-    current_guard = None
-    guards = {}
-    for line in sorted(content.splitlines()):
-        match [int(x) for x in re.findall(r"(\d+)", line)]:
-            case year, month, day, hour, minute, guard:
-                current_guard = guard
-            case year, month, day, hour, minute if "falls asleep" in line:
-                asleep_time = datetime(
-                    year=year, month=month, day=day, hour=hour, minute=minute
-                )
-            case year, month, day, hour, minute if "wakes up" in line:
-                awake_time = datetime(
-                    year=year, month=month, day=day, hour=hour, minute=minute
-                )
-                while asleep_time < awake_time:
-                    guards.setdefault(current_guard, defaultdict(int))
-                    guards[current_guard][asleep_time.time()] += 1
-                    asleep_time += timedelta(minutes=1)
-            case _:
-                breakpoint()
-
-    return guards
-
-
-def part1(content: str) -> int:
-    guards = parse(content)
-    most_asleep_guard = max(guards, key=lambda g: sum(guards[g].values()))
-    most_asleep_minute = max(
-        guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute]
-    )
-    return most_asleep_guard * most_asleep_minute.minute
-
-
-def part2(content: str) -> int:
-    guards = parse(content)
-    most_asleep_guard = max(guards, key=lambda g: max(guards[g].values()))
-    most_asleep_minute = max(
-        guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute]
-    )
-    return most_asleep_guard * most_asleep_minute.minute
 
 
 assert part1(test_content) == 240

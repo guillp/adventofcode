@@ -16,11 +16,7 @@ def read_nodes(nums: list[int]) -> tuple[int, int, list[int]]:
     if nb_nodes == 0:
         return part1, value, nums
 
-    return part1, sum(
-        scores[m - 1]
-        for m in metadata
-        if 0 < m <= nb_nodes
-    ), nums
+    return part1, sum(scores[m - 1] for m in metadata if 0 < m <= nb_nodes), nums
 
 
 def solve(content: str) -> tuple[int, int]:
@@ -34,4 +30,5 @@ assert solve(test_content) == (138, 66)
 
 with open("08.txt") as f:
     content = f.read()
-print(solve(content))
+for part in solve(content):
+    print(part)

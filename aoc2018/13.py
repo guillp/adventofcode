@@ -1,16 +1,15 @@
-from itertools import count
+from collections.abc import Iterator
 
-test_content = \
-r"""/->-\        
+test_content = r"""/->-\
 |   |  /----\
 | /-+--+-\  |
 | | |  | v  |
 \-+-/  \-+--/
-  \------/   
+  \------/
   """
 
 
-def solve(content: str) -> tuple[str, str]:
+def solve(content: str) -> Iterator[str]:
     grid = {(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line)}
     carts = {}
     for (x, y), c in grid.items():
@@ -21,17 +20,17 @@ def solve(content: str) -> tuple[str, str]:
             grid[x, y] = "|"
             carts[y, x] = c, 0
 
-    for tick in count():
-        #for y in range(0, len(content.splitlines())):
-        #    print("".join(carts[y,x][0] if (y,x) in carts else grid.get((x,y)," ") for x in range(len(content.splitlines()[0]))))
-        #print()
+        # for tick in count():
+        #    for y in range(0, len(content.splitlines())):
+        #       print("".join(carts[y,x][0] if (y,x) in carts else grid.get((x,y)," ") for x in range(len(content.splitlines()[0]))))
+        #       print()
 
         for y, x in sorted(carts):
             if (y, x) not in carts:
-                continue # cart may have been removed due to collision
+                continue  # cart may have been removed due to collision
             direction, intersections = carts.pop((y, x))
             track = grid[x, y]
-            part1: str = ""
+
             if track == "+":
                 track = {"^": "\\|/", "v": "\\|/", ">": "/-\\", "<": "/-\\"}[direction][intersections % 3]
                 intersections += 1
@@ -68,24 +67,25 @@ def solve(content: str) -> tuple[str, str]:
                 case "\\", "^":
                     x -= 1
                     direction = "<"
-
                 case _:
-                    breakpoint()
+                    assert False
+
             if (y, x) in carts:  # collision
-                if not part1:
-                    part1 = f"{x},{y}"
-                del carts[(y,x)]
+                yield f"{x},{y}"
+                del carts[(y, x)]
                 if len(carts) == 0:
-                    return part1
+                    return
                 if len(carts) == 1:
                     (y, x) = tuple(carts)[0]
-                    return part1, f"{x},{y}"
+                    yield f"{x},{y}"
             else:
                 carts[y, x] = direction, intersections
+    assert False
 
 
-assert solve(test_content) == "7,3"
+# assert next(solve(test_content)) == "7,3"
 
 with open("13.txt") as f:
     content = f.read()
-print(*solve(content), sep='\n')
+for part in solve(content):
+    print(part)
