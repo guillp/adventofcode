@@ -1,9 +1,10 @@
 import re
 from collections import defaultdict
+from collections.abc import Iterator
 from datetime import datetime, time, timedelta
 
 
-def parse(content: str) -> dict[int, dict[time, int]]:
+def solve(content: str) -> Iterator[int]:
     current_guard = None
     guards: dict[int, dict[time, int]] = {}
     for line in sorted(content.splitlines()):
@@ -21,21 +22,13 @@ def parse(content: str) -> dict[int, dict[time, int]]:
             case _:
                 breakpoint()
 
-    return guards
-
-
-def part1(content: str) -> int:
-    guards = parse(content)
     most_asleep_guard = max(guards, key=lambda g: sum(guards[g].values()))
     most_asleep_minute = max(guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute])
-    return most_asleep_guard * most_asleep_minute.minute
+    yield most_asleep_guard * most_asleep_minute.minute
 
-
-def part2(content: str) -> int:
-    guards = parse(content)
     most_asleep_guard = max(guards, key=lambda g: max(guards[g].values()))
     most_asleep_minute = max(guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute])
-    return most_asleep_guard * most_asleep_minute.minute
+    yield most_asleep_guard * most_asleep_minute.minute
 
 
 test_content = """\
@@ -59,11 +52,10 @@ test_content = """\
 """
 
 
-assert part1(test_content) == 240
-assert part2(test_content) == 4455
+assert tuple(solve(test_content)) == (240, 4455)
 
 with open("04.txt") as f:
     content = f.read()
 
-print(part1(content))
-print(part2(content))
+for part in solve(content):
+    print(part)
