@@ -1,34 +1,7 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
 from operator import itemgetter
 from pathlib import Path
-
-content = """$ cd /
-$ ls
-dir a
-14848514 b.txt
-8504156 c.dat
-dir d
-$ cd a
-$ ls
-dir e
-29116 f
-2557 g
-62596 h.lst
-$ cd e
-$ ls
-584 i
-$ cd ..
-$ cd ..
-$ cd d
-$ ls
-4060174 j
-8033020 d.log
-5626152 d.ext
-7214296 k
-"""
-
-with open("07.txt", "rt") as finput:
-    content = finput.read()
 
 
 @dataclass
@@ -44,27 +17,27 @@ class Directory:
     subs: list[Path]
 
     @property
-    def size(self):
+    def size(self) -> int:
         return sum(file.size for file in self.files)
 
 
 @dataclass
 class FileSystem:
-    dirs: dict[Path, Directory]
+    directories: dict[Path, Directory]
 
-    def size(self, path: Path):
-        dir = self.dirs[path]
-        s = dir.size
-        for sub in dir.subs:
+    def size(self, path: Path) -> int:
+        directory = self.directories[path]
+        s = directory.size
+        for sub in directory.subs:
             s += self.size(sub)
         return s
 
-    def __iter__(self):
-        for dir in self.dirs:
-            yield dir, self.size(dir)
+    def __iter__(self) -> Iterator[tuple[Path, int]]:
+        for directory in self.directories:
+            yield directory, self.size(directory)
 
 
-def iter_filesystem(content: str):
+def iter_filesystem(content: str) -> Iterator[Directory]:
     cwd = Path("/")
     lines = content.splitlines()
     while lines:
@@ -93,19 +66,52 @@ def iter_filesystem(content: str):
             assert False, line
 
 
-fs = FileSystem({dir.path: dir for dir in iter_filesystem(content)})
-print({dir: size for dir, size in fs})
+def solve(content: str) -> Iterator[int]:
+    fs = FileSystem({d.path: d for d in iter_filesystem(content)})
 
-s = 0
-for dir, size in fs:
-    if size < 100000:
-        s += size
-print(s)
+    part1 = 0
+    for directory, size in fs:
+        if size < 100000:
+            part1 += size
+    yield part1
 
-free_space = 70000000 - fs.size(Path("/"))
-size_to_free = 30000000 - free_space
+    free_space = 70000000 - fs.size(Path("/"))
+    size_to_free = 30000000 - free_space
 
-for dir, size in sorted(fs, key=itemgetter(1)):
-    if size > size_to_free:
-        print(size)
-        break
+    for directory, size in sorted(fs, key=itemgetter(1)):
+        if size > size_to_free:
+            yield size
+            return
+
+
+test_content = """$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k
+"""
+
+assert tuple(solve(test_content)) == (95437, 24933642)
+
+with open("07.txt") as finput:
+    content = finput.read()
+for part in solve(content):
+    print(part)

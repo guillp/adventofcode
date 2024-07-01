@@ -1,5 +1,4 @@
-with open("02.txt", "rt") as finput:
-    content = finput.readlines()
+from collections.abc import Iterator
 
 ROCK, PAPER, SCISSORS = 1, 2, 3
 
@@ -14,9 +13,10 @@ LETTERS = {
 
 WINNERS = {ROCK: SCISSORS, SCISSORS: PAPER, PAPER: ROCK}
 
+LOSE, DRAW, WIN = 1, 2, 3
 
-def score(round) -> int:
-    other, you = round
+
+def score(other: int, you: int) -> int:
     if you == other:
         return 3 + you
     if WINNERS[you] == other:
@@ -24,15 +24,7 @@ def score(round) -> int:
     return you
 
 
-rounds = tuple(tuple(LETTERS[x] for x in line.split()) for line in content)
-
-print(sum((score(round) for round in rounds)))
-
-LOSE, DRAW, WIN = 1, 2, 3
-
-
-def score2(round) -> int:
-    other, result = round
+def score2(other: int, result: int) -> int:
     if result == LOSE:
         return WINNERS[other]
     if result == DRAW:
@@ -41,6 +33,26 @@ def score2(round) -> int:
         for winner, looser in WINNERS.items():
             if other == looser:
                 return winner + 6
+    assert False, "Solution not found"
 
 
-print(sum((score2(round) for round in rounds)))
+def solve(content: str) -> Iterator[int]:
+    rounds = tuple(tuple(LETTERS[x] for x in line.split()) for line in content.splitlines())
+
+    yield sum(score(other, you) for other, you in rounds)
+    yield sum(score2(other, you) for other, you in rounds)
+
+
+assert tuple(
+    solve("""\
+A Y
+B X
+C Z
+""")
+) == (15, 12)
+
+with open("02.txt") as finput:
+    content = finput.read()
+
+for part in solve(content):
+    print(part)

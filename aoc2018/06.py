@@ -5,7 +5,7 @@ def manhattan(x1: int, y1: int, x2: int, y2: int) -> int:
     return abs(x1 - x2) + abs(y2 - y1)
 
 
-def solve(content: str, dist: int = 10000) -> tuple[int, int]:
+def solve(content: str, dist: int = 10_000) -> tuple[int, int]:
     grid = {tuple(int(x) for x in line.split(", ")) for line in content.splitlines()}
     left = min(x for x, _ in grid)
     right = max(x for x, _ in grid)
