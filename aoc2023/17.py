@@ -1,26 +1,7 @@
 from heapq import heappop, heappush
 
-test_content = """\
-2413432311323
-3215453535623
-3255245654254
-3446585845452
-4546657867536
-1438598798454
-4457876987766
-3637877979653
-4654967986887
-4564679986453
-1224686865563
-2546548887735
-4322674655533
-"""
 
-with open("17.txt") as f:
-    content = f.read()
-
-
-def solve(content: str, min_straigth: int = 1, max_straigth: int = 3):
+def solve(content: str, min_straigth: int = 1, max_straigth: int = 3) -> int:
     lines = content.splitlines()
     H = len(lines)
     W = len(lines[0])
@@ -30,7 +11,7 @@ def solve(content: str, min_straigth: int = 1, max_straigth: int = 3):
     target = (W - 1, H - 1)
 
     best = sum(grid.values())
-    best_directions = None
+
     DIRECTIONS = {
         ">": (1, 0, "<"),
         "v": (0, 1, "^"),
@@ -67,15 +48,31 @@ def solve(content: str, min_straigth: int = 1, max_straigth: int = 3):
                 next_directions = directions + next_direction * i
                 if (next_x, next_y) == target:
                     best = min(best, next_loss)
-                    best_directions = next_directions
                 else:
                     heappush(queue, (next_loss, (next_x, next_y), next_directions, i))
 
     return best
 
 
+test_content = """\
+2413432311323
+3215453535623
+3255245654254
+3446585845452
+4546657867536
+1438598798454
+4457876987766
+3637877979653
+4654967986887
+4564679986453
+1224686865563
+2546548887735
+4322674655533
+"""
+
+
 assert solve(test_content) == 102
-print(solve(content))
+
 
 assert solve(test_content, 4, 10) == 94
 assert (
@@ -91,4 +88,10 @@ assert (
     )
     == 71
 )
+
+
+with open("17.txt") as f:
+    content = f.read()
+
+print(solve(content))
 print(solve(content, 4, 10))

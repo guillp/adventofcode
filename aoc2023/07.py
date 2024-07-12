@@ -3,17 +3,6 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import ClassVar
 
-content = """\
-32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483
-"""
-
-with open("07.txt") as f:
-    content = f.read()
-
 
 class Rank(IntEnum):
     HIGH_CARD = 1
@@ -54,15 +43,12 @@ class Hand:
             case _:
                 rank = Rank.HIGH_CARD
         object.__setattr__(self, "rank", rank)
-        object.__setattr__(
-            self, "order", tuple(self.cards_order.index(card) for card in self.cards)
-        )
+        object.__setattr__(self, "order", tuple(self.cards_order.index(card) for card in self.cards))
 
 
-hand2bid = {Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]}
-print(sorted(hand2bid))
-
-print(sum((rank) * hand2bid[hand] for rank, hand in enumerate(sorted(hand2bid), start=1)))
+def part1(content: str) -> int:
+    hand2bid = {Hand(card): int(x) for line in content.splitlines() for card, x in [line.split()]}
+    return sum((rank) * hand2bid[hand] for rank, hand in enumerate(sorted(hand2bid), start=1))
 
 
 @dataclass(frozen=True)
@@ -75,13 +61,31 @@ class JokerHand(Hand):
         jokers = counts["J"]
         if jokers != 5:  # add jokers to the most frequent other card
             del counts["J"]
-            most_frequent_card, most_frequent_count = counts.most_common(1)[0]
+            most_frequent_card, _ = counts.most_common(1)[0]
             counts[most_frequent_card] += jokers
         return counts
 
 
-jokerhand2bid = {
-    JokerHand(card): int(x) for line in content.splitlines() for card, x in [line.split()]
-}
-print(sorted(jokerhand2bid))
-print(sum((rank) * jokerhand2bid[hand] for rank, hand in enumerate(sorted(jokerhand2bid), start=1)))
+def part2(content: str) -> int:
+    jokerhand2bid = {JokerHand(card): int(x) for line in content.splitlines() for card, x in [line.split()]}
+    return sum((rank) * jokerhand2bid[hand] for rank, hand in enumerate(sorted(jokerhand2bid), start=1))
+
+
+test_content = """\
+32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483
+"""
+
+
+assert part1(test_content) == 6440
+assert part2(test_content) == 5905
+
+
+with open("07.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))
