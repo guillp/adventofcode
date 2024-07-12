@@ -1,22 +1,6 @@
 from enum import Enum
 
-test_content = r"""
-.|...\....
-|.-.\.....
-.....|-...
-........|.
-..........
-.........\
-..../.\\..
-.-.-/..|..
-.|....-|.\
-..//.|....
-""".strip()
-
-with open("16.txt") as f:
-    content = f.read()
-
-type Point = tuple[int, int]
+Point = tuple[int, int]
 
 
 class Direction(Enum):
@@ -99,16 +83,12 @@ def continue_path(grid: dict[Point, str], cell: Point, direction: Direction) -> 
 
 
 def part1(content: str) -> int:
-    grid = {(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line)}
+    grid = {(x, y): c for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line)}
     return continue_path(grid, (0, 0), Direction.EAST)
 
 
-assert part1(test_content) == 46
-print(part1(content))
-
-
 def part2(content: str) -> int:
-    lines = content.splitlines()
+    lines = content.strip().splitlines()
     H = len(lines)
     W = len(lines[0])
     grid = {(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line)}
@@ -120,5 +100,25 @@ def part2(content: str) -> int:
     )
 
 
+test_content = r"""
+.|...\....
+|.-.\.....
+.....|-...
+........|.
+..........
+.........\
+..../.\\..
+.-.-/..|..
+.|....-|.\
+..//.|....
+"""
+
+
+assert part1(test_content) == 46
 assert part2(test_content) == 51
+
+with open("16.txt") as f:
+    content = f.read()
+
+print(part1(content))
 print(part2(content))

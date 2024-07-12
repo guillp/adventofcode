@@ -1,30 +1,13 @@
 from itertools import count
-from typing import TypeAlias
 
-test_content = """\
-O....#....
-O.OO#....#
-.....##...
-OO.#O....O
-.O.....O#.
-O.#..O.#.#
-..O..#O..O
-.......O..
-#....###..
-#OO..#....
-"""
-
-with open("14.txt") as f:
-    content = f.read()
-
-Grid: TypeAlias = dict[tuple[int, int], str]
+type Grid = dict[tuple[int, int], str]
 
 
-def roll(grid: Grid, H: int, W: int) -> Grid:
+def roll(grid: Grid, height: int, width: int) -> Grid:
     target = dict(grid)
-    for x in range(W):
+    for x in range(width):
         stop = 0
-        for y in range(H):
+        for y in range(height):
             match grid[x, y]:
                 case "#":
                     stop = y + 1
@@ -47,21 +30,17 @@ def part1(content: str) -> int:
     return get_load(grid, H, W)
 
 
-def get_load(grid: Grid, H: int, W: int) -> int:
+def get_load(grid: Grid, height: int, width: int) -> int:
     load = 0
-    for x in range(W):
-        for y in range(H):
+    for x in range(width):
+        for y in range(height):
             if grid[x, y] == "O":
-                load += H - y
+                load += height - y
     return load
 
 
-assert part1(test_content) == 136
-print(part1(content))
-
-
-def rotate(grid: Grid, H: int) -> Grid:
-    return {(H - y - 1, x): c for (x, y), c in grid.items()}
+def rotate(grid: Grid, height: int) -> Grid:
+    return {(height - y - 1, x): c for (x, y), c in grid.items()}
 
 
 def part2(content: str) -> int:
@@ -87,6 +66,27 @@ def part2(content: str) -> int:
         except ValueError:
             states.append(grid)
 
+    assert False, "Solution not found!"
 
+
+test_content = """\
+O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#....
+"""
+
+assert part1(test_content) == 136
 assert part2(test_content) == 64
+
+with open("14.txt") as f:
+    content = f.read()
+
+print(part1(content))
 print(part2(content))
