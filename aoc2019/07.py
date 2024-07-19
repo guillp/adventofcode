@@ -2,12 +2,12 @@ from itertools import permutations
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = [int(x) for x in instructions.split(",")]
         self.pointer = 0
         self.inputs = list(inputs)
@@ -29,7 +29,7 @@ class Computer:
     def store(self, value: int, pos: int) -> None:
         self.instructions[pos] = value
 
-    def next(self):
+    def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             raise StopIteration()
@@ -93,7 +93,7 @@ class Computer:
         except OutputSignal as out:
             return out.value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
@@ -127,24 +127,14 @@ def part2(content: str) -> int:
 
 
 assert part1("3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0") == 43210
+assert part1("3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0") == 54321
 assert (
-    part1("3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0")
-    == 54321
-)
-assert (
-    part1(
-        "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0"
-    )
+    part1("3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0")
     == 65210
 )
 
 
-assert (
-    part2(
-        "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5"
-    )
-    == 139629729
-)
+assert part2("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5") == 139629729
 assert (
     part2(
         "3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10"

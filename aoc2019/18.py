@@ -1,22 +1,17 @@
 from functools import cache
-from heapq import heapify, heappush, heappop
+from heapq import heapify, heappop, heappush
 
 
 def part1(content: str) -> int:
     lines = content.splitlines()
 
-    grid = {
-        complex(x, y): c
-        for y, line in enumerate(lines)
-        for x, c in enumerate(line)
-        if c != "#"
-    }
+    grid = {complex(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line) if c != "#"}
 
     start_pos = next(pos for pos, c in grid.items() if c == "@")
 
     # turn the labyrinth into a graph using a quick DFS
-    G = {"@": {}}
-    pool = [(0, "@", "", (start_pos,))]
+    G: dict[str, dict[str, tuple[set[str], int]]] = {"@": {}}
+    pool: list[tuple[int, str, str, tuple[complex, ...]]] = [(0, "@", "", (start_pos,))]
     while pool:
         steps, start_symbol, traversed, path = pool.pop()
         current_pos = path[-1]
@@ -40,9 +35,7 @@ def part1(content: str) -> int:
                 required_gates = {gate.lower() for gate in traversed if gate.isupper()}
                 # if a distance has been recorded already, make sure we keep the best one
                 # this is required because of the multiple possible path around the start position
-                if G[key_or_gate].get(start_symbol, (None, float("inf")))[1] > len(
-                    path
-                ):
+                if G[key_or_gate].get(start_symbol, (None, float("inf")))[1] > len(path):
                     G[key_or_gate][start_symbol] = G[start_symbol][key_or_gate] = (
                         required_gates,
                         len(path),
@@ -64,10 +57,10 @@ def part1(content: str) -> int:
 
     # find the shortest path from @ to all keys
     @cache
-    def solve(current_key: str, missing_keys: frozenset) -> int:
+    def solve(current_key: str, missing_keys: frozenset[str]) -> int:
         if not missing_keys:
             return 0
-        best = float("inf")
+        best = len(grid) ** 2
         for key in missing_keys:
             if key in G[current_key]:
                 required_gates, cost = G[current_key][key]
@@ -148,12 +141,7 @@ print(part1(content))
 def part2(content: str) -> int:
     lines = content.splitlines()
 
-    grid = {
-        complex(x, y): c
-        for y, line in enumerate(lines)
-        for x, c in enumerate(line)
-        if c != "#"
-    }
+    grid = {complex(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line) if c != "#"}
 
     # adjust the area around the single entrance
     if content.count("@") == 1:
@@ -178,9 +166,9 @@ def part2(content: str) -> int:
 
     start_positions = [pos for pos, c in grid.items() if c == "@"]
 
-    def dfs(start_pos) -> dict[str, dict[str, tuple[set[str], int]]]:
-        G = {"@": {}}
-        pool = [(0, "@", "", (start_pos,))]
+    def dfs(start_pos: complex) -> dict[str, dict[str, tuple[set[str], int]]]:
+        G: dict[str, dict[str, tuple[set[str], int]]] = {"@": {}}
+        pool: list[tuple[int, str, str, tuple[complex, ...]]] = [(0, "@", "", (start_pos,))]
         while pool:
             steps, start_symbol, traversed, path = pool.pop()
             current_pos = path[-1]
@@ -201,9 +189,7 @@ def part2(content: str) -> int:
                         )
                     )
                     G.setdefault(key_or_gate, {})
-                    required_gates = {
-                        gate.lower() for gate in traversed if gate.isupper()
-                    }
+                    required_gates = {gate.lower() for gate in traversed if gate.isupper()}
                     G[key_or_gate][start_symbol] = G[start_symbol][key_or_gate] = (
                         required_gates,
                         len(path),
@@ -219,27 +205,22 @@ def part2(content: str) -> int:
                         )
                     )
                 else:  # is just a step
-                    pool.append(
-                        (steps + 1, start_symbol, traversed, path + (next_pos,))
-                    )
+                    pool.append((steps + 1, start_symbol, traversed, path + (next_pos,)))
 
         return G
 
     graphs = [dfs(start_pos) for start_pos in start_positions]
     all_keys = frozenset(c for graph in graphs for c in graph if c.islower())
 
-    sorted_costs = sorted(
-        cost for graph in graphs for d in graph.values() for _, cost in d.values()
-    )
-    pool = [(len(all_keys), 0, (0, 0, 0, 0), ("@", "@", "@", "@"), all_keys)]
+    sorted_costs = sorted(cost for graph in graphs for d in graph.values() for _, cost in d.values())
+    pool: list[tuple[int, int, tuple[int, ...], tuple[str, ...], frozenset[str]]] = [
+        (len(all_keys), 0, (0, 0, 0, 0), ("@", "@", "@", "@"), all_keys)
+    ]
     heapify(pool)
     best = None
     while pool:
         nb_missing_keys, current_cost, steps, positions, missing_keys = heappop(pool)
-        if (
-            best is not None
-            and current_cost + sum(sorted_costs[:nb_missing_keys]) >= best
-        ):
+        if best is not None and current_cost + sum(sorted_costs[:nb_missing_keys]) >= best:
             continue
 
         for next_key in missing_keys:
@@ -257,16 +238,12 @@ def part2(content: str) -> int:
                         (
                             nb_missing_keys - 1,
                             current_cost + cost,
-                            tuple(
-                                s if j != i else s + cost for j, s in enumerate(steps)
-                            ),
-                            tuple(
-                                p if j != i else next_key
-                                for j, p in enumerate(positions)
-                            ),
+                            tuple(s if j != i else s + cost for j, s in enumerate(steps)),
+                            tuple(p if j != i else next_key for j, p in enumerate(positions)),
                             missing_keys - {next_key},
                         ),
                     )
+    assert best is not None, "Solution not found!"
     return best
 
 

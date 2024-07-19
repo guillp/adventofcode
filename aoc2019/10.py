@@ -1,14 +1,10 @@
 import math
+from collections.abc import Iterator
 from itertools import combinations
 
 
-def solve(content: str) -> tuple[int, int | None]:
-    asteroids = {
-        (x, y)
-        for y, line in enumerate(content.splitlines())
-        for x, c in enumerate(line)
-        if c == "#"
-    }
+def solve(content: str) -> Iterator[int]:
+    asteroids = {(x, y) for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c == "#"}
 
     # assume every asteroid sees each other for now
     los = {a: set(asteroids) - {a} for a in asteroids}
@@ -21,21 +17,21 @@ def solve(content: str) -> tuple[int, int | None]:
             los[xc, yc] -= {(xa, ya)}
 
     best_x, best_y = max(los, key=lambda a: len(los[a]))
-    part1 = len(los[best_x, best_y])
+    yield len(los[best_x, best_y])
 
-    def angle(xy) -> float:
+    def angle(xy: tuple[int, int]) -> float:
         x, y = xy
         return -math.atan2(x - best_x, y - best_y) + math.pi / 4
 
-    part2 = None
     if len(los) >= 200:
         x200, y200 = sorted(los[best_x, best_y], key=angle)[199]
-        part2 = x200 * 100 + y200
-
-    return part1, part2
+        yield x200 * 100 + y200
 
 
-assert solve("""......#.#.
+assert (
+    next(
+        solve("""\
+......#.#.
 #..#.#....
 ..#######.
 .#.#.###..
@@ -44,10 +40,16 @@ assert solve("""......#.#.
 #..#....#.
 .##.#..###
 ##...#..#.
-.#....####""") == (33, None)
+.#....####""")
+    )
+    == 33
+)
 
 
-assert solve("""#.#...#.#.
+assert (
+    next(
+        solve("""\
+#.#...#.#.
 .###....#.
 .#....#...
 ##.#.#.#.#
@@ -56,9 +58,15 @@ assert solve("""#.#...#.#.
 ..#...##..
 ..##....##
 ......#...
-.####.###.""") == (35, None)
+.####.###.""")
+    )
+    == 35
+)
 
-assert solve(""".#..#..###
+assert (
+    next(
+        solve("""\
+.#..#..###
 ####.###.#
 ....###.#.
 ..###.##.#
@@ -67,9 +75,14 @@ assert solve(""".#..#..###
 ..#.#..#.#
 #..#.#.###
 .##...##.#
-.....#.#..""") == (41, None)
+.....#.#..""")
+    )
+    == 41
+)
 
-assert solve(""".#..##.###...#######
+assert tuple(
+    solve("""\
+.#..##.###...#######
 ##.############..##.
 .#.######.########.#
 .###.#######.####.#.
@@ -88,9 +101,11 @@ assert solve(""".#..##.###...#######
 ....##.##.###..#####
 .#.#.###########.###
 #.#.#.#####.####.###
-###.##.####.##.#..##""") == (210, 802)
+###.##.####.##.#..##""")
+) == (210, 802)
 
 with open("10.txt") as f:
     content = f.read()
 
-print(*solve(content), sep="\n")
+for part in solve(content):
+    print(part)

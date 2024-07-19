@@ -1,4 +1,7 @@
-def fft_sum(signal: tuple[int], i: int):
+from collections.abc import Iterable
+
+
+def fft_sum(signal: tuple[int, ...], i: int) -> int:
     s = 0
     for j in range(i + 1):
         s += sum(signal[i + j :: (i + 1) * 4])
@@ -6,32 +9,24 @@ def fft_sum(signal: tuple[int], i: int):
     return s
 
 
-def fft_phase(signal: tuple[int]):
+def fft_phase(signal: tuple[int, ...]) -> Iterable[int]:
     n = len(signal)
     for i in range(n):
         yield abs(fft_sum(signal, i)) % 10
 
 
-def fft(signal: str, n: int) -> str:
+def part1(signal: str, n: int = 100) -> str:
     digits = tuple(int(x) for x in signal)
     for _ in range(n):
         digits = tuple(fft_phase(digits))
 
-    return "".join(str(x) for x in digits)
+    return "".join(str(x) for x in digits[:8])
 
 
-assert fft("12345678", 4) == "01029498"
+def part2(content: str, phases: int = 100) -> str:
+    offset = int(content[:7])
+    signal = content * 10000
 
-with open("16.txt") as f:
-    content = f.read()
-
-print(fft(content, 100)[:8])
-
-offset = int(content[:7])
-content2 = content * 10000
-
-
-def fast_fft(signal: str, offset: int, phases: int) -> str:
     assert offset > len(signal) / 2
     # for any offset > len(signal)/2, the pattern is just offset 0 and the rest of 1
     # so calculating next phase value for such offset is just the sum of all next values
@@ -42,7 +37,13 @@ def fast_fft(signal: str, offset: int, phases: int) -> str:
         for i in range(1, len(signal) - offset + 1):
             s += r[-i]
             r[-i] = abs(s) % 10
-    return "".join(str(x) for x in r)
+    return "".join(str(x) for x in r[:8])
 
 
-print(fast_fft(content2, offset, 100)[:8])
+assert part1("12345678", 4) == "01029498"
+
+with open("16.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))

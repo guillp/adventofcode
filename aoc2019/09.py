@@ -1,42 +1,40 @@
-import sys
-from typing import Literal
+from enum import Enum
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
-POSITION, IMMEDIATE, RELATIVE = "0", "1", "2"
-
-
-def debug(*args, **kwargs):
-    print(*args, **kwargs, file=sys.stderr, flush=True)
+class ParamMode(str, Enum):
+    POSITION = "0"
+    IMMEDIATE = "1"
+    RELATIVE = "2"
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
         self.inputs = list(inputs)
 
-    def get_param(self, mode: Literal[POSITION, IMMEDIATE, RELATIVE]) -> int:
+    def get_param(self, mode: ParamMode) -> int:
         value = self.instructions[self.pointer]
         self.pointer += 1
-        if mode == IMMEDIATE:
+        if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == POSITION:
+        elif mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == RELATIVE:
+        elif mode == ParamMode.RELATIVE:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: Literal[POSITION, RELATIVE], value) -> None:
-        dest = self.get_param(IMMEDIATE)
-        if mode == POSITION:
+    def set_param(self, mode: ParamMode, value: int) -> None:
+        dest = self.get_param(ParamMode.IMMEDIATE)
+        if mode == ParamMode.POSITION:
             self.instructions[dest] = value
-        elif mode == RELATIVE:
+        elif mode == ParamMode.RELATIVE:
             self.instructions[dest + self.relative_base] = value
         else:
             assert False, f"Unknown mode {mode}"
@@ -48,7 +46,7 @@ class Computer:
         self.pointer += 1
         return opcode, modes
 
-    def next(self):
+    def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             raise StopIteration()
@@ -107,15 +105,12 @@ class Computer:
             except StopIteration:
                 return output
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-assert Computer(
-    "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
-).run_until_halt() == [
-    int(x)
-    for x in "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99".split(",")
+assert Computer("109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99").run_until_halt() == [
+    int(x) for x in "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99".split(",")
 ]
 assert Computer("1102,34915192,34915192,7,4,7,99,0").run() == 1219070632396864
 assert Computer("104,1125899906842624,9").run() == 1125899906842624

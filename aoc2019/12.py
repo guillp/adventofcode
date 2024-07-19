@@ -1,23 +1,16 @@
 import math
+import re
 from itertools import combinations
-from stringparser import Parser
 
 
-test_content = """<x=-8, y=-10, z=0>
-<x=5, y=5, z=10>
-<x=2, y=-7, z=3>
-<x=9, y=-8, z=-3>"""
-
-
-def solve(content: str, steps: int) -> tuple[int, int | None]:
-    parser = Parser("<x={:d}, y={:d}, z={:d}>")
-    pos = [parser(line) for i, line in enumerate(content.splitlines())]
+def solve(content: str, steps: int = 1000) -> tuple[int, int | None]:
+    pos = [
+        [int(x), int(y), int(z)] for x, y, z in re.findall(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", content, re.MULTILINE)
+    ]
     nb_moons = len(pos)
     pos0 = tuple(list(p) for p in pos)
     vel = [[0, 0, 0] for _ in pos]
-    loops = [None, None, None]
-
-    part1 = part2 = 0
+    loops: list[int | None] = [None, None, None]
 
     for step in range(1, 100000000):
         # apply gravity
@@ -36,10 +29,7 @@ def solve(content: str, steps: int) -> tuple[int, int | None]:
 
         # part 1
         if step == steps:
-            part1 = sum(
-                sum(abs(x) for x in p) * sum(abs(x) for x in v)
-                for p, v in zip(pos, vel)
-            )
+            yield sum(sum(abs(x) for x in p) * sum(abs(x) for x in v) for p, v in zip(pos, vel))
 
         # part 2: check for loops
         for axis in (0, 1, 2):  # for each axis
@@ -51,13 +41,24 @@ def solve(content: str, steps: int) -> tuple[int, int | None]:
                         loops[axis] = step
 
                 if None not in loops:
-                    part2 = math.lcm(*loops)
-                    return part1, part2
+                    yield math.lcm(*loops)
+                    return
 
 
-assert solve(test_content, 100) == (1940, 4686774924)
+assert tuple(
+    solve(
+        """\
+<x=-8, y=-10, z=0>
+<x=5, y=5, z=10>
+<x=2, y=-7, z=3>
+<x=9, y=-8, z=-3>""",
+        100,
+    )
+) == (1940, 4686774924)
 
 
 with open("12.txt") as f:
     content = f.read()
-print(*solve(content, 1000), sep="\n")
+
+for part in solve(content):
+    print(part)

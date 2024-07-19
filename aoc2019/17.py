@@ -1,8 +1,9 @@
+from collections.abc import Iterator
 from enum import Enum
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -17,7 +18,7 @@ class ParamMode(str, Enum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -34,13 +35,11 @@ class Computer:
             return self.instructions.get(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
-        if mode == ParamMode.POSITION:
-            pass
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             dest += self.relative_base
-        else:
+        elif mode != ParamMode.POSITION:
             assert False, f"Unknown mode {mode}"
         self.instructions[dest] = value
 
@@ -67,8 +66,8 @@ class Computer:
         assert "-" not in modes
         return pointer, opcode, modes
 
-    def next(self):
-        pointer, opcode, modes = self.get_instruction()
+    def next(self) -> None:
+        _, opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             self.stop()
         elif opcode == "01":  # add
@@ -119,8 +118,8 @@ class Computer:
         except InputSignal:
             return None
 
-    def run_until_halt(self, *i) -> list[int]:
-        self.inputs.extend(i)
+    def run_until_halt(self, *inputs: int) -> list[int]:
+        self.inputs.extend(inputs)
         output = []
         while True:
             try:
@@ -135,69 +134,65 @@ class Computer:
     def run_until_input(self, *i: int) -> list[int]:
         self.inputs.extend(i)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-with open("17.txt") as f:
-    content = f.read()
+def solve(content: str) -> Iterator[int]:
+    computer = Computer(content)
 
-computer = Computer(content)
+    output = computer.run_until_halt()
 
-output = computer.run_until_halt()
+    img = bytes(output).decode().strip()
+    # print(img)
+    lines = img.splitlines()
+    grid = {complex(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line) if c != "."}
 
-img = bytes(output).decode().strip()
-print(img)
-lines = img.splitlines()
-grid = {
-    complex(x, y): c
-    for y, line in enumerate(lines)
-    for x, c in enumerate(line)
-    if c != "."
-}
+    intersections = set()
 
-intersections = set()
+    UP = -1j
+    DOWN = 1j
+    LEFT = -1
+    RIGHT = 1
 
-UP = -1j
-DOWN = 1j
-LEFT = -1
-RIGHT = 1
+    s = 0
+    for pos in grid:
+        if all(grid.get(pos + d) == "#" for d in (UP, DOWN, RIGHT, LEFT)):
+            s += int(pos.real) * int(pos.imag)
+            intersections.add(pos)
 
-s = 0
-for pos in grid:
-    if all(grid.get(pos + d) == "#" for d in (UP, DOWN, RIGHT, LEFT)):
-        s += int(pos.real) * int(pos.imag)
-        intersections.add(pos)
+    yield s
 
-print(s)
+    TURN_RIGHT = "R"
+    TURN_LEFT = "L"
 
-TURN_RIGHT = "R"
-TURN_LEFT = "L"
+    def dfs() -> tuple[str | int]:
+        positions = next(p for p, c in grid.items() if c in "^v<>")
+        directions = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}.get(grid[positions])
+        pool = [(positions, directions, set(grid) - {positions}, ())]
+        while pool:
+            pool.sort(key=lambda x: len(x[2]))
+            positions, directions, remaining, path = pool.pop()
+            if remaining:
+                for action, turn in {TURN_RIGHT: 1j, TURN_LEFT: -1j}.items():
+                    if grid.get(positions + turn * directions) == "#" and positions + turn * directions in remaining:
+                        pool.append((positions, turn * directions, remaining, path + (action,)))
 
-
-def dfs():
-    positions = next(p for p, c in grid.items() if c in "^v<>")
-    directions = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}.get(grid[positions])
-    pool = [(positions, directions, set(grid) - {positions}, ())]
-    while pool:
-        pool.sort(key=lambda x: len(x[2]))
-        positions, directions, remaining, path = pool.pop()
-        if remaining:
-            for action, turn in {TURN_RIGHT: 1j, TURN_LEFT: -1j}.items():
-                if (
-                    grid.get(positions + turn * directions) == "#"
-                    and positions + turn * directions in remaining
-                ):
-                    pool.append(
-                        (positions, turn * directions, remaining, path + (action,))
-                    )
-
-            steps = 0
-            new_remaining = set(remaining)
-            while grid.get(positions + steps * directions + directions) == "#":
-                steps += 1
-                new_remaining -= {positions + steps * directions}
-                if grid[positions + steps * directions] in intersections:
+                steps = 0
+                new_remaining = set(remaining)
+                while grid.get(positions + steps * directions + directions) == "#":
+                    steps += 1
+                    new_remaining -= {positions + steps * directions}
+                    if grid[positions + steps * directions] in intersections:
+                        pool.append(
+                            (
+                                positions + steps * directions,
+                                directions,
+                                new_remaining,
+                                path + (steps,),
+                            )
+                        )
+                if steps > 0:
                     pool.append(
                         (
                             positions + steps * directions,
@@ -206,34 +201,31 @@ def dfs():
                             path + (steps,),
                         )
                     )
-            if steps > 0:
-                pool.append(
-                    (
-                        positions + steps * directions,
-                        directions,
-                        new_remaining,
-                        path + (steps,),
-                    )
-                )
-        else:
-            return path
+            else:
+                return path
+
+    path = ",".join(str(x) for x in dfs())
+    print(path)
+    # MANUALLY INSPECT FOR REPEATING FUNCTIONS
+
+    A = "R,10,R,8,L,10,L,10"
+    B = "R,8,L,6,L,6"
+    C = "L,10,R,10,L,6"
+
+    main = "A,B,B,A,C,B,C,C,B,A"
+
+    instructions = f"{main}\n{A}\n{B}\n{C}\nn\n"
+    # print(instructions)
+    inputs = [ord(c) for c in instructions]
+    computer2 = Computer(content)
+    computer2.instructions[0] = 2
+
+    output = computer2.run_until_halt(*inputs)
+    yield output[-1]
 
 
-path = ",".join(str(x) for x in dfs())
-# print(path)
-# MANUALLY INSPECT FOR REPEATING FUNCTIONS
+with open("17.txt") as f:
+    content = f.read()
 
-A = "R,10,R,8,L,10,L,10"
-B = "R,8,L,6,L,6"
-C = "L,10,R,10,L,6"
-
-main = "A,B,B,A,C,B,C,C,B,A"
-
-instructions = f"{main}\n{A}\n{B}\n{C}\nn\n"
-# print(instructions)
-inputs = [ord(c) for c in instructions]
-computer2 = Computer(content)
-computer2.instructions[0] = 2
-
-output = computer2.run_until_halt(*inputs)
-print(output[-1])
+for part in solve(content):
+    print(part)

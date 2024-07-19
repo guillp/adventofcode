@@ -1,17 +1,8 @@
-import sys
-
-content = "1,9,10,3,2,3,11,0,99,30,40,50"
-
-
-def debug(*args, **kwargs):
-    print(*args, **kwargs, file=sys.stderr, flush=True)
-
-
 class Computer:
-    def __init__(self, instructions: str, inputs: list[int]):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = list(int(x) for x in instructions.split(","))
         self.pointer = 0
-        self.inputs = inputs
+        self.inputs = list(inputs)
         self.outputs = []
 
     def get_param(self, immediate: bool = False) -> int:
@@ -31,10 +22,9 @@ class Computer:
     def store(self, value: int, pos: int) -> None:
         self.instructions[pos] = value
 
-    def next(self):
+    def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
-            debug("HALT")
             raise StopIteration()
         if opcode == "01":  # add
             left = self.get_param(modes[0])
@@ -43,7 +33,6 @@ class Computer:
             dest = self.get_param(True)
             res = left + right
             self.store(res, dest)
-            debug(f"ADD {left} + {right} -> {dest}")
         elif opcode == "02":  # mult
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])
@@ -51,29 +40,24 @@ class Computer:
             dest = self.get_param(True)
             res = left * right
             self.store(res, dest)
-            debug(f"MULT {left} x {right} -> {dest}")
         elif opcode == "03":  # store input
             assert modes[0] is False
             value = self.inputs.pop(0)
             dest = self.get_param(True)
             self.store(value, dest)
-            debug(f"STORE {value} -> {dest}")
         elif opcode == "04":  # output
             source = self.get_param(modes[0])
             self.outputs.append(source)
-            debug(f"OUT {source}")
         elif opcode == "05":  # jump-if-true
             test = self.get_param(modes[0])
             dest = self.get_param(modes[1])
             if test != 0:
                 self.pointer = dest
-            debug(f"JUMP {test} != 0 -> {dest}")
         elif opcode == "06":  # jump-if-false
             test = self.get_param(modes[0])
             dest = self.get_param(modes[1])
             if test == 0:
                 self.pointer = dest
-            debug(f"JUMP {test} == 0 -> {dest}")
         elif opcode == "07":  # less than
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])
@@ -83,7 +67,6 @@ class Computer:
                 self.store(1, dest)
             else:
                 self.store(0, dest)
-            debug(f"LT {left} < {right} -> {dest}")
         elif opcode == "08":  # equals
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])
@@ -93,7 +76,6 @@ class Computer:
                 self.store(1, dest)
             else:
                 self.store(0, dest)
-            debug(f"EQ {left} == {right} -> {dest}")
 
     def run(self) -> list[int]:
         try:
@@ -102,7 +84,7 @@ class Computer:
         except StopIteration:
             return self.outputs
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
@@ -126,10 +108,18 @@ assert Computer(
 ).run() == [1001]
 
 
+def part1(content: str) -> int:
+    c = Computer(content, [1])
+    return c.run()[-1]
+
+
+def part2(content: str) -> int:
+    c = Computer(content, [5])
+    return c.run()[-1]
+
+
 with open("05.txt") as f:
     content = f.read()
 
-c = Computer(content, [1])
-print(c.run()[-1])
-c = Computer(content, [5])
-print(c.run()[-1])
+print(part1(content))
+print(part2(content))

@@ -1,4 +1,5 @@
-with open('22.txt') as f: content = f.read()
+with open("22.txt") as f:
+    content = f.read()
 
 
 def part1(content: str, N: int = 10007, card: int = 2019) -> int:
