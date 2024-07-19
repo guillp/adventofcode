@@ -1,9 +1,8 @@
 from enum import Enum
-from itertools import product
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -14,7 +13,7 @@ class ParamMode(str, Enum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -31,7 +30,7 @@ class Computer:
             return self.instructions.setdefault(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
         if mode == ParamMode.POSITION:
             self.instructions[dest] = value
@@ -47,12 +46,12 @@ class Computer:
     def offset_relative_base(self, offset: int) -> None:
         self.relative_base += offset
 
-    def add_input(self, *inputs: int):
+    def add_input(self, *inputs: int) -> None:
         self.waiting_for_input = False
         self.inputs.extend(inputs)
 
-    def add_ascii_input(self, ascii: str):
-        self.add_input(*map(ord, ascii))
+    def add_ascii_input(self, text: str) -> None:
+        self.add_input(*map(ord, text))
 
     def get_input(self) -> int:
         if self.inputs:
@@ -76,8 +75,8 @@ class Computer:
         assert "-" not in modes
         return pointer, opcode, modes
 
-    def next(self):
-        pointer, opcode, modes = self.get_instruction()
+    def next(self) -> None:
+        _, opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             self.stop()
         elif opcode == "01":  # add
@@ -154,7 +153,7 @@ class Computer:
             if history.endswith(prompt):
                 return history
 
-    def run_until_big_int(self) -> int:
+    def run_until_big_int(self) -> str:
         history = ""
         while True:
             try:
@@ -166,7 +165,7 @@ class Computer:
             except StopIteration:
                 return history
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 

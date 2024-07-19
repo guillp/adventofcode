@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -13,7 +13,7 @@ class ParamMode(str, Enum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -30,7 +30,7 @@ class Computer:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
         if mode == ParamMode.POSITION:
             self.instructions[dest] = value
@@ -62,8 +62,8 @@ class Computer:
         assert "-" not in modes
         return pointer, opcode, modes
 
-    def next(self):
-        pointer, opcode, modes = self.get_instruction()
+    def next(self) -> None:
+        _, opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             self.stop()
         elif opcode == "01":  # add
@@ -123,7 +123,7 @@ class Computer:
             except StopIteration:
                 return output
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
@@ -163,11 +163,7 @@ def print_grid(grid: dict[complex, str], pos: complex) -> None:
     for y in range(y_min, y_max + 1):
         print(
             "".join(
-                grid.get(complex(x, y), UNKNOWN)
-                if not x == y == 0
-                else DROID
-                if complex(x, y) == pos
-                else "@"
+                grid.get(complex(x, y), UNKNOWN) if not x == y == 0 else DROID if complex(x, y) == pos else "@"
                 for x in range(x_min, x_max + 1)
             )
         )
@@ -194,9 +190,7 @@ while True:
                 grid[pos + direction] = {MOVED: EMPTY, FOUND_OXYGEN: OXYGEN}[output]
                 pos += direction
                 path.append(pos)
-                if output == FOUND_OXYGEN and (
-                    best_path is None or len(path) < len(best_path)
-                ):
+                if output == FOUND_OXYGEN and (best_path is None or len(path) < len(best_path)):
                     best_path = list(path)
             break
 
@@ -205,11 +199,7 @@ while True:
         if len(path) == 1:
             break
         last_step = path.pop(-1) - (path[-1] if path else 0)
-        output = computer.run(
-            {NORTH: MOVE_SOUTH, SOUTH: MOVE_NORTH, EAST: MOVE_WEST, WEST: MOVE_EAST}[
-                last_step
-            ]
-        )
+        output = computer.run({NORTH: MOVE_SOUTH, SOUTH: MOVE_NORTH, EAST: MOVE_WEST, WEST: MOVE_EAST}[last_step])
         assert output == MOVED
         pos -= last_step
 

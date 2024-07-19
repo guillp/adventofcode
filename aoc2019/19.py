@@ -1,10 +1,11 @@
 from collections import defaultdict
+from collections.abc import Iterator
 from enum import Enum
 from itertools import product
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -15,7 +16,7 @@ class ParamMode(str, Enum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -32,7 +33,7 @@ class Computer:
             return self.instructions.setdefault(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
         if mode == ParamMode.POSITION:
             self.instructions[dest] = value
@@ -64,8 +65,8 @@ class Computer:
         assert "-" not in modes
         return pointer, opcode, modes
 
-    def next(self):
-        pointer, opcode, modes = self.get_instruction()
+    def next(self) -> None:
+        _, opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             self.stop()
         elif opcode == "01":  # add
@@ -125,21 +126,21 @@ class Computer:
             except StopIteration:
                 return output
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
 PULLED = 1
 
 
-def solve(content: str):
+def solve(content: str) -> Iterator[int]:
     pulled = set()
     for x, y in product(range(50), repeat=2):
         computer = Computer(content)
         if computer.run(x, y) == PULLED:
             pulled.add((x, y))
 
-    part1 = len(pulled)
+    yield len(pulled)
 
     # the tractor beam is delimited by 2 lines passing by origin
     # get the 2 quotients that define the line slopes
@@ -148,7 +149,7 @@ def solve(content: str):
 
     # TODO: some trigonometry to delimit the area to search for such a diagonal
 
-    def search():
+    def search() -> set[tuple[int, int]]:
         x = 50
         s = defaultdict(set)
         while True:
@@ -163,24 +164,22 @@ def solve(content: str):
 
     diagonal = search()
     xmin = min(x for x, y in diagonal)
-    xmax = xmin + 100
+
     ymin = min(y for x, y in diagonal)
-    ymax = ymin + 100
-    part2 = xmin * 10000 + ymin
+    yield xmin * 10000 + ymin
 
-    for y in range(ymin - 50, ymax + 50):
-        print(
-            "".join(
-                "X" if (x, y) in diagonal else "#" if (x, y) in pulled else "."
-                for x in range(xmin - 50, xmax + 50)
-            )
-        )
-
-    return part1, part2
+    # xmax = xmin + 100
+    # ymax = ymin + 100
+    # for y in range(ymin - 50, ymax + 50):
+    #     print(
+    #         "".join(
+    #             "X" if (x, y) in diagonal else "#" if (x, y) in pulled else "." for x in range(xmin - 50, xmax + 50)
+    #         )
+    #     )
 
 
 with open("19.txt") as f:
     content = f.read()
 
-
-print(solve(content))
+for part in solve(content):
+    print(part)

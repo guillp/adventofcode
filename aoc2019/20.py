@@ -1,16 +1,8 @@
 def part1(content: str) -> int:
-    paths = {
-        complex(x, y)
-        for y, line in enumerate(content.splitlines())
-        for x, c in enumerate(line)
-        if c == "."
-    }
+    paths = {complex(x, y) for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c == "."}
 
     portal_labels = {
-        complex(x, y): c
-        for y, line in enumerate(content.splitlines())
-        for x, c in enumerate(line)
-        if c.isalpha()
+        complex(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c.isalpha()
     }
 
     portal_cache = {}
@@ -19,14 +11,8 @@ def part1(content: str) -> int:
     for pos, letter in portal_labels.items():
         for d in (1, -1, 1j, -1j):
             if pos + d in paths:  # there is an adjacent path
-                other_letter = portal_labels[
-                    pos - d
-                ]  # the other letter is opposite to the path
-                label = (
-                    f"{other_letter}{letter}"
-                    if d in (1, 1j)
-                    else f"{letter}{other_letter}"
-                )  # read the label
+                other_letter = portal_labels[pos - d]  # the other letter is opposite to the path
+                label = f"{other_letter}{letter}" if d in (1, 1j) else f"{letter}{other_letter}"  # read the label
                 if label == "AA":
                     start = pos + d
                 elif label == "ZZ":
@@ -69,16 +55,15 @@ def part1(content: str) -> int:
     for y in range(len(lines)):
         print(
             "".join(
-                str(best_path.index(complex(x, y)) % 10)
-                if complex(x, y) in best_path
-                else lines[y][x]
+                str(best_path.index(complex(x, y)) % 10) if complex(x, y) in best_path else lines[y][x]
                 for x in range(len(lines[y]))
             )
         )
     return len(best_path) - 1
 
 
-test_content = """                   A
+test_content = """\
+                   A
                    A
   #################.#############
   #.#...#...................#.#.#

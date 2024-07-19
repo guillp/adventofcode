@@ -6,9 +6,7 @@ def parse(ingredient: str) -> tuple[str, int]:
     return material, int(n)
 
 
-def calc_ore_cost(
-    G: dict[str, dict[str, int]], Q: dict[str, int], n: int, mat: str = "FUEL"
-) -> int:
+def calc_ore_cost(G: dict[str, dict[str, int]], Q: dict[str, int], n: int, mat: str = "FUEL") -> int:
     required = dict(G[mat])
     if n > 1:
         for material in required:
@@ -49,7 +47,8 @@ def solve(content: str) -> tuple[int, int]:
     return part1, part2
 
 
-assert solve("""157 ORE => 5 NZVS
+assert solve("""\
+157 ORE => 5 NZVS
 165 ORE => 6 DCFZ
 44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL
 12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ
@@ -58,7 +57,8 @@ assert solve("""157 ORE => 5 NZVS
 7 DCFZ, 7 PSHF => 2 XJWVT
 165 ORE => 2 GPVTF
 3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT""") == (13312, 82892753)
-assert solve("""2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG
+assert solve("""\
+2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG
 17 NVRVD, 3 JNWZP => 8 VPVL
 53 STKFG, 6 MNCFX, 46 VJHF, 81 HVMC, 68 CXFTF, 25 GNMV => 1 FUEL
 22 VJHF, 37 MNCFX => 5 FWMGM
@@ -70,7 +70,8 @@ assert solve("""2 VPVL, 7 FWMGM, 2 CXFTF, 11 MNCFX => 1 STKFG
 1 NVRVD => 8 CXFTF
 1 VJHF, 6 MNCFX => 4 RFSQX
 176 ORE => 6 VJHF""") == (180697, 5586022)
-assert solve("""171 ORE => 8 CNZTR
+assert solve("""\
+171 ORE => 8 CNZTR
 7 ZLQW, 3 BMBT, 9 XCVML, 26 XMNCP, 1 WPTQ, 2 MZWV, 1 RJRHP => 4 PLWSL
 114 ORE => 4 BHXH
 14 VRPVC => 6 BMBT
@@ -91,4 +92,5 @@ assert solve("""171 ORE => 8 CNZTR
 
 with open("14.txt") as f:
     content = f.read()
-print(*solve(content), sep="\n")
+for part in solve(content):
+    print(part)

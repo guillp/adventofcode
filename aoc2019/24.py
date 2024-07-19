@@ -1,6 +1,6 @@
 from collections import defaultdict
+from collections.abc import Iterable
 from itertools import product
-from typing import Iterable
 
 
 def print_grid(grid: frozenset[tuple[int, int]]) -> None:
@@ -11,19 +11,20 @@ def print_grid(grid: frozenset[tuple[int, int]]) -> None:
 
 def part1(content: str) -> int:
     grid = frozenset(
-        (x, y) for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line) if c == '#'
+        (x, y) for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line) if c == "#"
     )
 
-    def next(grid: frozenset[tuple[int, int]]) -> frozenset[tuple[int, int]]:
+    def step(grid: frozenset[tuple[int, int]]) -> frozenset[tuple[int, int]]:
         return frozenset(
             (x, y)
             for y in range(5)
             for x in range(5)
             if (
-                    (nb := sum((xn, yn) in grid for xn, yn in ((x, y - 1), (x + 1, y), (x, y + 1), (x - 1, y)))) == 1
-                    and (x, y) in grid
+                (nb := sum((xn, yn) in grid for xn, yn in ((x, y - 1), (x + 1, y), (x, y + 1), (x - 1, y)))) == 1
+                and (x, y) in grid
             )
-            or nb in (1, 2) and (x, y) not in grid
+            or nb in (1, 2)
+            and (x, y) not in grid
         )
 
     history = set()
@@ -32,10 +33,10 @@ def part1(content: str) -> int:
             return sum(2 ** (y * 5 + x) for y in range(5) for x in range(5) if (x, y) in grid)
         history.add(grid)
         # print_grid(grid)
-        grid = next(grid)
+        grid = step(grid)
 
 
-def recursive_neighbors(x, y, z) -> Iterable[tuple[int, int, int]]:
+def recursive_neighbors(x: int, y: int, z: int) -> Iterable[tuple[int, int, int]]:
     if x == y == 2:
         return
 
@@ -82,7 +83,7 @@ assert set(recursive_neighbors(3, 2, 1)) == {  # 14
     (4, 3, 2),  # T
     (4, 4, 2),  # Y
     (4, 2, 1),  # 15
-    (3, 3, 1)  # 19
+    (3, 3, 1),  # 19
 }
 assert set(recursive_neighbors(3, 2, 0)) == {  # N
     (3, 1, 0),  # I
@@ -103,18 +104,17 @@ assert set(recursive_neighbors(0, 4, 1)) == {  # U
 
 
 def part2(content: str, minutes: int = 200) -> int:
-    grid = defaultdict(set, {
-        0: {(x, y) for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line) if c == '#'}})
+    grid = defaultdict(
+        set,
+        {0: {(x, y) for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line) if c == "#"}},
+    )
 
-    def next(grid: frozenset[complex]) -> frozenset[complex]:
+    def step(grid: frozenset[complex]) -> frozenset[complex]:
         new_grid = defaultdict(set)
         for z in range(min(grid) - 1, max(grid) + 2):
             bugs = grid[z]
             for x, y in product(range(5), repeat=2):
-                nb = sum(
-                    (xn, yn) in grid[zn]
-                    for xn, yn, zn in recursive_neighbors(x, y, z)
-                )
+                nb = sum((xn, yn) in grid[zn] for xn, yn, zn in recursive_neighbors(x, y, z))
 
                 if (x, y) in bugs and nb == 1:
                     new_grid[z].add((x, y))
@@ -124,7 +124,7 @@ def part2(content: str, minutes: int = 200) -> int:
         return new_grid
 
     for i in range(minutes):
-        grid = next(grid)
+        grid = step(grid)
 
     for layer in sorted(grid):
         print(layer, len(grid[layer]))

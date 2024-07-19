@@ -2,7 +2,7 @@ from enum import StrEnum
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -13,7 +13,7 @@ class ParamMode(StrEnum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -31,7 +31,7 @@ class Computer:
             return self.instructions.setdefault(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
         if mode == ParamMode.POSITION:
             self.instructions[dest] = value
@@ -47,7 +47,7 @@ class Computer:
     def offset_relative_base(self, offset: int) -> None:
         self.relative_base += offset
 
-    def add_input(self, *inputs):
+    def add_input(self, *inputs: int) -> None:
         self.waiting_for_input = False
         self.inputs.extend(inputs)
 
@@ -73,7 +73,7 @@ class Computer:
         assert "-" not in modes
         return pointer, opcode, modes
 
-    def next(self):
+    def next(self) -> None:
         pointer, opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             self.stop()
@@ -123,7 +123,7 @@ class Computer:
         except StopIteration as out:
             return out.value
 
-    def next_output(self) -> int|None:
+    def next_output(self) -> int | None:
         try:
             while True:
                 self.next()
@@ -143,11 +143,11 @@ class Computer:
             except StopIteration:
                 return output
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-def part1(content: str):
+def part1(content: str) -> int:
     computers = [Computer(content, address) for address in range(50)]
     queues = [[] for _ in range(50)]
     while True:
@@ -167,10 +167,10 @@ def part1(content: str):
                         computers[dest].add_input(x, y)
 
 
-def part2(content: str):
+def part2(content: str) -> int:
     computers = [Computer(content, address) for address in range(50)]
     queues = [[] for _ in range(50)]
-    nat: tuple[int, int] |None = None
+    nat: tuple[int, int] | None = None
     nat_history = []
 
     while True:
@@ -194,8 +194,10 @@ def part2(content: str):
                     if dest == 255:
                         nat = x, y
                     elif 0 <= dest < 50:
-                        computers[dest].add_input(x,y)
+                        computers[dest].add_input(x, y)
 
-with open("23.txt") as f: content = f.read()
+
+with open("23.txt") as f:
+    content = f.read()
 print(part1(content))
 print(part2(content))

@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 BLACK = 0
 WHITE = 1
 
@@ -9,7 +8,7 @@ RIGHT = 1
 
 
 class OutputSignal(RuntimeError):
-    def __init__(self, value: int):
+    def __init__(self, value: int) -> None:
         self.value = value
 
 
@@ -20,7 +19,7 @@ class ParamMode(str, Enum):
 
 
 class Computer:
-    def __init__(self, instructions: str, *inputs: int):
+    def __init__(self, instructions: str, *inputs: int) -> None:
         self.instructions = {i: int(x) for i, x in enumerate(instructions.split(","))}
         self.pointer = 0
         self.relative_base = 0
@@ -37,7 +36,7 @@ class Computer:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
-    def set_param(self, mode: ParamMode, value) -> None:
+    def set_param(self, mode: ParamMode, value: int) -> None:
         dest = self.get_param(ParamMode.IMMEDIATE)
         if mode == ParamMode.POSITION:
             self.instructions[dest] = value
@@ -53,7 +52,7 @@ class Computer:
         self.pointer += 1
         return opcode, modes
 
-    def next(self):
+    def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
             raise StopIteration()
@@ -112,7 +111,7 @@ class Computer:
             except StopIteration:
                 return output
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
@@ -133,7 +132,7 @@ def part1(content: str) -> int:
     return len(hull)
 
 
-def part2(content: str):
+def part2(content: str) -> None:
     pos, heading = 0, -1j
     hull2 = {}
     computer = Computer(content)
@@ -153,12 +152,7 @@ def part2(content: str):
     y_max = max(int(pos.imag) for pos in hull2)
 
     for y in range(y_min, y_max + 1):
-        print(
-            " ".join(
-                " " if hull2.get(complex(x, y), BLACK) == BLACK else "#"
-                for x in range(x_min, x_max + 1)
-            )
-        )
+        print(" ".join(" " if hull2.get(complex(x, y), BLACK) == BLACK else "#" for x in range(x_min, x_max + 1)))
 
 
 with open("11.txt") as f:

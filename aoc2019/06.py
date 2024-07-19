@@ -1,20 +1,9 @@
+from collections.abc import Iterable
 from functools import cache
 
-test_content = """COM)B
-B)C
-C)D
-D)E
-E)F
-B)G
-G)H
-D)I
-E)J
-J)K
-K)L"""
 
-
-def solve(content: str) -> tuple[int, int | None]:
-    G = {}
+def solve(content: str) -> Iterable[int]:
+    G: dict[str, str] = {}
     for line in content.splitlines():
         a, b = line.split(")")
         G[b] = a
@@ -22,17 +11,16 @@ def solve(content: str) -> tuple[int, int | None]:
     assert "COM" not in G
 
     @cache
-    def orbits(leave):
+    def orbits(leave: str) -> int:
         if leave not in G:
             return 0
         else:
             return 1 + orbits(G[leave])
 
-    part1 = sum(orbits(leave) for leave in G)
+    yield sum(orbits(leave) for leave in G)
 
-    part2 = None
     if "YOU" not in G:
-        return part1, part2
+        return
 
     you_to_com = ("YOU",)
     while you_to_com[0] != "COM":
@@ -48,14 +36,31 @@ def solve(content: str) -> tuple[int, int | None]:
         if a == b:
             total_transfers -= 2
 
-    part2 = total_transfers - 2
-
-    return part1, part2
+    yield total_transfers - 2
 
 
-assert solve(test_content) == (42, None)
+assert (
+    next(
+        solve("""\
+COM)B
+B)C
+C)D
+D)E
+E)F
+B)G
+G)H
+D)I
+E)J
+J)K
+K)L""")
+    )
+    == 42
+)
 
-test_content2 = """COM)B
+
+assert tuple(
+    solve("""\
+COM)B
 B)C
 C)D
 D)E
@@ -67,11 +72,11 @@ E)J
 J)K
 K)L
 K)YOU
-I)SAN"""
-
-assert solve(test_content2) == (54, 4)
+I)SAN""")
+) == (54, 4)
 
 
 with open("06.txt") as f:
     content = f.read()
-print(*solve(content), sep="\n")
+for part in solve(content):
+    print(part)
