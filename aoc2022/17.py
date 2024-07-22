@@ -1,8 +1,3 @@
-jets = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-
-with open("17.txt") as f:
-    jets = f.read().strip()
-
 ROCKS = """####
 
 .#.
@@ -23,8 +18,8 @@ ROCKS = """####
 """
 
 
-def move(rock: frozenset[complex], dir: complex):
-    return frozenset(pos + dir for pos in rock)
+def move(rock: frozenset[complex], direction: complex) -> frozenset[complex]:
+    return frozenset(pos + direction for pos in rock)
 
 
 rocks = [
@@ -38,31 +33,26 @@ rocks = [
 ]
 
 
-def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None):
-    top_display = min(
+def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None) -> None:
+    top_display = int(min(
         min(pos.imag for pos in chamber),
         min(pos.imag for pos in rock) if rock else 1,
-    )
+    ))
     for y in range(top_display, 50):
         print(
             "".join(
-                "@"
-                if rock and complex(x, y) in rock
-                else "#"
-                if complex(x, y) in chamber
-                else "."
-                for x in range(7)
+                "@" if rock and complex(x, y) in rock else "#" if complex(x, y) in chamber else "." for x in range(7)
             )
         )
     print()
 
 
-def solve(n: int = 2022) -> int:
+def solve(content: str, n: int) -> int:
     chamber = frozenset(complex(i) for i in range(7))
     height = 0
     jet = 0
     i = 0
-    states = {}
+    states: dict[tuple[int, int, frozenset[complex]], tuple[int, int]] = {}
     while i < n:
         # loop detection, when we end up in a previously known state
         state = (i % len(rocks), jet, chamber)
@@ -74,9 +64,9 @@ def solve(n: int = 2022) -> int:
 
         rock = rocks[i % len(rocks)]
         while True:
-            pushed_rock = move(rock, -1 if jets[jet] == "<" else 1)
+            pushed_rock = move(rock, -1 if content[jet] == "<" else 1)
             jet += 1
-            jet %= len(jets)
+            jet %= len(content)
             if (
                 min(pos.real for pos in pushed_rock) >= 0
                 and max(pos.real for pos in pushed_rock) < 7
@@ -106,5 +96,13 @@ def solve(n: int = 2022) -> int:
     return height
 
 
-print(solve(2022))
-print(solve(1000000000000))
+test_content = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+
+assert solve(test_content, 2022) == 3068
+#assert solve(test_content, 1_000_000_000_000) == 1514285714288  #TODO: fix this
+
+with open("17.txt") as f:
+    content = f.read().strip()
+
+print(solve(content, 2022))
+print(solve(content, 1_000_000_000_000))

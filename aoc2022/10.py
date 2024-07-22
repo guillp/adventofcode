@@ -1,4 +1,30 @@
-content = """addx 15
+from collections.abc import Iterator
+
+
+def solve(content: str) -> Iterator[int | str]:
+    X = 1
+    cycles = [X]
+
+    for line in content.splitlines():
+        if line == "noop":
+            cycles.append(X)
+        if line.startswith("addx"):
+            n = int(line.split()[1])
+            cycles.extend([X, X + n])
+            X += n
+
+    yield (
+        cycles[19] * 20 + cycles[59] * 60 + cycles[99] * 100 + cycles[139] * 140 + cycles[179] * 180 + cycles[219] * 220
+    )
+
+    pixels = tuple(p % 40 - 1 <= cycles[p] <= p % 40 + 1 for p in range(240))
+
+    for y in range(6):
+        yield "".join("#" if pixels[y * 40 + x] else "." for x in range(40))
+
+
+test_content = """\
+addx 15
 addx -11
 addx 6
 addx -3
@@ -146,32 +172,10 @@ noop
 noop
 """
 
+assert next(solve(test_content)) == 13140
 
-with open("10.txt", "rt") as finput:
+with open("10.txt") as finput:
     content = finput.read()
 
-X = 1
-cycles = [X]
-
-for line in content.splitlines():
-    if line == "noop":
-        cycles.append(X)
-    if line.startswith("addx"):
-        n = int(line.split()[1])
-        cycles.extend([X, X + n])
-        X += n
-
-
-print(
-    cycles[19] * 20
-    + cycles[59] * 60
-    + cycles[99] * 100
-    + cycles[139] * 140
-    + cycles[179] * 180
-    + cycles[219] * 220
-)
-
-pixels = tuple(p % 40 - 1 <= cycles[p] <= p % 40 + 1 for p in range(240))
-
-for y in range(6):
-    print("".join("#" if pixels[y * 40 + x] else "." for x in range(40)))
+for part in solve(content):
+    print(part)
