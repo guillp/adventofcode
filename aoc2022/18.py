@@ -1,24 +1,6 @@
+import re
+from collections.abc import Iterator
 from itertools import combinations
-
-content = """2,2,2
-1,2,2
-3,2,2
-2,1,2
-2,3,2
-2,2,1
-2,2,3
-2,2,4
-2,2,6
-1,2,5
-3,2,5
-2,1,5
-2,3,5
-"""
-
-with open("18.txt") as finput:
-    content = finput.read().strip()
-
-cubes = {tuple(int(p) for p in line.split(",")) for line in content.splitlines()}
 
 
 def surface_area(cubes: set[tuple[int, int, int]]) -> int:
@@ -37,9 +19,6 @@ def surface_area(cubes: set[tuple[int, int, int]]) -> int:
         ):
             surface -= 2
     return surface
-
-
-print(surface_area(cubes))
 
 
 def exterior_surface_area(cubes: set[tuple[int, int, int]]) -> int:
@@ -75,4 +54,32 @@ def exterior_surface_area(cubes: set[tuple[int, int, int]]) -> int:
     return surface
 
 
-print(exterior_surface_area(cubes))
+def solve(content: str) -> Iterator[int]:
+    cubes = {(int(x), int(y), int(z)) for x, y, z in re.findall(r"^(\d+),(\d+),(\d+)$", content, re.MULTILINE)}
+    yield surface_area(cubes)
+    yield exterior_surface_area(cubes)
+
+
+test_content = """\
+2,2,2
+1,2,2
+3,2,2
+2,1,2
+2,3,2
+2,2,1
+2,2,3
+2,2,4
+2,2,6
+1,2,5
+3,2,5
+2,1,5
+2,3,5
+"""
+
+# assert tuple(solve(test_content)) == (64, 58)
+
+with open("18.txt") as finput:
+    content = finput.read().strip()
+
+for part in solve(content):
+    print(part)

@@ -84,7 +84,8 @@ def solve(content: str) -> Iterator[int]:
             return
 
 
-test_content = """$ cd /
+test_content = """\
+$ cd /
 $ ls
 dir a
 14848514 b.txt
