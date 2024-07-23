@@ -53,5 +53,6 @@ def solve(X: int, Y: int, urdl: str) -> int | None:
 
     return None
 
+
 n = solve(X, Y, urdl)
 print(n if n is not None else "not possible")
