@@ -5,8 +5,8 @@ def part1(content: str) -> int:
         complex(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c.isalpha()
     }
 
-    portal_cache = {}
-    portal_map = {}
+    portal_cache: dict[str, tuple[complex, complex]] = {}
+    portal_map: dict[complex, complex] = {}
 
     for pos, letter in portal_labels.items():
         for d in (1, -1, 1j, -1j):
@@ -25,7 +25,7 @@ def part1(content: str) -> int:
                     else:
                         portal_cache[label] = pos, pos + d
 
-    pool = [(start,)]
+    pool: list[tuple[complex, ...]] = [(start,)]
     best_path = tuple(paths)
 
     while pool:

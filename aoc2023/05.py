@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from itertools import count
-from typing import Callable
 
 content = """\
 seeds: 79 14 55 13
@@ -177,11 +177,7 @@ for location in count():
     if check_seed(
         soil2seed(
             fertilizer2soil(
-                water2fertilizer(
-                    light2water(
-                        temperature2light(humidity2temperature(location2humidity(location)))
-                    )
-                )
+                water2fertilizer(light2water(temperature2light(humidity2temperature(location2humidity(location)))))
             )
         )
     ):

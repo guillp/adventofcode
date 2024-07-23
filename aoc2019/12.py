@@ -1,9 +1,10 @@
 import math
 import re
+from collections.abc import Iterator
 from itertools import combinations
 
 
-def solve(content: str, steps: int = 1000) -> tuple[int, int | None]:
+def solve(content: str, steps: int = 1000) -> Iterator[int]:
     pos = [
         [int(x), int(y), int(z)] for x, y, z in re.findall(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", content, re.MULTILINE)
     ]
@@ -41,7 +42,7 @@ def solve(content: str, steps: int = 1000) -> tuple[int, int | None]:
                         loops[axis] = step
 
                 if None not in loops:
-                    yield math.lcm(*loops)
+                    yield math.lcm(*loops) # type: ignore[arg-type]
                     return
 
 

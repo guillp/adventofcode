@@ -65,12 +65,12 @@ class Computer:
     def stop(self) -> None:
         raise StopIteration()
 
-    def get_instruction(self) -> tuple[int, str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
         instruction = f"{self.instructions[pointer]:05d}"
         assert not instruction.startswith("-")
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         assert "-" not in modes
         return pointer, opcode, modes
@@ -123,6 +123,7 @@ class Computer:
         except OutputSignal as out:
             return out.value
         except StopIteration as out:
+            assert isinstance(out.value, int)
             return out.value
 
     def next_output(self) -> int | None:
@@ -149,21 +150,17 @@ class Computer:
         history = ""
         while True:
             c = self.next_output()
+            assert c is not None, "Prompt not found!"
             history += chr(c)
             if history.endswith(prompt):
                 return history
 
-    def run_until_big_int(self) -> str:
-        history = ""
+    def run_until_big_int(self) -> int:
         while True:
-            try:
-                c = self.next_output()
-                if c > 128:
-                    return c
-                else:
-                    history += chr(c)
-            except StopIteration:
-                return history
+            c = self.next_output()
+            assert c is not None, "Big int not found!"
+            if c > 128:
+                return c
 
     def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"

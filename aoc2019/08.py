@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 
-def solve(content: str) -> Iterator[int]:
+def solve(content: str) -> Iterator[int|str]:
     WIDTH = 25
     HEIGHT = 6
     LAYER_SIZE = WIDTH * HEIGHT
@@ -13,7 +13,7 @@ def solve(content: str) -> Iterator[int]:
     check = min(layers, key=lambda l: l.count("0"))
     yield check.count("1") * check.count("2")
 
-    BLACK, WHITE, TRANSPARENT = "012"
+    BLACK, TRANSPARENT = "0", "2"
 
     image = [next(p for p in stack if p != TRANSPARENT) for stack in zip(*layers)]
     for y in range(HEIGHT):

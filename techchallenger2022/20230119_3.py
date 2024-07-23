@@ -37,7 +37,7 @@ def solve(X: int, Y: int, urdl: str) -> int | None:
 
     # avoid cases where it is impossible to reach target
     if dx >= 0 > X or dy >= 0 > Y or dx <= 0 < X or dy <= 0 < Y:
-        return
+        return None
 
     # for each step of the pattern, check how many more whole loops are needed to reach the target
     for i, (x, y) in diffs.items():
@@ -51,6 +51,7 @@ def solve(X: int, Y: int, urdl: str) -> int | None:
             # otherwise we need N loops plus i steps of the pattern
             return N * len(urdl) + i
 
+    return None
 
 n = solve(X, Y, urdl)
 print(n if n is not None else "not possible")

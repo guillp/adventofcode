@@ -39,10 +39,10 @@ class Computer:
         else:
             assert False, f"Unknown mode {mode}"
 
-    def get_instruction(self) -> tuple[str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[str, tuple[ParamMode, ...]]:
         instruction = f"{self.instructions[self.pointer]:05d}"
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         return opcode, modes
 

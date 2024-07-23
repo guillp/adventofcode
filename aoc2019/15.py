@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from enum import Enum
 
 
@@ -52,12 +53,12 @@ class Computer:
     def stop(self) -> None:
         raise StopIteration()
 
-    def get_instruction(self) -> tuple[int, str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
         instruction = f"{self.instructions[pointer]:05d}"
         assert not instruction.startswith("-")
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         assert "-" not in modes
         return pointer, opcode, modes
@@ -127,9 +128,6 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-with open("15.txt") as f:
-    content = f.read()
-computer = Computer(content)
 
 EMPTY = "."
 WALL = "#"
@@ -151,9 +149,6 @@ HIT_WALL = 0
 MOVED = 1
 FOUND_OXYGEN = 2
 
-grid = {0: EMPTY}
-
-
 def print_grid(grid: dict[complex, str], pos: complex) -> None:
     x_min = int(min(p.real for p in grid))
     x_max = int(max(p.real for p in grid))
@@ -168,78 +163,90 @@ def print_grid(grid: dict[complex, str], pos: complex) -> None:
             )
         )
 
+def solve(content: str) -> Iterator[int]:
+    computer = Computer(content)
+    grid: dict[complex, str] = {0: EMPTY}
 
-pos = 0
-path = [0]
-best_path = None
-while True:
-    # explore unknown directions
-    for direction in (NORTH, EAST, SOUTH, WEST):
-        if grid.get(pos + direction) is None:
-            output = computer.run(
-                {
-                    NORTH: MOVE_NORTH,
-                    SOUTH: MOVE_SOUTH,
-                    WEST: MOVE_WEST,
-                    EAST: MOVE_EAST,
-                }[direction]
-            )
-            if output == HIT_WALL:
-                grid[pos + direction] = WALL
-            else:
-                grid[pos + direction] = {MOVED: EMPTY, FOUND_OXYGEN: OXYGEN}[output]
-                pos += direction
-                path.append(pos)
-                if output == FOUND_OXYGEN and (best_path is None or len(path) < len(best_path)):
-                    best_path = list(path)
-            break
+    pos = 0j
+    path: tuple[complex, ...] = (0j,)
+    best_path: list[complex] | None = None
+    while True:
+        # explore unknown directions
+        for direction in (NORTH, EAST, SOUTH, WEST):
+            if grid.get(pos + direction) is None:
+                output = computer.run(
+                    {
+                        NORTH: MOVE_NORTH,
+                        SOUTH: MOVE_SOUTH,
+                        WEST: MOVE_WEST,
+                        EAST: MOVE_EAST,
+                    }[direction]
+                )
+                if output == HIT_WALL:
+                    grid[pos + direction] = WALL
+                else:
+                    grid[pos + direction] = {MOVED: EMPTY, FOUND_OXYGEN: OXYGEN}[output]
+                    pos += direction
+                    path += (pos,)
+                    if output == FOUND_OXYGEN and (best_path is None or len(path) < len(best_path)):
+                        best_path = list(path)
+                break
 
-    else:
-        # if no adjacent area to explore, backtrack to previous location
-        if len(path) == 1:
-            break
-        last_step = path.pop(-1) - (path[-1] if path else 0)
-        output = computer.run({NORTH: MOVE_SOUTH, SOUTH: MOVE_NORTH, EAST: MOVE_WEST, WEST: MOVE_EAST}[last_step])
-        assert output == MOVED
-        pos -= last_step
-
-print_grid(grid, pos)
-oxygen_location = next(p for p, v in grid.items() if v == OXYGEN)
-
-
-# try to enhance the best path (not necessary in my case since there is a single path)
-pool = [(0,)]
-while pool:
-    pool.sort(key=len)
-    path = pool.pop()
-    pos = path[-1]
-
-    if len(path) >= len(best_path):
-        continue
-
-    for direction in (NORTH, SOUTH, EAST, WEST):
-        if grid[pos + direction] == WALL or pos + direction in path:
-            continue
-        elif grid[pos + direction] == OXYGEN:
-            if len(path) + 2 < len(best_path):
-                best_path = path + (pos + direction,)
-                print(len(best_path))
         else:
-            pool.append(path + (pos + direction,))
+            # if no adjacent area to explore, backtrack to previous location
+            if len(path) == 1:
+                break
+            last_step = path[-1] - (path[-2] if path else 0)
+            path = path[:-1]
+            output = computer.run({NORTH: MOVE_SOUTH, SOUTH: MOVE_NORTH, EAST: MOVE_WEST, WEST: MOVE_EAST}[last_step])
+            assert output == MOVED
+            pos -= last_step
 
-print(len(best_path) - 1)
+    #print_grid(grid, pos)
+    oxygen_location = next(p for p, v in grid.items() if v == OXYGEN)
 
-# Flood fill the grid
-oxygen = {oxygen_location}
-i = 0
-while EMPTY in grid.values():
-    new_oxygen = set()
-    for o in oxygen:
+    assert best_path is not None, "Best track not found!"
+    # try to enhance the best path (not necessary in my case since there is a single path)
+    pool: list[tuple[complex, ...]] = [(0,)]
+    while pool:
+        pool.sort(key=len)
+        path = pool.pop()
+        pos = path[-1]
+
+        if len(path) >= len(best_path):
+            continue
+
         for direction in (NORTH, SOUTH, EAST, WEST):
-            if grid[o + direction] == EMPTY:
-                grid[o + direction] = OXYGEN
-                new_oxygen.add(o + direction)
-    i += 1
-    oxygen = new_oxygen
+            if grid[pos + direction] == WALL or pos + direction in path:
+                continue
+            elif grid[pos + direction] == OXYGEN:
+                if len(path) + 2 < len(best_path):
+                    best_path = list(path + (pos + direction,))
+                    print(len(best_path))
+            else:
+                pool.append(path + (pos + direction,))
 
-print(i)
+    yield len(best_path) - 1
+
+    # Flood fill the grid
+    oxygen = {oxygen_location}
+    part2 = 0
+    while EMPTY in grid.values():
+        new_oxygen = set()
+        for o in oxygen:
+            for direction in (NORTH, SOUTH, EAST, WEST):
+                if grid[o + direction] == EMPTY:
+                    grid[o + direction] = OXYGEN
+                    new_oxygen.add(o + direction)
+        part2 += 1
+        oxygen = new_oxygen
+
+    yield part2
+
+
+
+with open("15.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)

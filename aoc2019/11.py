@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from enum import Enum
 
 BLACK = 0
@@ -45,10 +46,10 @@ class Computer:
         else:
             assert False, f"Unknown mode {mode}"
 
-    def get_instruction(self) -> tuple[str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[str, tuple[ParamMode, ...]]:
         instruction = f"{self.instructions[self.pointer]:05d}"
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         return opcode, modes
 
@@ -117,7 +118,7 @@ class Computer:
 
 def part1(content: str) -> int:
     pos, heading = 0j, 1j
-    hull = {}
+    hull: dict[complex, int] = {}
     computer = Computer(content)
     while True:
         try:
@@ -132,9 +133,9 @@ def part1(content: str) -> int:
     return len(hull)
 
 
-def part2(content: str) -> None:
-    pos, heading = 0, -1j
-    hull2 = {}
+def part2(content: str) -> Iterator[str]:
+    pos, heading = 0j, -1j
+    hull2: dict[complex, int] = {}
     computer = Computer(content)
     while True:
         try:
@@ -152,11 +153,12 @@ def part2(content: str) -> None:
     y_max = max(int(pos.imag) for pos in hull2)
 
     for y in range(y_min, y_max + 1):
-        print(" ".join(" " if hull2.get(complex(x, y), BLACK) == BLACK else "#" for x in range(x_min, x_max + 1)))
+        yield " ".join(" " if hull2.get(complex(x, y), BLACK) == BLACK else "#" for x in range(x_min, x_max + 1))
 
 
 with open("11.txt") as f:
     content = f.read()
 
 print(part1(content))
-part2(content)
+for part in part2(content):
+    print(part)

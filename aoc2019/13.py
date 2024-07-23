@@ -52,12 +52,12 @@ class Computer:
     def stop(self) -> None:
         raise StopIteration()
 
-    def get_instruction(self) -> tuple[int, str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
         instruction = f"{self.instructions[pointer]:05d}"
         assert not instruction.startswith("-")
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         assert "-" not in modes
         return pointer, opcode, modes

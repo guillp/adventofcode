@@ -7,8 +7,8 @@ def part1(content: str, N: int = 10007, card: int = 2019) -> int:
         match line.split():
             case "deal", "into", "new", "stack":
                 card = N - card - 1
-            case "cut", _ as pos:
-                pos = int(pos) % N
+            case "cut", _ as pos_:
+                pos = int(pos_) % N
                 card -= pos if card >= pos else pos - N
             case "deal", "with", "increment", _ as inc:
                 card = (card * int(inc)) % N
