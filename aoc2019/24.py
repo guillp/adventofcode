@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from itertools import product
 
 
-def print_grid(grid: frozenset[tuple[int, int]]) -> None:
+def print_grid(grid: set[tuple[int, int]]) -> None:
     for y in range(5):
         print("".join("#" if (x, y) in grid else "." for x in range(5)))
     print()
@@ -104,26 +104,24 @@ assert set(recursive_neighbors(0, 4, 1)) == {  # U
 
 
 def part2(content: str, minutes: int = 200) -> int:
-    grid = defaultdict(
+    grid: dict[int, set[tuple[int, int]]] = defaultdict(
         set,
         {0: {(x, y) for y, line in enumerate(content.strip().splitlines()) for x, c in enumerate(line) if c == "#"}},
     )
 
-    def step(grid: frozenset[complex]) -> frozenset[complex]:
-        new_grid = defaultdict(set)
+    def step(grid: dict[int, set[tuple[int, int]]]) -> dict[int, set[tuple[int, int]]]:
+        new_grid: dict[int, set[tuple[int, int]]] = defaultdict(set)
         for z in range(min(grid) - 1, max(grid) + 2):
             bugs = grid[z]
             for x, y in product(range(5), repeat=2):
                 nb = sum((xn, yn) in grid[zn] for xn, yn, zn in recursive_neighbors(x, y, z))
 
-                if (x, y) in bugs and nb == 1:
-                    new_grid[z].add((x, y))
-                elif (x, y) not in bugs and nb in (1, 2):
+                if ((x, y) in bugs and nb == 1) or ((x, y) not in bugs and nb in (1, 2)):
                     new_grid[z].add((x, y))
 
         return new_grid
 
-    for i in range(minutes):
+    for _ in range(minutes):
         grid = step(grid)
 
     for layer in sorted(grid):
