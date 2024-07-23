@@ -1,5 +1,4 @@
 import re
-from operator import itemgetter
 
 test_content = """\
 1,0,1~1,2,1
@@ -15,11 +14,11 @@ with open("22.txt") as f:
     content = f.read()
 
 
-def solve(content: str) -> int:
+def solve(content: str) -> tuple[int, int]:
     # convert each brick to a set of cubes
     bricks = sorted(
         tuple(
-            (z, x, y) # z first so bricks are sorted by initial altitude
+            (z, x, y)  # z first so bricks are sorted by initial altitude
             for x in range(x1, x2 + 1)
             for y in range(y1, y2 + 1)
             for z in range(z1, z2 + 1)

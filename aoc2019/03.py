@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 
 def wire(path: str) -> dict[complex, int]:
-    wire = {}
+    wire: dict[complex, int] = {}
     pos = 0j
     steps = 0
     for step in path.split(","):

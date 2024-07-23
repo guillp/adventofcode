@@ -98,7 +98,7 @@ class Computer:
 
 
 def part1(content: str) -> int:
-    res: tuple[int, tuple[int, ...]] = (0, None)
+    res: tuple[int, tuple[int, ...]] = (0, ())
     for phases in permutations(range(5)):
         n = 0
         for phase in phases:
@@ -110,7 +110,7 @@ def part1(content: str) -> int:
 
 
 def part2(content: str) -> int:
-    res = (0, None)
+    res: tuple[int, tuple[int, ...]] = (0, ())
     for phases in permutations(range(5, 10)):
         n = 0
         computers = [Computer(content, phase) for phase in phases]

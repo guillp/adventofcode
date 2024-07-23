@@ -63,12 +63,12 @@ class Computer:
     def stop(self) -> None:
         raise StopIteration()
 
-    def get_instruction(self) -> tuple[int, str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
         instruction = f"{self.instructions[pointer]:05d}"
         assert not instruction.startswith("-")
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         assert "-" not in modes
         return pointer, opcode, modes
@@ -121,6 +121,7 @@ class Computer:
         except OutputSignal as out:
             return out.value
         except StopIteration as out:
+            assert isinstance(out.value, int)
             return out.value
 
     def next_output(self) -> int | None:
@@ -149,7 +150,7 @@ class Computer:
 
 def part1(content: str) -> int:
     computers = [Computer(content, address) for address in range(50)]
-    queues = [[] for _ in range(50)]
+    queues: list[list[int]] = [[] for _ in range(50)]
     while True:
         for i, computer in enumerate(computers):
             try:
@@ -169,9 +170,9 @@ def part1(content: str) -> int:
 
 def part2(content: str) -> int:
     computers = [Computer(content, address) for address in range(50)]
-    queues = [[] for _ in range(50)]
+    queues: list[list[int]] = [[] for _ in range(50)]
     nat: tuple[int, int] | None = None
-    nat_history = []
+    nat_history: list[int] = []
 
     while True:
         if nat is not None and all(computer.waiting_for_input for computer in computers):

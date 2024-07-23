@@ -56,12 +56,12 @@ class Computer:
     def stop(self) -> None:
         raise StopIteration()
 
-    def get_instruction(self) -> tuple[int, str, tuple[str, ...]]:
+    def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
         instruction = f"{self.instructions[pointer]:05d}"
         assert not instruction.startswith("-")
         opcode = instruction[3:]
-        modes = tuple(x for x in instruction[:3][::-1])
+        modes = tuple(ParamMode(x) for x in instruction[:3][::-1])
         self.pointer += 1
         assert "-" not in modes
         return pointer, opcode, modes
@@ -131,9 +131,6 @@ class Computer:
             except InputSignal:
                 return output
 
-    def run_until_input(self, *i: int) -> list[int]:
-        self.inputs.extend(i)
-
     def __repr__(self) -> str:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
@@ -166,43 +163,35 @@ def solve(content: str) -> Iterator[int]:
     TURN_RIGHT = "R"
     TURN_LEFT = "L"
 
-    def dfs() -> tuple[str | int]:
+    def dfs() -> tuple[str | int, ...]:
         positions = next(p for p, c in grid.items() if c in "^v<>")
-        directions = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}.get(grid[positions])
-        pool = [(positions, directions, set(grid) - {positions}, ())]
+        direction = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}[grid[positions]]
+        pool: list[tuple[complex, complex, set[complex], tuple[str|int, ...]]] = [(positions, direction, set(grid) - {positions}, ())]
         while pool:
             pool.sort(key=lambda x: len(x[2]))
-            positions, directions, remaining, path = pool.pop()
+            positions, direction, remaining, path = pool.pop()
             if remaining:
                 for action, turn in {TURN_RIGHT: 1j, TURN_LEFT: -1j}.items():
-                    if grid.get(positions + turn * directions) == "#" and positions + turn * directions in remaining:
-                        pool.append((positions, turn * directions, remaining, path + (action,)))
+                    if grid.get(positions + turn * direction) == "#" and positions + turn * direction in remaining:
+                        pool.append((positions, turn * direction, remaining, path + (action,)))
 
                 steps = 0
                 new_remaining = set(remaining)
-                while grid.get(positions + steps * directions + directions) == "#":
+                while grid.get(positions + steps * direction + direction) == "#":
                     steps += 1
-                    new_remaining -= {positions + steps * directions}
-                    if grid[positions + steps * directions] in intersections:
-                        pool.append(
-                            (
-                                positions + steps * directions,
-                                directions,
-                                new_remaining,
-                                path + (steps,),
-                            )
-                        )
+                    new_remaining -= {positions + steps * direction}
                 if steps > 0:
                     pool.append(
                         (
-                            positions + steps * directions,
-                            directions,
+                            positions + steps * direction,
+                            direction,
                             new_remaining,
                             path + (steps,),
                         )
                     )
             else:
                 return path
+        assert False, "Solution not found!"
 
     path = ",".join(str(x) for x in dfs())
     print(path)

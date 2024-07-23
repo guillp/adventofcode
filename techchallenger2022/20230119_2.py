@@ -5,8 +5,8 @@ m = int(input())
 squads = [int(input()) for _ in range(m)]
 
 
-def hire(n: int, squads: list[int]) -> tuple[int, tuple[int]]:
-    possible_hires = {0: ()}
+def hire(n: int, squads: list[int]) -> tuple[int, tuple[int, ...]]:
+    possible_hires: dict[int, tuple[int, ...]] = {0: ()}
     for squad in squads:
         for total, hired in list(possible_hires.items()):
             possible_hires[total + squad] = hired + (squad,)

@@ -1,8 +1,8 @@
-from collections.abc import Iterable
+from collections.abc import Iterator
 from functools import cache
 
 
-def solve(content: str) -> Iterable[int]:
+def solve(content: str) -> Iterator[int]:
     G: dict[str, str] = {}
     for line in content.splitlines():
         a, b = line.split(")")
@@ -22,11 +22,11 @@ def solve(content: str) -> Iterable[int]:
     if "YOU" not in G:
         return
 
-    you_to_com = ("YOU",)
+    you_to_com: tuple[str, ...] = ("YOU",)
     while you_to_com[0] != "COM":
         you_to_com = G[you_to_com[0]], *you_to_com
 
-    san_to_com = ("SAN",)
+    san_to_com: tuple[str, ...] = ("SAN",)
     while san_to_com[0] != "COM":
         san_to_com = G[san_to_com[0]], *san_to_com
 
