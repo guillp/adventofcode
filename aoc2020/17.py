@@ -1,16 +1,8 @@
+from collections.abc import Iterable
 from functools import cache
-from typing import Iterable
-
-content = """.#.
-..#
-###
-"""
-
-with open("17.txt") as f:
-    content = f.read()
 
 
-def neighbors(x: int, y: int, z: int):
+def neighbors(x: int, y: int, z: int) -> Iterable[tuple[int, int, int]]:
     return (
         (x + xd, y + yd, z + zd)
         for xd in (-1, 0, 1)
@@ -20,7 +12,7 @@ def neighbors(x: int, y: int, z: int):
     )
 
 
-def surround(cubes: set[tuple[int, int, int]]) -> Iterable[tuple[int, int, int]]:
+def surround(cubes: set[tuple[int, int, int]]) -> Iterable[tuple[int, int, int, bool]]:
     min_x = max_x = min_y = max_y = min_z = max_z = 0
     for x, y, z in cubes:
         min_x = min(min_x, x)
@@ -35,32 +27,27 @@ def surround(cubes: set[tuple[int, int, int]]) -> Iterable[tuple[int, int, int]]
                 yield x, y, z, (x, y, z) in cubes
 
 
-@cache
-def cubes_at_cycle(cycle: int) -> set[tuple[int, int, int]]:
-    if cycle == 0:
-        return {
-            (x, y, 0)
-            for y, line in enumerate(content.splitlines())
-            for x, c in enumerate(line)
-            if c == "#"
-        }
-    previous_cubes = cubes_at_cycle(cycle - 1)
-    new_cubes = set()
-    for x, y, z, state in surround(previous_cubes):
-        if state:
-            if sum(nb in previous_cubes for nb in neighbors(x, y, z)) in (2, 3):
-                new_cubes.add((x, y, z))
-        else:
-            if sum(nb in previous_cubes for nb in neighbors(x, y, z)) == 3:
-                new_cubes.add((x, y, z))
+def part1(content: str) -> int:
+    @cache
+    def cubes_at_cycle(cycle: int) -> set[tuple[int, int, int]]:
+        if cycle == 0:
+            return {(x, y, 0) for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c == "#"}
+        previous_cubes = cubes_at_cycle(cycle - 1)
+        new_cubes = set()
+        for x, y, z, state in surround(previous_cubes):
+            if state:
+                if sum(nb in previous_cubes for nb in neighbors(x, y, z)) in (2, 3):
+                    new_cubes.add((x, y, z))
+            else:
+                if sum(nb in previous_cubes for nb in neighbors(x, y, z)) == 3:
+                    new_cubes.add((x, y, z))
 
-    return new_cubes
+        return new_cubes
+
+    return len(cubes_at_cycle(6))
 
 
-print(len(cubes_at_cycle(6)))
-
-
-def hyperneighbors(w: int, x: int, y: int, z: int):
+def hyperneighbors(w: int, x: int, y: int, z: int) -> Iterable[tuple[int, int, int, int]]:
     return (
         (w + wd, x + xd, y + yd, z + zd)
         for wd in (-1, 0, 1)
@@ -71,9 +58,7 @@ def hyperneighbors(w: int, x: int, y: int, z: int):
     )
 
 
-def hypersurround(
-    cubes: set[tuple[int, int, int, int]]
-) -> Iterable[tuple[int, int, int]]:
+def hypersurround(cubes: set[tuple[int, int, int, int]]) -> Iterable[tuple[int, int, int, int, bool]]:
     min_w = max_w = min_x = max_x = min_y = max_y = min_z = max_z = 0
     for w, x, y, z in cubes:
         min_w = min(min_w, w)
@@ -91,26 +76,40 @@ def hypersurround(
                     yield w, x, y, z, (w, x, y, z) in cubes
 
 
-@cache
-def hypercubes_at_cycle(cycle: int) -> set[tuple[int, int, int, int]]:
-    if cycle == 0:
-        return {
-            (0, x, y, 0)
-            for y, line in enumerate(content.splitlines())
-            for x, c in enumerate(line)
-            if c == "#"
-        }
-    previous_cubes = hypercubes_at_cycle(cycle - 1)
-    new_cubes = set()
-    for w, x, y, z, state in hypersurround(previous_cubes):
-        if state:
-            if sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) in (2, 3):
-                new_cubes.add((w, x, y, z))
-        else:
-            if sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) == 3:
-                new_cubes.add((w, x, y, z))
+def part2(content: str) -> int:
+    @cache
+    def hypercubes_at_cycle(cycle: int) -> set[tuple[int, int, int, int]]:
+        if cycle == 0:
+            return {(0, x, y, 0) for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c == "#"}
+        previous_cubes = hypercubes_at_cycle(cycle - 1)
+        new_cubes = set()
+        for w, x, y, z, state in hypersurround(previous_cubes):
+            if state:
+                if sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) in (
+                    2,
+                    3,
+                ):
+                    new_cubes.add((w, x, y, z))
+            else:
+                if sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) == 3:
+                    new_cubes.add((w, x, y, z))
 
-    return new_cubes
+        return new_cubes
+
+    return len(hypercubes_at_cycle(6))
 
 
-print(len(hypercubes_at_cycle(6)))
+test_content = """\
+.#.
+..#
+###
+"""
+
+assert part1(test_content) == 112
+assert part2(test_content) == 848
+
+with open("17.txt") as f:
+    content = f.read()
+
+print(part1(content))
+print(part2(content))
