@@ -34,10 +34,12 @@ rocks = [
 
 
 def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None) -> None:
-    top_display = int(min(
-        min(pos.imag for pos in chamber),
-        min(pos.imag for pos in rock) if rock else 1,
-    ))
+    top_display = int(
+        min(
+            min(pos.imag for pos in chamber),
+            min(pos.imag for pos in rock) if rock else 1,
+        )
+    )
     for y in range(top_display, 50):
         print(
             "".join(
@@ -99,7 +101,7 @@ def solve(content: str, n: int) -> int:
 test_content = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
 
 assert solve(test_content, 2022) == 3068
-#assert solve(test_content, 1_000_000_000_000) == 1514285714288  #TODO: fix this
+# assert solve(test_content, 1_000_000_000_000) == 1514285714288  #TODO: fix this
 
 with open("17.txt") as f:
     content = f.read().strip()

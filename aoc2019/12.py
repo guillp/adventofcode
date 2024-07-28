@@ -42,7 +42,7 @@ def solve(content: str, steps: int = 1000) -> Iterator[int]:
                         loops[axis] = step
 
                 if None not in loops:
-                    yield math.lcm(*loops) # type: ignore[arg-type]
+                    yield math.lcm(*loops)  # type: ignore[arg-type]
                     return
 
 

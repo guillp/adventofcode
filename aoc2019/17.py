@@ -166,7 +166,9 @@ def solve(content: str) -> Iterator[int]:
     def dfs() -> tuple[str | int, ...]:
         positions = next(p for p, c in grid.items() if c in "^v<>")
         direction = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}[grid[positions]]
-        pool: list[tuple[complex, complex, set[complex], tuple[str|int, ...]]] = [(positions, direction, set(grid) - {positions}, ())]
+        pool: list[tuple[complex, complex, set[complex], tuple[str | int, ...]]] = [
+            (positions, direction, set(grid) - {positions}, ())
+        ]
         while pool:
             pool.sort(key=lambda x: len(x[2]))
             positions, direction, remaining, path = pool.pop()

@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 
-def solve(content: str) -> Iterator[int|str]:
+def solve(content: str) -> Iterator[int | str]:
     WIDTH = 25
     HEIGHT = 6
     LAYER_SIZE = WIDTH * HEIGHT
