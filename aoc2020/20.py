@@ -31,12 +31,7 @@ class Tile:
     def parse(cls, s: str) -> "Tile":
         lines = s.splitlines()
         tile_id = int(lines.pop(0).strip(":").split()[1])
-        pixels = frozenset(
-            complex(x, y)
-            for y, line in enumerate(lines)
-            for x, c in enumerate(line)
-            if c == "#"
-        )
+        pixels = frozenset(complex(x, y) for y, line in enumerate(lines) for x, c in enumerate(line) if c == "#")
         return Tile(tile_id, pixels)
 
     @cache
@@ -46,13 +41,9 @@ class Tile:
         if rotation == Rotation.CLOCKWISE:
             pixels = frozenset(coord * 1j + self.size - 1 for coord in self.pixels)
         elif rotation == Rotation.HALFTURN:
-            pixels = frozenset(
-                coord * -1 + (self.size - 1) * (1 + 1j) for coord in self.pixels
-            )
+            pixels = frozenset(coord * -1 + (self.size - 1) * (1 + 1j) for coord in self.pixels)
         elif rotation == Rotation.ANTICLOCKWISE:
-            pixels = frozenset(
-                coord * -1j + (self.size - 1) * 1j for coord in self.pixels
-            )
+            pixels = frozenset(coord * -1j + (self.size - 1) * 1j for coord in self.pixels)
 
         return Tile(
             self.id,
@@ -64,13 +55,9 @@ class Tile:
     @cache
     def flip(self, horizontal: bool = False, vertical: bool = False) -> "Tile":
         if vertical:
-            pixels = frozenset(
-                complex(self.size - pos.real - 1, pos.imag) for pos in self.pixels
-            )
+            pixels = frozenset(complex(self.size - pos.real - 1, pos.imag) for pos in self.pixels)
         elif horizontal:
-            pixels = frozenset(
-                complex(pos.real, self.size - pos.imag - 1) for pos in self.pixels
-            )
+            pixels = frozenset(complex(pos.real, self.size - pos.imag - 1) for pos in self.pixels)
         else:
             pixels = frozenset(self.pixels)
         return Tile(
@@ -83,23 +70,13 @@ class Tile:
     @cache
     def border(self, side: Direction) -> str:
         if side == Direction.UP:
-            return "".join(
-                "#" if complex(x, 0) in self.pixels else "." for x in range(self.size)
-            )
+            return "".join("#" if complex(x, 0) in self.pixels else "." for x in range(self.size))
         if side == Direction.RIGHT:
-            return "".join(
-                "#" if complex(self.size - 1, y) in self.pixels else "."
-                for y in range(self.size)
-            )
+            return "".join("#" if complex(self.size - 1, y) in self.pixels else "." for y in range(self.size))
         if side == Direction.DOWN:
-            return "".join(
-                "#" if complex(x, self.size - 1) in self.pixels else "."
-                for x in range(self.size)
-            )
+            return "".join("#" if complex(x, self.size - 1) in self.pixels else "." for x in range(self.size))
         if side == Direction.LEFT:
-            return "".join(
-                "#" if complex(0, y) in self.pixels else "." for y in range(self.size)
-            )
+            return "".join("#" if complex(0, y) in self.pixels else "." for y in range(self.size))
 
     def __repr__(self) -> str:
         return f"Tile {self.id}{self.transformations}"
@@ -109,13 +86,7 @@ class Tile:
             yield tuple(complex(x, y) in self.pixels for x in range(0, self.size))
 
     def __str__(self) -> str:
-        return (
-            repr(self)
-            + ":\n"
-            + "\n".join(
-                "".join("#" if pixel else "." for pixel in line) for line in self
-            )
-        )
+        return repr(self) + ":\n" + "\n".join("".join("#" if pixel else "." for pixel in line) for line in self)
 
 
 def solve(content: str) -> Iterator[int]:
@@ -164,9 +135,7 @@ def solve(content: str) -> Iterator[int]:
             for x in range(IMAGE_SIZE):
                 if x == y == 0:
                     tile = corners[0]
-                    while next_tile(tile, Direction.UP) or next_tile(
-                        tile, Direction.LEFT
-                    ):
+                    while next_tile(tile, Direction.UP) or next_tile(tile, Direction.LEFT):
                         tile = tile.rotate(Rotation.CLOCKWISE)
                 elif x == 0:
                     tile = next_tile(grid[x, y - 1], Direction.DOWN)
@@ -182,8 +151,7 @@ def solve(content: str) -> Iterator[int]:
                 for x in range(IMAGE_SIZE)
                 for y in range(IMAGE_SIZE)
                 for pos in grid[x, y].pixels
-                if pos.real not in (0, TILE_SIZE - 1)
-                and pos.imag not in (0, TILE_SIZE - 1)
+                if pos.real not in (0, TILE_SIZE - 1) and pos.imag not in (0, TILE_SIZE - 1)
             ),
             size=(TILE_SIZE - 2) * IMAGE_SIZE,
         )
@@ -201,9 +169,7 @@ def solve(content: str) -> Iterator[int]:
         ):
             for hflip, vflip in ((False, False), (True, False), (False, True)):
                 lines = list(image.rotate(rotation).flip(hflip, vflip))
-                for y, (line1, line2, line3) in enumerate(
-                    zip(lines, lines[1:], lines[2:])
-                ):
+                for y, (line1, line2, line3) in enumerate(zip(lines, lines[1:], lines[2:])):
                     for x in range(0, image.size - 20):
                         if all(
                             line1[x + 18 : x + 19]

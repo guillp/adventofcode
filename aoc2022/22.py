@@ -103,7 +103,6 @@ def follow_path(
 
     heading = UP
     for turn, steps in re.findall(r"([RL])(\d+)", "R" + instructions):
-
         if turn == "R":
             heading *= 1j
         else:

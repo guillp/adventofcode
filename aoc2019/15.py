@@ -128,7 +128,6 @@ class Computer:
         return f"{self.pointer} -> {self.instructions[self.pointer]}"
 
 
-
 EMPTY = "."
 WALL = "#"
 DROID = "D"
@@ -149,6 +148,7 @@ HIT_WALL = 0
 MOVED = 1
 FOUND_OXYGEN = 2
 
+
 def print_grid(grid: dict[complex, str], pos: complex) -> None:
     x_min = int(min(p.real for p in grid))
     x_max = int(max(p.real for p in grid))
@@ -162,6 +162,7 @@ def print_grid(grid: dict[complex, str], pos: complex) -> None:
                 for x in range(x_min, x_max + 1)
             )
         )
+
 
 def solve(content: str) -> Iterator[int]:
     computer = Computer(content)
@@ -202,7 +203,7 @@ def solve(content: str) -> Iterator[int]:
             assert output == MOVED
             pos -= last_step
 
-    #print_grid(grid, pos)
+    # print_grid(grid, pos)
     oxygen_location = next(p for p, v in grid.items() if v == OXYGEN)
 
     assert best_path is not None, "Best track not found!"
@@ -242,7 +243,6 @@ def solve(content: str) -> Iterator[int]:
         oxygen = new_oxygen
 
     yield part2
-
 
 
 with open("15.txt") as f:

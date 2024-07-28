@@ -28,9 +28,7 @@ def score(deck: list[int]) -> int:
 
 
 def part1(content: str) -> int:
-    deck1, deck2 = (
-        list(int(x) for x in lines.splitlines()[1:]) for lines in content.split("\n\n")
-    )
+    deck1, deck2 = (list(int(x) for x in lines.splitlines()[1:]) for lines in content.split("\n\n"))
     while deck1 and deck2:
         card1 = deck1.pop(0)
         card2 = deck2.pop(0)
@@ -42,9 +40,7 @@ def part1(content: str) -> int:
 
 
 def part2(content: str) -> int:
-    deck1, deck2 = (
-        list(int(x) for x in lines.splitlines()[1:]) for lines in content.split("\n\n")
-    )
+    deck1, deck2 = (list(int(x) for x in lines.splitlines()[1:]) for lines in content.split("\n\n"))
     game_part2(deck1, deck2)
     return score(deck1 or deck2)
 

@@ -35,13 +35,11 @@ def part1(content: str) -> str:
     return "".join(str(x) for x in cups[:index1] + cups[index1 + 1 :])
 
 
-
 def part2(content: str) -> int:
     init_cups = tuple(int(x) for x in content)
     cups = crab(init_cups + tuple(range(max(init_cups) + 1, 1000000 + 1)), 10000000)
     index1 = cups.index(1)
     return cups[index1 + 1] * cups[index1 + 2]
-
 
 
 test_content = "389125467"

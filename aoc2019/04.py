@@ -3,7 +3,7 @@ from collections.abc import Iterator
 
 def solve(content: str) -> Iterator[int]:
     low, high = (int(x) for x in content.split("-"))
-    number_range = range(low, high+1)
+    number_range = range(low, high + 1)
     possible_passwords = set()
     for number in number_range:
         password = str(number)

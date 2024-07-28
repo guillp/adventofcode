@@ -1,12 +1,11 @@
 from collections.abc import Iterator
 
 
-def solve(content: str) -> Iterator[int|str]:
+def solve(content: str) -> Iterator[int | str]:
     def parse() -> Iterator[tuple[set[str], set[str]]]:
         for line in content.splitlines():
             ingredients, allergens = line.rstrip(")").split(" (contains ")
             yield set(ingredients.split()), set(allergens.split(", "))
-
 
     pairs = tuple(parse())
     all_ingredients = set()
@@ -36,7 +35,9 @@ def solve(content: str) -> Iterator[int|str]:
 
     yield ",".join(allergens_map[allergen].pop() for allergen in sorted(allergens_map))
 
-test_content = """mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+
+test_content = """\
+mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
 trh fvjkl sbzzf mxmxvkd (contains dairy)
 sqjhc fvjkl (contains soy)
 sqjhc mxmxvkd sbzzf (contains fish)

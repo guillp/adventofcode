@@ -20,6 +20,7 @@ def solve(content: str) -> int:
 
     return encryption_key
 
+
 with open("25.txt") as f:
     content = f.read()
 
