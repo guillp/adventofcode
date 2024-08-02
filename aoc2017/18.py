@@ -30,58 +30,71 @@ def part1(content: str) -> int:
         cursor += 1
 
 
-class Computer:
-    def __init__(self, pid: int, *instructions: str) -> None:
+class Send(Exception):
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+
+class Part2Computer:
+    def __init__(self, instructions: list[str], p: int) -> None:
         self.instructions = instructions
-        self.cursor = 0
-        self.registers = defaultdict(int)
-        self.registers["p"] = pid
+        self.registers = {"p": p}
         self.queue: deque[int] = deque()
+        self.pointer = 0
+        self.nb_sent = 0
+        self.waiting = False
 
-    def get_value(self, x: str) -> int:
-        return self.registers[x] if x.isalpha() else int(x)
+    def get_value(self, val: str) -> int:
+        if val in self.registers:
+            return self.registers[val]
+        return int(val)
 
-    def next(self, i: int | None = None) -> int | None:
-        if i is not None:
-            self.queue.append(i)
-        while True:
-            match self.instructions[self.cursor].split():
-                case "snd", x:
-                    self.cursor += 1
-                    return self.get_value(x)
-                case "set", x, y:
-                    self.registers[x] = self.get_value(y)
-                case "add", x, y:
-                    self.registers[x] += self.get_value(y)
-                case "mul", x, y:
-                    self.registers[x] *= self.get_value(y)
-                case "mod", x, y:
-                    self.registers[x] %= self.get_value(y)
-                case "rcv", x if self.queue:
+    def process_instruction(self) -> None:
+        instruction = self.instructions[self.pointer]
+        self.pointer += 1
+        match instruction.split():
+            case "jgz", x, y:
+                if self.get_value(x) > 0:
+                    self.pointer += self.get_value(y) - 1
+            case "snd", x:
+                self.nb_sent += 1
+                raise Send(self.get_value(x))
+            case "rcv", x:
+                if len(self.queue) > 0:
                     self.registers[x] = self.queue.popleft()
-                case "rcv", x if len(self.queue) == 0:
-                    return None
-                case "jgz", x, y if self.get_value(x) != 0:
-                    self.cursor += self.get_value(y) - 1
-            self.cursor += 1
+                    self.waiting = False
+                else:
+                    self.waiting = True
+                    self.pointer -= 1
+            case "set", x, y:
+                self.registers[x] = self.get_value(y)
+            case "add", x, y:
+                self.registers[x] += self.get_value(y)
+            case "mul", x, y:
+                self.registers[x] *= self.get_value(y)
+            case "mod", x, y:
+                self.registers[x] %= self.get_value(y)
+            case _:
+                assert False
 
 
 def part2(content: str) -> int:
     instructions = content.splitlines()
-    c0 = Computer(0, *instructions)
-    c1 = Computer(1, *instructions)
 
-    next0: int | None
-    next1: int | None
-    next0 = next1 = None
-    count = 0
-    while True:
-        next1 = c0.next(next0)
-        next0 = c1.next(next1)
-        if next0 is not None:
-            count += 1
-        if next0 is None and next1 is None:
-            return count
+    computer0 = Part2Computer(instructions, p=0)
+    computer1 = Part2Computer(instructions, p=1)
+
+    while not computer0.waiting or not computer1.waiting:
+        try:
+            computer0.process_instruction()
+        except Send as exc:
+            computer1.queue.append(exc.value)
+        try:
+            computer1.process_instruction()
+        except Send as exc:
+            computer0.queue.append(exc.value)
+
+    return computer1.nb_sent
 
 
 test_content1 = """\
