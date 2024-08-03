@@ -1,13 +1,23 @@
 from collections.abc import Iterable, Iterator
+from enum import Enum
 from functools import cache
+
+
+class Direction(complex, Enum):
+    e = -2
+    w = 2
+    ne = -1 - 1j
+    nw = 1 - 1j
+    se = -1 + 1j
+    sw = 1 + 1j
 
 
 def iter_path(path: str) -> Iterable[str]:
     while path:
-        for n in ("nw", "ne", "sw", "se", "e", "w"):
-            if path.startswith(n):
-                yield n
-                path = path.removeprefix(n)
+        for n in Direction:
+            if path.startswith(n.name):
+                yield n.name
+                path = path.removeprefix(n.name)
 
 
 def solve(content: str) -> Iterator[int]:
@@ -15,21 +25,13 @@ def solve(content: str) -> Iterator[int]:
     for line in content.splitlines():
         pos = 0j
         for tile in iter_path(line):
-            pos += {
-                "e": -2,
-                "w": 2,
-                "ne": -1 - 1j,
-                "nw": 1 - 1j,
-                "se": -1 + 1j,
-                "sw": 1 + 1j,
-            }[tile]
+            pos += Direction[tile]
         if pos in black_tiles:
             black_tiles.remove(pos)
         else:
             black_tiles.add(pos)
 
     yield len(black_tiles)
-
 
     @cache
     def tiles_at(day: int) -> set[complex]:
@@ -39,7 +41,8 @@ def solve(content: str) -> Iterator[int]:
         previous_tiles = tiles_at(day - 1)
         new_tiles = set()
         for black_tile in previous_tiles:
-            if 0 < sum(black_tile + direction in previous_tiles for direction in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)) <= 2:
+            nb_adjacent_black_tiles = sum(black_tile + direction in previous_tiles for direction in Direction)
+            if 0 < nb_adjacent_black_tiles <= 2:
                 new_tiles.add(black_tile)
 
         min_real = int(min(pos.real for pos in previous_tiles) - 1)
@@ -54,17 +57,16 @@ def solve(content: str) -> Iterator[int]:
                 tile = complex(real, imag)
                 if tile in previous_tiles:
                     continue
-                if sum(tile + direction in previous_tiles for direction in (-2, 2, -1 - 1j, 1 - 1j, -1 + 1j, 1 + 1j)) == 2:
+                if sum(tile + direction in previous_tiles for direction in Direction) == 2:
                     new_tiles.add(tile)
 
         return new_tiles
 
-
     yield len(tiles_at(100))
 
 
-
-test_content = """sesenwnenenewseeswwswswwnenewsewsw
+test_content = """\
+sesenwnenenewseeswwswswwnenewsewsw
 neeenesenwnwwswnenewnwwsewnenwseswesw
 seswneswswsenwwnwse
 nwnwneseeswswnenewneswwnewseswneseene
