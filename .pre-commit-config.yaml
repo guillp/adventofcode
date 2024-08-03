@@ -31,3 +31,5 @@ repos:
         - --show-error-context
         - --show-column-numbers
         - --explicit-package-bases
+        additional_dependencies:
+            - types-requests
