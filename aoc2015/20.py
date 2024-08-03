@@ -22,4 +22,6 @@ def solve(target: int = 34000000) -> tuple[int, int]:
 
 
 TARGET = 34000000
-print(solve(TARGET))
+
+for part in solve(TARGET):
+    print(part)
