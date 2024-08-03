@@ -53,4 +53,5 @@ assert solve("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$"
 
 with open("20.txt") as f:
     content = f.read()
-print(*solve(content), sep="\n")
+for part in solve(content):
+    print(part)
