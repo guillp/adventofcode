@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Iterator
 from itertools import combinations
 
 n, d = (int(x) for x in input().split())
@@ -12,10 +13,10 @@ for _ in range(n):
 
 
 def dist(a: complex, b: complex) -> float:
-    return ((a - b).real ** 2 + (a - b).imag ** 2) ** .5
+    return ((a - b).real ** 2 + (a - b).imag ** 2) ** 0.5  # type: ignore[no-any-return]
 
 
-G = defaultdict(set)
+G: dict[complex, set[complex]] = defaultdict(set)
 for a, b in combinations(lillies, 2):
     if dist(a, b) <= d:
         G[a].add(b)
@@ -27,7 +28,7 @@ for a in lillies:
         G[a].add(start)
 
 
-def dfs(G, *path):
+def dfs(G: dict[complex, set[complex]], *path: complex) -> Iterator[tuple[complex, ...]]:
     next_steps = G[path[-1]] - set(path)
     if next_steps:
         for step in next_steps:

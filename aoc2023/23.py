@@ -12,7 +12,7 @@ def part1(content: str) -> int:
 
     heap: list[
         tuple[
-            int,  #
+            int,
             str,
             tuple[complex, ...],
         ]
@@ -20,7 +20,7 @@ def part1(content: str) -> int:
     heappush(heap, (0, "", (start_pos,)))
     best = 0
     while heap:
-        l, trace, path = heappop(heap)
+        length, trace, path = heappop(heap)
         current_pos = path[-1]
         for d in (1, 1j, -1, -1j):
             next_pos = current_pos + d
@@ -31,10 +31,9 @@ def part1(content: str) -> int:
             if SLOPES[-d] == grid[next_pos]:
                 continue  # don't try to walk slopes uphill
             if next_pos == target_pos:
-                if l - 1 < best:
-                    best = l - 1
+                best = min(length - 1, best)
             else:
-                heappush(heap, (l - 1, trace + SLOPES[d], path + (next_pos,)))
+                heappush(heap, (length - 1, trace + SLOPES[d], (*path, next_pos)))
 
     return -best
 
@@ -59,11 +58,10 @@ def part2(content: str) -> int:
             case 0:
                 continue  # dead end
             case 1:  # on a single path
-                pool.append(path + (next_positions.pop(),))
+                pool.append((*path, next_positions.pop()))
             case 2 | 3:  # reached an intersection
                 if current_pos not in G:
-                    for p in next_positions:
-                        pool.append((current_pos, p))
+                    pool.extend((current_pos, p) for p in next_positions)
                 G.setdefault(current_pos, {})
                 G[current_pos][path[0]] = len(path) - 1
                 G[path[0]][current_pos] = len(path) - 1
@@ -71,17 +69,16 @@ def part2(content: str) -> int:
     # do another DFS to find the longest path in that graph
     pool2: list[tuple[int, tuple[complex, ...]]] = [(0, (start_pos,))]
     longest = 0
-    while pool:
-        l, path = pool2.pop()
+    while pool2:
+        length, path = pool2.pop()
         current_pos = path[-1]
         for next_pos, steps in G[current_pos].items():
             if next_pos in path:
                 continue  # don't walk twice on the same tile
             if next_pos == target_pos:
-                if l + steps > longest:
-                    longest = l + steps
+                longest = max(length + steps, longest)
             else:
-                pool2.append((l + steps, path + (next_pos,)))
+                pool2.append((length + steps, (*path, next_pos)))
 
     return longest
 
@@ -112,7 +109,7 @@ test_content = """\
 #####################.#
 """
 
-assert (part1(test_content)) == 94
+assert part1(test_content) == 94
 assert part2(test_content) == 154
 
 with open("23.txt") as f:

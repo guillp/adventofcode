@@ -20,7 +20,7 @@ def solve(content: str) -> Iterator[int]:
                     guards[current_guard][asleep_time.time()] += 1
                     asleep_time += timedelta(minutes=1)
             case _:
-                breakpoint()
+                assert False
 
     most_asleep_guard = max(guards, key=lambda g: sum(guards[g].values()))
     most_asleep_minute = max(guards[most_asleep_guard], key=lambda minute: guards[most_asleep_guard][minute])

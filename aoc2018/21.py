@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 
-def part1(content: str, part2: bool = False) -> int:
+def part1(content: str, *, part2: bool = False) -> int:
     registers = [0] * 6
     if part2:
         registers[0] = 1

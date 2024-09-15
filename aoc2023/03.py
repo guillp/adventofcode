@@ -2,13 +2,13 @@ import re
 from collections.abc import Iterator
 
 
-def neighbors(x: int, y: int, l: int) -> Iterator[tuple[int, int]]:
+def neighbors(x: int, y: int, length: int) -> Iterator[tuple[int, int]]:
     yield x - 1, y  # neighbor on the left
     # neighbors above and below
-    for d in range(-1, l + 1):
+    for d in range(-1, length + 1):
         yield x + d, y - 1
         yield x + d, y + 1
-    yield x + l, y  # neighbor on the right
+    yield x + length, y  # neighbor on the right
 
 
 def solve(content: str) -> tuple[int, int]:

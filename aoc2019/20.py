@@ -17,13 +17,12 @@ def part1(content: str) -> int:
                     start = pos + d
                 elif label == "ZZ":
                     stop = pos + d
+                elif label in portal_cache:
+                    orig, dest = portal_cache[label]
+                    portal_map[pos] = dest
+                    portal_map[orig] = pos + d
                 else:
-                    if label in portal_cache:
-                        orig, dest = portal_cache[label]
-                        portal_map[pos] = dest
-                        portal_map[orig] = pos + d
-                    else:
-                        portal_cache[label] = pos, pos + d
+                    portal_cache[label] = pos, pos + d
 
     pool: list[tuple[complex, ...]] = [(start,)]
     best_path = tuple(paths)
@@ -43,7 +42,7 @@ def part1(content: str) -> int:
                 continue  # avoid stepping outside of open passages
             if next_pos in path:
                 continue  # avoid loops
-            next_path = path + (next_pos,)
+            next_path = (*path, next_pos)
             if next_pos == stop:
                 if len(next_path) < len(best_path):
                     best_path = next_path
@@ -57,7 +56,7 @@ def part1(content: str) -> int:
             "".join(
                 str(best_path.index(complex(x, y)) % 10) if complex(x, y) in best_path else lines[y][x]
                 for x in range(len(lines[y]))
-            )
+            ),
         )
     return len(best_path) - 1
 

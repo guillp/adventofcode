@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass(unsafe_hash=True, eq=False)
@@ -16,7 +15,7 @@ class Spell:
     mana: int = 0
     effect: int = 0
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Spell):
             return self.name == other.name
         return super().__eq__(other)
@@ -47,7 +46,7 @@ class GameState:
         return sum(spell.cost for spell in self.used_spells)
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     hit_points, damage = map(int, re.findall(r"\d+", content, re.MULTILINE))
     pool = [GameState(hit_points, damage, 50, 500, hard=part2)]
 

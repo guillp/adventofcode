@@ -28,8 +28,8 @@ def part1(content: str) -> int:
                         steps + 1,
                         start_symbol,
                         traversed,
-                        path + (next_pos,),
-                    )
+                        (*path, next_pos),
+                    ),
                 )
                 G.setdefault(key_or_gate, {})
                 required_gates = {gate.lower() for gate in traversed if gate.isupper()}
@@ -47,11 +47,11 @@ def part1(content: str) -> int:
                         steps + 1,
                         start_symbol,
                         traversed + key_or_gate,
-                        path + (next_pos,),
-                    )
+                        (*path, next_pos),
+                    ),
                 )
             else:  # is just a step
-                pool.append((steps + 1, start_symbol, traversed, path + (next_pos,)))
+                pool.append((steps + 1, start_symbol, traversed, (*path, next_pos)))
 
     all_keys = frozenset(c for c in G if c.islower())
 
@@ -67,8 +67,7 @@ def part1(content: str) -> int:
                 if missing_keys & required_gates:
                     continue
                 distance = cost + solve(key, missing_keys - {key})
-                if distance < best:
-                    best = distance
+                best = min(distance, best)
         return best
 
     return solve("@", all_keys)
@@ -82,7 +81,7 @@ assert (
 ######################.#
 #d.....................#
 ########################
-"""
+""",
     )
     == 86
 )
@@ -95,7 +94,7 @@ assert (
 #.######################
 #.....@.a.B.c.d.A.e.F.g#
 ########################
-"""
+""",
     )
     == 132
 )
@@ -112,7 +111,7 @@ assert (
 ########.########
 #l.F..d...h..C.m#
 #################
-"""
+""",
     )
     == 136
 )
@@ -126,7 +125,7 @@ assert (
 ###A#B#C################
 ###g#h#i################
 ########################
-"""
+""",
     )
     == 81
 )
@@ -185,8 +184,8 @@ def part2(content: str) -> int:
                             steps + 1,
                             start_symbol,
                             traversed,
-                            path + (next_pos,),
-                        )
+                            (*path, next_pos),
+                        ),
                     )
                     G.setdefault(key_or_gate, {})
                     required_gates = {gate.lower() for gate in traversed if gate.isupper()}
@@ -201,11 +200,11 @@ def part2(content: str) -> int:
                             steps + 1,
                             start_symbol,
                             traversed + key_or_gate,
-                            path + (next_pos,),
-                        )
+                            (*path, next_pos),
+                        ),
                     )
                 else:  # is just a step
-                    pool.append((steps + 1, start_symbol, traversed, path + (next_pos,)))
+                    pool.append((steps + 1, start_symbol, traversed, (*path, next_pos)))
 
         return G
 
@@ -214,7 +213,7 @@ def part2(content: str) -> int:
 
     sorted_costs = sorted(cost for graph in graphs for d in graph.values() for _, cost in d.values())
     pool: list[tuple[int, int, tuple[int, ...], tuple[str, ...], frozenset[str]]] = [
-        (len(all_keys), 0, (0, 0, 0, 0), ("@", "@", "@", "@"), all_keys)
+        (len(all_keys), 0, (0, 0, 0, 0), ("@", "@", "@", "@"), all_keys),
     ]
     heapify(pool)
     best = None
@@ -230,9 +229,8 @@ def part2(content: str) -> int:
                     required_keys, cost = G[current_pos][next_key]
                     if required_keys & missing_keys:
                         continue
-                    if len(missing_keys) == 1:
-                        if best is None or sum(steps) + cost < best:
-                            best = sum(steps) + cost
+                    if len(missing_keys) == 1 and (best is None or sum(steps) + cost < best):
+                        best = sum(steps) + cost
                     heappush(
                         pool,
                         (

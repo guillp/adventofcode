@@ -37,9 +37,10 @@ def solve(content: str, steps: int = 1000) -> Iterator[int]:
             # check that velocities on that axis are all 0
             if all(vel[moon][axis] == 0 for moon in range(nb_moons)):
                 # check that positions on that axis are same as initial
-                if all(pos[moon][axis] == pos0[moon][axis] for moon in range(nb_moons)):
-                    if loops[axis] is None:  # keep only the smallest cycle
-                        loops[axis] = step
+                if (
+                    all(pos[moon][axis] == pos0[moon][axis] for moon in range(nb_moons)) and loops[axis] is None
+                ):  # keep only the smallest cycle
+                    loops[axis] = step
 
                 if None not in loops:
                     yield math.lcm(*loops)  # type: ignore[arg-type]
@@ -54,7 +55,7 @@ assert tuple(
 <x=2, y=-7, z=3>
 <x=9, y=-8, z=-3>""",
         100,
-    )
+    ),
 ) == (1940, 4686774924)
 
 

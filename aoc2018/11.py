@@ -1,4 +1,4 @@
-def solve(serial_number: int, part2: bool = False) -> str:
+def solve(serial_number: int, *, part2: bool = False) -> str:
     min_square_size = 1 if part2 else 3
     max_square_size = 300 if part2 else 3
     grid_size = 300

@@ -1,4 +1,4 @@
-def solve(content: str, part2: bool = False) -> str:
+def solve(content: str, *, part2: bool = False) -> str:
     if not part2:
         grid = {
             (-1, -1): "1",

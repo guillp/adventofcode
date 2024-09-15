@@ -30,7 +30,7 @@ def solve(content: str) -> Iterator[int]:
                         continue
                     next_remaining = remaining - {next_location}
                     if next_remaining:
-                        pool.add((path + (next_location,), next_remaining, next_cost))
+                        pool.add(((*path, next_location), next_remaining, next_cost))
                     elif next_cost < best_path:
                         best_path = next_cost
     yield best_path
@@ -46,7 +46,7 @@ def solve(content: str) -> Iterator[int]:
                     next_cost = cost + new_cost
                     next_remaining = remaining - {next_location}
                     if next_remaining:
-                        pool.add((path + (next_location,), next_remaining, next_cost))
+                        pool.add(((*path, next_location), next_remaining, next_cost))
                     elif next_cost > part2:
                         part2 = next_cost
 

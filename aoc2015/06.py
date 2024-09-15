@@ -4,7 +4,9 @@ from collections.abc import Iterable, Iterator
 
 def iter_instructions(content: str) -> Iterable[tuple[str, int, int, int, int]]:
     for instruction, *coords in re.findall(
-        r"^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)$", content, re.MULTILINE
+        r"^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)$",
+        content,
+        re.MULTILINE,
     ):
         x1, y1, x2, y2 = map(int, coords)
         if x1 > x2:

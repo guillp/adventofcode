@@ -5,7 +5,6 @@ asteroids = 0
 
 while pixels:
     open_list = {pixels.pop()}
-    asteroid = set()
     while open_list:
         x = open_list.pop()
         for y in (x + 1, x - 1, x + 1j, x - 1j):

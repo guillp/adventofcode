@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 
-def find_mirror(pattern: str, part2: bool = False) -> int:
+def find_mirror(pattern: str, *, part2: bool = False) -> int:
     lines = pattern.splitlines()
     H = len(lines)
     W = len(lines[0])

@@ -1,28 +1,15 @@
 import re
 
-test_content = """\
-1,0,1~1,2,1
-0,0,2~2,0,2
-0,2,3~2,2,3
-0,0,4~0,2,4
-2,0,5~2,2,5
-0,1,6~2,1,6
-1,1,8~1,1,9
-"""
-
-with open("22.txt") as f:
-    content = f.read()
-
 
 def solve(content: str) -> tuple[int, int]:
     # convert each brick to a set of cubes
     bricks = sorted(
-        tuple(
+        {
             (z, x, y)  # z first so bricks are sorted by initial altitude
             for x in range(x1, x2 + 1)
             for y in range(y1, y2 + 1)
             for z in range(z1, z2 + 1)
-        )
+        }
         for line in content.splitlines()
         for x1, y1, z1, x2, y2, z2 in ((int(x) for x in re.findall(r"\d+", line)),)
     )
@@ -56,5 +43,18 @@ def gravity(bricks: list[set[tuple[int, int, int]]]) -> int:
     return move_count
 
 
-assert solve(test_content) == (5, 7)
-print(*solve(content))
+assert solve("""\
+1,0,1~1,2,1
+0,0,2~2,0,2
+0,2,3~2,2,3
+0,0,4~0,2,4
+2,0,5~2,2,5
+0,1,6~2,1,6
+1,1,8~1,1,9
+""") == (5, 7)
+
+with open("22.txt") as f:
+    content = f.read()
+
+for part in solve(content):
+    print(part)

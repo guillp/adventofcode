@@ -18,7 +18,7 @@ def solve(content: str) -> tuple[int, int]:
         }[testop]
         if testmeth(registers[testreg], int(testval)):
             registers[reg] += int(val) * (1 if op == "inc" else -1)
-        part2 = max(part2, max(registers.values()))
+        part2 = max(part2, *registers.values())
 
     return max(registers.values()), part2
 

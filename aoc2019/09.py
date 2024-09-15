@@ -24,9 +24,9 @@ class Computer:
         self.pointer += 1
         if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == ParamMode.POSITION:
+        if mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
@@ -49,7 +49,7 @@ class Computer:
     def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
-            raise StopIteration()
+            raise StopIteration
         if opcode == "01":  # add
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])

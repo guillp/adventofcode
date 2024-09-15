@@ -7,9 +7,9 @@ def parse(
     content: str,
 ) -> tuple[dict[str, tuple[tuple[str, Literal["<", ">"], int, str] | str, ...]], list[dict[str, int]]]:
     workflows_chunk, parts_chunk = content.split("\n\n")
-    parts: list[dict[str, int]] = []
-    for p in parts_chunk.splitlines():
-        parts.append({k: int(v) for score in p[1:-1].split(",") for k, v in (score.split("="),)})
+    parts: list[dict[str, int]] = [
+        {k: int(v) for score in p[1:-1].split(",") for k, v in (score.split("="),)} for p in parts_chunk.splitlines()
+    ]
 
     workflows: dict[str, tuple[tuple[str, Literal["<", ">"], int, str] | str, ...]] = {}
     for w in workflows_chunk.splitlines():
@@ -109,7 +109,7 @@ class Range:
 def part2(content: str) -> int:
     workflows, _ = parse(content)
 
-    def dp(wf: str, state: Range = Range()) -> Iterator[int]:
+    def dp(wf: str, state: Range) -> Iterator[int]:
         if wf == "R":
             return
         if wf == "A":
@@ -123,7 +123,7 @@ def part2(content: str) -> int:
                 yield from dp(res, valid)
             yield from dp(default_workflow, default_range)
 
-    return sum(dp("in"))
+    return sum(dp("in", Range()))
 
 
 test_content = """\

@@ -7,7 +7,9 @@ def solve(content: str) -> Iterator[int]:
     gains = {}
     people = set()
     for a, gain_or_lose, points, b in re.findall(
-        r"^(\w+?) would (gain|lose) (\d+) happiness units by sitting next to (\w+).", content, re.MULTILINE
+        r"^(\w+?) would (gain|lose) (\d+) happiness units by sitting next to (\w+).",
+        content,
+        re.MULTILINE,
     ):
         if gain_or_lose == "gain":
             gains[(a, b)] = int(points)

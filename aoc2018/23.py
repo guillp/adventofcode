@@ -1,7 +1,7 @@
 import re
 from collections.abc import Iterator
 
-from z3 import Bool, If, Int, Ints, Optimize  # type: ignore[import-not-found]
+from z3 import Bool, If, Int, Ints, Optimize  # type: ignore[import-untyped]
 
 
 def solve(content: str) -> Iterator[int]:
@@ -22,7 +22,7 @@ def solve(content: str) -> Iterator[int]:
     o = Optimize()
     x, y, z = Ints("x y z")
 
-    def Abs(x: Int) -> If:
+    def Abs(x: Int) -> If:  # noqa: N802
         return If(x >= 0, x, -x)
 
     is_in_range = [Bool(f"in_range{i}") for i in range(nbots)]

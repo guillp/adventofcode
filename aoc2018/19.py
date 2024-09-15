@@ -1,4 +1,4 @@
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     registers = [0] * 6
     if part2:
         registers[0] = 1
@@ -23,7 +23,7 @@ def solve(content: str, part2: bool = False) -> int:
                 if pointer == 3:  ## THIS PART MAY CHANGE BASED ON YOUR INPUT
                     n = max(registers)
                     # program adds all factors of a given number into register 0
-                    return sum(set(factor for i in range(1, int(n**0.5) + 1) if n % i == 0 for factor in (i, n // i)))
+                    return sum({factor for i in range(1, int(n**0.5) + 1) if n % i == 0 for factor in (i, n // i)})
                 registers[int(c)] = registers[int(a)] * registers[int(b)]
             case "eqrr", a, b, c:
                 registers[int(c)] = 1 if registers[int(a)] == registers[int(b)] else 0

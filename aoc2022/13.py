@@ -14,7 +14,7 @@ def compare(left: object, right: object, level: int = 0) -> bool | None:
     if isinstance(right, int):
         right = [right]
     if isinstance(left, list) and isinstance(right, list):
-        for l, r in zip(left, right):
+        for l, r in zip(left, right, strict=False):
             if (c := compare(l, r, level=level + 1)) is None:
                 continue
             return c

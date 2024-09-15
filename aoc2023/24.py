@@ -2,6 +2,8 @@ import re
 from contextlib import suppress
 from itertools import combinations
 
+from z3 import Int, Ints, Solver, sat  # type: ignore[import-untyped]
+
 
 def part1(content: str, area_min: int = 7, area_max: int = 28) -> int:
     hails = [tuple(int(x) for x in re.findall(r"-?\d+", line)) for line in content.splitlines()]
@@ -18,9 +20,6 @@ def part1(content: str, area_min: int = 7, area_max: int = 28) -> int:
                 intersections += 1
 
     return intersections
-
-
-from z3 import Int, Ints, Solver, sat
 
 
 def part2(content: str) -> int:

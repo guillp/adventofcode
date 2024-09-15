@@ -3,7 +3,7 @@ from itertools import pairwise
 
 
 def part1(content: str) -> int:
-    d = {i: c for i, c in enumerate(content)}
+    d = dict(enumerate(content))
 
     while d:
         for i, j in pairwise(d.keys()):

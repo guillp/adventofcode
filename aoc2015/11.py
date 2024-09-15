@@ -1,17 +1,20 @@
+from itertools import pairwise
+
+
 def validate(password: str) -> bool:
     if "i" in password or "o" in password or "l" in password:
         return False
-    for a, b, c in zip(password, password[1:], password[2:], strict=False):
+    for a, b, c in zip(password, password[1:], password[2:]):
         if ord(a) + 1 == ord(b) == ord(c) - 1:
             break
     else:
         return False
-    for i, (a, b) in enumerate(zip(password, password[1:], strict=False)):
+    for i, (a, b) in enumerate(pairwise(password)):
         if a == b:
             break
     else:
         return False
-    for c, d in zip(password[i + 2 :], password[i + 3 :], strict=False):
+    for c, d in zip(password[i + 2 :], password[i + 3 :]):
         if c == d:
             break
     else:

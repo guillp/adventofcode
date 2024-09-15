@@ -39,7 +39,7 @@ def solve(content: str) -> Iterator[int]:
     # print(best_path)
 
     part2 = 0
-    my_best_path = elephant_best_path = None  # noqa: F841
+    my_best_path = elephant_best_path = None
     for my_part in itertools.combinations(valves_to_open, len(valves_to_open) // 2):
         my_pressure, my_path = max(dfs(0, set(my_part), 26, "AA"), key=itemgetter(0))
         elephant_pressure, elephant_path = max(dfs(0, valves_to_open - set(my_part), 26, "AA"), key=itemgetter(0))

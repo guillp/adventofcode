@@ -4,9 +4,7 @@ def part1(content: str) -> int:
 
 def part2(content: str) -> int:
     return sum(
-        1
-        for line in content.splitlines()
-        if len(set("".join(sorted(word)) for word in line.split())) == len(line.split())
+        1 for line in content.splitlines() if len({"".join(sorted(word)) for word in line.split()}) == len(line.split())
     )
 
 

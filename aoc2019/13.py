@@ -24,9 +24,9 @@ class Computer:
         self.pointer += 1
         if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == ParamMode.POSITION:
+        if mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
@@ -50,7 +50,7 @@ class Computer:
         raise OutputSignal(value)
 
     def stop(self) -> None:
-        raise StopIteration()
+        raise StopIteration
 
     def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer

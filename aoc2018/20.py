@@ -40,7 +40,7 @@ def solve(content: str) -> tuple[int, int]:
         for next_pos in G[pos]:
             if next_pos in path:
                 continue  # don't walk twice in the same room
-            pool.append((dist + 1, path + (next_pos,)))
+            pool.append((dist + 1, (*path, next_pos)))
 
     return longest, len(more_than_1000)
 

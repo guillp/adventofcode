@@ -3,7 +3,7 @@ def shoelace_area(*points: tuple[int, int]) -> float:
     return (  # type: ignore[no-any-return]
         abs(
             sum(i * j for i, j in zip(x, y[1:] + y[:1], strict=False))
-            - sum(i * j for i, j in zip(x[1:] + x[:1], y, strict=False))
+            - sum(i * j for i, j in zip(x[1:] + x[:1], y, strict=False)),
         )
         / 2
     )
@@ -23,7 +23,7 @@ def part2_parser(line: str) -> tuple[int, int]:
     return dx * dst, dy * dst
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     x = y = 0
     points = []
     border = 0

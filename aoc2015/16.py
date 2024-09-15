@@ -3,15 +3,17 @@ import re
 import pandas as pd
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     aunts = {
         name: {c1: int(n1), c2: int(n2), c3: int(n3)}
         for name, c1, n1, c2, n2, c3, n3 in re.findall(
-            r"^Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+)$", content, re.MULTILINE
+            r"^Sue (\d+): (\w+): (\d+), (\w+): (\d+), (\w+): (\d+)$",
+            content,
+            re.MULTILINE,
         )
     }
 
-    df = pd.DataFrame(aunts).transpose()
+    aunts_df = pd.DataFrame(aunts).transpose()
 
     values = {}
     for line in """\
@@ -30,15 +32,15 @@ perfumes: 1""".splitlines():
 
     if part2:
         for c in ("cats", "trees"):
-            df = df[(df[c] > values.pop(c)) | df[c].isna()]
+            aunts_df = aunts_df[(aunts_df[c] > values.pop(c)) | aunts_df[c].isna()]
 
         for c in ("pomeranians", "goldfish"):
-            df = df[(df[c] < values.pop(c)) | df[c].isna()]
+            aunts_df = aunts_df[(aunts_df[c] < values.pop(c)) | aunts_df[c].isna()]
 
     for k, v in values.items():
-        df = df[(df[k] == v) | df[k].isna()]
+        aunts_df = aunts_df[(aunts_df[k] == v) | aunts_df[k].isna()]
 
-    return int(df.iloc[0].name)  # type: ignore[call-overload, no-any-return]
+    return int(aunts_df.iloc[0].name)  # type: ignore[call-overload, no-any-return]
 
 
 with open("16.txt") as f:

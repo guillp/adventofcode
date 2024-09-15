@@ -9,10 +9,7 @@ def part1(password: str, content: str) -> str:
                 passwd = [y if c == x else x if c == y else c for c in passwd]
             case "rotate", direction, x, "steps" | "step":
                 s = int(x) % len(passwd)
-                if direction == "right":
-                    passwd = passwd[-s:] + passwd[:-s]
-                else:
-                    passwd = passwd[s:] + passwd[:s]
+                passwd = passwd[-s:] + passwd[:-s] if direction == "right" else passwd[s:] + passwd[:s]
             case "rotate", "based", "on", "position", "of", "letter", x:
                 i = passwd.index(x)
                 passwd = passwd[-1:] + passwd[:-1]
@@ -47,10 +44,7 @@ def part2(password: str, content: str) -> str:
                 passwd = [y if c == x else x if c == y else c for c in passwd]
             case "rotate", direction, x, "steps" | "step":
                 s = int(x) % len(passwd)
-                if direction == "left":
-                    passwd = passwd[-s:] + passwd[:-s]
-                else:
-                    passwd = passwd[s:] + passwd[:s]
+                passwd = passwd[-s:] + passwd[:-s] if direction == "left" else passwd[s:] + passwd[:s]
             case "rotate", "based", "on", "position", "of", "letter", x:
                 i = passwd.index(x)
                 for _ in range({0: 1, 1: 1, 2: 6, 3: 2, 4: 7, 5: 3, 6: 0, 7: 4, 8: 4}[i]):

@@ -26,7 +26,7 @@ def part1(dx: int, dy: int, n: int) -> int:
             if nx == dx and ny == dy:
                 best = len(path)
             else:
-                pool.append(path + ((nx, ny),))
+                pool.append((*path, (nx, ny)))
 
     return best
 
@@ -46,7 +46,7 @@ def part2(n: int) -> int:
 
             reachable.add((nx, ny))
             if len(path) < 50:
-                pool.append(path + ((nx, ny),))
+                pool.append((*path, (nx, ny)))
 
     return len(reachable)
 

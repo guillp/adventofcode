@@ -48,7 +48,7 @@ assert tuple(
 A Y
 B X
 C Z
-""")
+"""),
 ) == (15, 12)
 
 with open("02.txt") as finput:

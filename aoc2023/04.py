@@ -2,8 +2,8 @@ def score_card(card: str) -> tuple[int, int]:
     card_part, number_part = card.split(":")
     card_id = int(card_part.split()[1])
     winning_part, played_part = number_part.split("|")
-    winning = set(int(x) for x in winning_part.split())
-    played = set(int(x) for x in played_part.split())
+    winning = {int(x) for x in winning_part.split()}
+    played = {int(x) for x in played_part.split()}
     common = winning & played
     return card_id, len(common)
 

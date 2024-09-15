@@ -29,9 +29,9 @@ class Computer:
         self.pointer += 1
         if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == ParamMode.POSITION:
+        if mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             return self.instructions.get(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
@@ -54,7 +54,7 @@ class Computer:
         raise OutputSignal(value)
 
     def stop(self) -> None:
-        raise StopIteration()
+        raise StopIteration
 
     def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
@@ -80,7 +80,7 @@ class Computer:
             self.set_param(modes[2], left * right)
         elif opcode == "03":  # get input
             if not self.inputs:
-                raise InputSignal()
+                raise InputSignal
             value = self.inputs.pop(0)
             self.set_param(modes[0], value)
         elif opcode == "04":  # output
@@ -167,7 +167,7 @@ def solve(content: str) -> Iterator[int]:
         positions = next(p for p, c in grid.items() if c in "^v<>")
         direction = {"^": UP, "v": DOWN, ">": RIGHT, "<": LEFT}[grid[positions]]
         pool: list[tuple[complex, complex, set[complex], tuple[str | int, ...]]] = [
-            (positions, direction, set(grid) - {positions}, ())
+            (positions, direction, set(grid) - {positions}, ()),
         ]
         while pool:
             pool.sort(key=lambda x: len(x[2]))
@@ -175,7 +175,7 @@ def solve(content: str) -> Iterator[int]:
             if remaining:
                 for action, turn in {TURN_RIGHT: 1j, TURN_LEFT: -1j}.items():
                     if grid.get(positions + turn * direction) == "#" and positions + turn * direction in remaining:
-                        pool.append((positions, turn * direction, remaining, path + (action,)))
+                        pool.append((positions, turn * direction, remaining, (*path, action)))
 
                 steps = 0
                 new_remaining = set(remaining)
@@ -188,8 +188,8 @@ def solve(content: str) -> Iterator[int]:
                             positions + steps * direction,
                             direction,
                             new_remaining,
-                            path + (steps,),
-                        )
+                            (*path, steps),
+                        ),
                     )
             else:
                 return path

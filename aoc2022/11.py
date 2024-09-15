@@ -13,7 +13,7 @@ class Monkey:
     nb_inspections: int = 0
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     monkeys: dict[int, Monkey] = {}
     for monkey_no, starting_items, operation, diviser, true_target, false_target in re.findall(
         r"""^Monkey (\d+):

@@ -12,7 +12,7 @@ if __name__ == "__main__":
     try:
         cookie = os.getenv("ADVENTOFCODE_SESSION") or sys.argv[1]
         assert cookie is not None
-    except Exception:
+    except (KeyError, AssertionError):
         print("Please set ADVENTOFCODE_SESSION envvar with your adventofcode.com session cookie value.")
         sys.exit(1)
 

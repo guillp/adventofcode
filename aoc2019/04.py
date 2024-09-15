@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from itertools import pairwise
 
 
 def solve(content: str) -> Iterator[int]:
@@ -8,7 +9,7 @@ def solve(content: str) -> Iterator[int]:
     for number in number_range:
         password = str(number)
         same_adjcent = False
-        for a, b in zip(password, password[1:]):
+        for a, b in pairwise(password):
             if b < a:
                 break
             if a == b:
