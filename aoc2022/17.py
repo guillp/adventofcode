@@ -17,11 +17,6 @@ ROCKS = """####
 ##
 """
 
-
-def move(rock: frozenset[complex], direction: complex) -> frozenset[complex]:
-    return frozenset(pos + direction for pos in rock)
-
-
 rocks = [
     frozenset(
         complex(x + 2, -y - 4)  # adjusted so that rocks are at their starting positions
@@ -33,18 +28,22 @@ rocks = [
 ]
 
 
+def move(rock: frozenset[complex], direction: complex) -> frozenset[complex]:
+    return frozenset(pos + direction for pos in rock)
+
+
 def print_chamber(chamber: set[complex], rock: frozenset[complex] | None = None) -> None:
     top_display = int(
-        min(
-            min(pos.imag for pos in chamber),
-            min(pos.imag for pos in rock) if rock else 1,
-        )
+        min(  # type: ignore[misc]
+            *(pos.imag for pos in chamber),
+            *(pos.imag for pos in rock) if rock else 1,
+        ),
     )
     for y in range(top_display, 50):
         print(
             "".join(
                 "@" if rock and complex(x, y) in rock else "#" if complex(x, y) in chamber else "." for x in range(7)
-            )
+            ),
         )
     print()
 

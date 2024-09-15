@@ -1,4 +1,7 @@
-def solve(content: str, part2: bool = False) -> int:
+from itertools import pairwise
+
+
+def solve(content: str, *, part2: bool = False) -> int:
     rope = [0j] * (10 if part2 else 2)
 
     visited = set()
@@ -7,7 +10,7 @@ def solve(content: str, part2: bool = False) -> int:
         for i in range(int(steps)):
             rope[0] += {"R": 1, "U": -1j, "L": -1, "D": 1j}[direction]
 
-            for n, (head, tail) in enumerate(zip(rope, rope[1:]), start=1):
+            for n, (head, tail) in enumerate(pairwise(rope), start=1):
                 diff = head - tail
                 if abs(diff.real) > 1 or abs(diff.imag) > 1 or abs(diff.real) + abs(diff.imag) > 2:
                     if diff.real:

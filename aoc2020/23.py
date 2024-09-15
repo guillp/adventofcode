@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 
 def crab(cups: tuple[int, ...], n: int) -> tuple[int, ...]:
-    ring = {a: b for a, b in zip(cups, cups[1:] + cups[:1])}
+    ring = dict(zip(cups, cups[1:] + cups[:1]))
 
     current_cup = cups[0]
     for _ in range(n):

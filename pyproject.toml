@@ -7,8 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pandas = "^1.5.2"
-stringparser = "^0.6"
+pandas = ">=2.0.0"
 astar = "^0.94"
 
 
@@ -21,8 +20,44 @@ target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]
-select = ["A", "ANN", "F", "I", "UP", "W"]
+select = ["ALL"]
 ignore = [
     "ANN101",
     "ANN102",
+    "ARG001",
+    "B007",
+    "B011",
+    "B019",
+    "B020",
+    "B905",
+    "BLE001",
+    "C901",
+    "D",
+    "DTZ001",
+    "E741",
+    "EM101",
+    "ERA001",
+    "FBT001",
+    "FBT002",
+    "FBT003",
+    "FIX002",
+    "INP001",
+    "N803",
+    "N806",
+    "N818",
+    "PLR0911",
+    "PLR0912",
+    "PLR0915",
+    "PLR1704",
+    "PLR2004",
+    "PLW2901",
+    "PT015",
+    "PT017",
+    "PTH123",
+    "RET504",
+    "S",
+    "T201",
+    "TCH003",
+    "TD",
+    "TRY003"
 ]

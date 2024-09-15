@@ -24,7 +24,7 @@ def solve(content: str, dist: int = 10_000) -> tuple[int, int]:
                 part2 += 1
 
     for area in sorted(areas.values(), key=len, reverse=True):
-        if any(x == left or x == right or y == top or y == bottom for x, y in area):
+        if any(x in {left, right} or y in {top, bottom} for x, y in area):
             continue
         part1 = len(area)
         break

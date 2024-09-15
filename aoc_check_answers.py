@@ -18,7 +18,7 @@ if __name__ == "__main__":
                 print(f"Missing solution for {year} day {day}")
                 continue
 
-            process = subprocess.run(["python", day_solution], capture_output=True)
+            process = subprocess.run(["python", day_solution], capture_output=True, check=False)
             your_answers = process.stdout.decode().split()
             if good_answers != your_answers:
                 print("WRONG -", your_answers, ", expected:", good_answers)

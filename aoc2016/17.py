@@ -56,8 +56,7 @@ def part2(passwd: str) -> int:
             if nx < 0 or nx > 3 or ny < 0 or ny > 3:
                 continue
             if nx == ny == 3:
-                if len(path) + 1 > best:
-                    best = len(path) + 1
+                best = max(len(path) + 1, best)
             else:
                 pool.add((l + 1, path + d, (nx, ny)))
 

@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from itertools import pairwise
 
 
 def print_grid(grid: dict[complex, str]) -> None:
@@ -17,7 +18,7 @@ def solve(content: str) -> Iterator[int]:
     grid = {}
     for line in content.splitlines():
         coords = [(int(x), int(y)) for coord in line.split(" -> ") for x, y in [coord.split(",")]]
-        for (x1, y1), (x2, y2) in zip(coords, coords[1:]):
+        for (x1, y1), (x2, y2) in pairwise(coords):
             if x1 == x2:
                 if y2 < y1:
                     y1, y2 = y2, y1

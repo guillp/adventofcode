@@ -3,11 +3,11 @@ from collections.abc import Iterator
 
 
 def apply_value_mask(value: int, mask: str) -> int:
-    return int("".join(v if m == "X" else m for v, m in zip(f"{value:036b}", mask)), 2)
+    return int("".join(v if m == "X" else m for v, m in zip(f"{value:036b}", mask, strict=False)), 2)
 
 
 def apply_mem_mask(mem: int, mask: str) -> str:
-    return "".join(v if m == "0" else m for v, m in zip(f"{mem:036b}", mask))
+    return "".join(v if m == "0" else m for v, m in zip(f"{mem:036b}", mask, strict=False))
 
 
 def unfloat(mask: str) -> Iterator[int]:

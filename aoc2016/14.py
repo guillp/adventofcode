@@ -9,7 +9,7 @@ content = b"yjdafjpo"
 
 
 @lru_cache(1000)
-def md5hash(content: bytes, i: int, part2: bool = False) -> str:
+def md5hash(content: bytes, i: int, *, part2: bool = False) -> str:
     h = hashlib.md5(content)
     h.update(str(i).encode())
     if part2:
@@ -18,7 +18,7 @@ def md5hash(content: bytes, i: int, part2: bool = False) -> str:
     return h.hexdigest()
 
 
-def find_keys(content: bytes, part2: bool = False) -> Iterator[int]:
+def find_keys(content: bytes, *, part2: bool = False) -> Iterator[int]:
     for i in count():
         h = md5hash(content, i, part2=part2)
         for c in re.findall(r"(.)\1\1\1\1", h):
@@ -28,7 +28,7 @@ def find_keys(content: bytes, part2: bool = False) -> Iterator[int]:
                     yield j
 
 
-def solve(content: bytes, n: int = 64, part2: bool = False) -> int:
+def solve(content: bytes, n: int = 64, *, part2: bool = False) -> int:
     s: list[int] = []
     iterator = find_keys(content, part2=part2)
     while len(s) <= n or s[n] > max(s) - 1000:

@@ -13,10 +13,7 @@ def abba(part: str) -> str | None:
 def supports_tls(addr: str) -> bool:
     for supernet in re.split(r"\[.*?\]", addr):
         if abba(supernet):
-            for hypernet in re.findall(r"\[(.*?)\]", addr):
-                if abba(hypernet):
-                    return False
-            return True
+            return all(not abba(hypernet) for hypernet in re.findall(r"\[(.*?)\]", addr))
     return False
 
 

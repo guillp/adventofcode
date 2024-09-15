@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
-import networkx as nx
+import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+import networkx as nx  # type: ignore[import-not-found]
 
 
 def part1(content: str) -> int:

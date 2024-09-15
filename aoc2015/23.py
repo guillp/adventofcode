@@ -1,4 +1,4 @@
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     registers = {"a": 0, "b": 0}
     if part2:
         registers["a"] = 1

@@ -1,10 +1,10 @@
 from collections.abc import Iterator
 from typing import Any
 
-from astar import AStar
+from astar import AStar  # type: ignore[import-not-found]
 
 
-class Day12(AStar[complex]):
+class Day12(AStar):  # type: ignore[misc]
     def __init__(self, grid: dict[complex, int]) -> None:
         self.grid = grid
 
@@ -14,7 +14,7 @@ class Day12(AStar[complex]):
     def distance_between(self, n1: complex, n2: complex) -> float:
         if self.grid[n2] - 1 == self.grid[n1]:
             return 0
-        elif self.grid[n2] <= self.grid[n1]:
+        if self.grid[n2] <= self.grid[n1]:
             return self.grid[n1] - self.grid[n2] + 1
         return float("inf")
 
@@ -55,8 +55,7 @@ def solve(content: str) -> Iterator[int]:
             if candidate_path is None:
                 continue
             candidate_path = list(candidate_path)
-            if len(candidate_path) - 1 < s:
-                s = len(candidate_path) - 1
+            s = min(len(candidate_path) - 1, s)
 
     yield s
 

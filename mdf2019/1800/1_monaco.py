@@ -1,13 +1,13 @@
-pos = [i for i in range(21)]
+pos = list(range(21))
 
 p = int(input())
 for _ in range(int(input())):
-    i, e = input().split()
-    i = int(i)
-    if e == 'D':
+    i_, e = input().split()
+    i = int(i_)
+    if e == "D":
         previous = pos.index(pos[i] - 1)
         pos[previous], pos[i] = pos[i], pos[previous]
-    elif e == 'I':
+    elif e == "I":
         if i == p:
             print("KO")
             break

@@ -121,7 +121,7 @@ def solve(content: str) -> Iterator[int]:
             eqir,
             eqri,
             eqrr,
-        }
+        },
     )
     instructions_map = {i: all_opcodes for i in range(16)}
     part1 = 0
@@ -144,7 +144,7 @@ def solve(content: str) -> Iterator[int]:
         for opcode, methods in instructions_map.items():
             methods -= set(known_opcodes.values())  # type: ignore[arg-type]
             if len(methods) == 1:
-                known_opcodes[opcode] = tuple(methods)[0]
+                known_opcodes[opcode] = next(iter(methods))
 
     registers: tuple[int, ...] = (0, 0, 0, 0)
     for line in program.splitlines():
@@ -160,8 +160,8 @@ assert (
             """\
 Before: [3, 2, 1, 1]
 9 2 1 2
-After:  [3, 2, 2, 1]"""
-        )
+After:  [3, 2, 2, 1]""",
+        ),
     )
     == 1
 )

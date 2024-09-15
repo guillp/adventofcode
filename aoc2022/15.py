@@ -55,14 +55,14 @@ def solve(content: str, target_y: int = 2000000, max_x: int = 4000000, max_y: in
         def __bool__(self) -> bool:
             return len(self.y_candidate_ranges) > 0
 
-    frequencies = {x: Frequency(x) for x in range(0, max_x + 1)}
+    frequencies = {x: Frequency(x) for x in range(max_x + 1)}
     for line in content.splitlines():
         xs, ys, xb, yb = (int(x) for x in re.findall(r"-?\d+", line))
         d = abs(xs - xb) + abs(ys - yb)
 
         for xd in range(d + 1):
             yd = d - xd
-            for x in {xs + xd, xs - xd}:
+            for x in (xs + xd, xs - xd):
                 if x in frequencies:
                     frequencies[x].remove(ys - yd, ys + yd)
                     if not frequencies[x]:

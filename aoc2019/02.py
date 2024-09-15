@@ -22,8 +22,8 @@ def solve(content: str) -> Iterator[int]:
 
     yield int_program(positions, 12, 2)
 
-    for verb in range(0, 100):
-        for noun in range(0, 100):
+    for verb in range(100):
+        for noun in range(100):
             if int_program(positions, noun, verb) == 19690720:
                 yield 100 * noun + verb
 

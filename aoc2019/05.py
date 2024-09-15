@@ -1,6 +1,6 @@
 class Computer:
     def __init__(self, instructions: str, *inputs: int) -> None:
-        self.instructions = list(int(x) for x in instructions.split(","))
+        self.instructions = [int(x) for x in instructions.split(",")]
         self.pointer = 0
         self.inputs = list(inputs)
         self.outputs: list[int] = []
@@ -25,7 +25,7 @@ class Computer:
     def next(self) -> None:
         opcode, modes = self.get_instruction()
         if opcode == "99":  # quit
-            raise StopIteration()
+            raise StopIteration
         if opcode == "01":  # add
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])

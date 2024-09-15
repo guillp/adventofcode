@@ -25,9 +25,9 @@ class Computer:
         self.pointer += 1
         if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == ParamMode.POSITION:
+        if mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             return self.instructions.setdefault(self.relative_base + value, 0)
         assert False, f"Unknown mode {mode}"
 
@@ -40,7 +40,7 @@ class Computer:
         else:
             assert False, f"Unknown mode {mode}"
 
-    def jump(self, target: int, condition: bool = True) -> None:
+    def jump(self, target: int, *, condition: bool = True) -> None:
         if condition:
             self.pointer = target
 
@@ -61,7 +61,7 @@ class Computer:
         raise OutputSignal(value)
 
     def stop(self) -> None:
-        raise StopIteration()
+        raise StopIteration
 
     def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
@@ -94,11 +94,11 @@ class Computer:
         elif opcode == "05":  # jump-if-true
             test = self.get_param(modes[0])
             dest = self.get_param(modes[1])
-            self.jump(dest, test != 0)
+            self.jump(dest, condition=test != 0)
         elif opcode == "06":  # jump-if-false
             test = self.get_param(modes[0])
             dest = self.get_param(modes[1])
-            self.jump(dest, test == 0)
+            self.jump(dest, condition=test == 0)
         elif opcode == "07":  # less than
             left = self.get_param(modes[0])
             right = self.get_param(modes[1])
@@ -164,7 +164,7 @@ def part1(content: str) -> int:
 
                     if dest == 255:
                         return y
-                    elif 0 <= dest < 50:
+                    if 0 <= dest < 50:
                         computers[dest].add_input(x, y)
 
 

@@ -5,7 +5,7 @@ def loop(value: int, subject: int) -> int:
 
 
 def solve(content: str) -> int:
-    public_keys = set(int(line) for line in content.splitlines())
+    public_keys = {int(line) for line in content.splitlines()}
 
     door_loop_size = 0
     door_candidate_public_key = 1

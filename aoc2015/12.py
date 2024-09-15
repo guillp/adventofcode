@@ -1,9 +1,8 @@
 import json
 from collections.abc import Iterable
-from typing import Any
 
 
-def walk(doc: Any) -> Iterable[int]:
+def walk(doc: object) -> Iterable[int]:
     if isinstance(doc, int):
         yield doc
     elif isinstance(doc, dict):
@@ -23,11 +22,11 @@ def part1(content: str) -> int:
     return sum(n for n in walk(doc))
 
 
-def walk2(doc: Any) -> Iterable[int]:
+def walk2(doc: object) -> Iterable[int]:
     if isinstance(doc, int):
         yield doc
     elif isinstance(doc, dict):
-        values = list(v for v in doc.values() if isinstance(v, str))
+        values = [v for v in doc.values() if isinstance(v, str)]
         if "red" not in values:
             for v in doc.values():
                 yield from walk2(v)

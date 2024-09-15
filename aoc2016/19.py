@@ -14,8 +14,7 @@ def part2(n: int) -> int:
     i = int(log(n, 3))
     if 3**i < n <= 2 * 3**i:
         return n - 3**i  # type: ignore[no-any-return]
-    else:
-        return 2 * n - 3 ** (i + 1)  # type: ignore[no-any-return]
+    return 2 * n - 3 ** (i + 1)  # type: ignore[no-any-return]
 
 
 assert part1(5) == 3

@@ -10,7 +10,7 @@ def solve(content: str) -> Iterator[int | str]:
 
     layers = [content[LAYER_SIZE * i : LAYER_SIZE * (i + 1)] for i in range(len(content) // LAYER_SIZE)]
 
-    check = min(layers, key=lambda l: l.count("0"))
+    check = min(layers, key=lambda layer: layer.count("0"))
     yield check.count("1") * check.count("2")
 
     BLACK, TRANSPARENT = "0", "2"

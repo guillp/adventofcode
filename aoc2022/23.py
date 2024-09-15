@@ -10,7 +10,7 @@ DIRECTIONS = deque(
         (SOUTH, {SOUTH + EAST, SOUTH, SOUTH + WEST}),
         (WEST, {WEST + NORTH, WEST, WEST + SOUTH}),
         (EAST, {EAST + NORTH, EAST, EAST + SOUTH}),
-    )
+    ),
 )
 
 

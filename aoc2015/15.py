@@ -24,6 +24,7 @@ def iter_ingredients(content: str) -> Iterator[tuple[str, tuple[int, int, int, i
 def score(
     ingredients: dict[str, tuple[int, int, int, int, int]],
     quantities: dict[str, int],
+    *,
     part2: bool = False,
 ) -> int:
     totals = [0] * 5

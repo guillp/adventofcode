@@ -22,7 +22,10 @@ def solve(content: str) -> Iterator[str]:
 
         # for tick in count():
         #    for y in range(0, len(content.splitlines())):
-        #       print("".join(carts[y,x][0] if (y,x) in carts else grid.get((x,y)," ") for x in range(len(content.splitlines()[0]))))
+        #       print("".join(
+        #           carts[y,x][0] if (y,x) in carts else grid.get((x,y)," ")
+        #           for x in range(len(content.splitlines()[0])))
+        #       )
         #       print()
 
         for y, x in sorted(carts):
@@ -76,7 +79,7 @@ def solve(content: str) -> Iterator[str]:
                 if len(carts) == 0:
                     return
                 if len(carts) == 1:
-                    (y, x) = tuple(carts)[0]
+                    (y, x) = next(iter(carts))
                     yield f"{x},{y}"
             else:
                 carts[y, x] = direction, intersections

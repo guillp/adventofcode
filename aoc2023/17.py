@@ -30,7 +30,7 @@ def solve(content: str, min_straigth: int = 1, max_straigth: int = 3) -> int:
             continue
         visited.add(((x, y), last_direction, streak))
         for next_direction, (dx, dy, opposite_direction) in DIRECTIONS.items():
-            if next_direction == last_direction or opposite_direction == last_direction:
+            if last_direction in {next_direction, opposite_direction}:
                 continue
             next_x, next_y, next_loss = x, y, loss
             for i in range(1, max_straigth + 1):

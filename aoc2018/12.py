@@ -1,4 +1,4 @@
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     nb_generations: int = 50000000000 if part2 else 20
     initial_state, spreads = content.split("\n\n")
     rules = {

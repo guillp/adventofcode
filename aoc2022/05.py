@@ -6,7 +6,7 @@ def parse(content: str) -> tuple[dict[str, list[str]], list[tuple[int, str, str]
     *stack_contents, stack_names = stacks_str.splitlines()
     stacks: dict[str, list[str]] = {name: [] for name in stack_names.split()}
     for line in reversed(stack_contents):
-        for crate_name, crate in zip(stack_names.split(), line[1::4]):
+        for crate_name, crate in zip(stack_names.split(), line[1::4], strict=False):
             if crate.strip():
                 stacks[crate_name].append(crate)
 

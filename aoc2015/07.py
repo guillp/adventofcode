@@ -1,7 +1,7 @@
 from functools import cache
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     gates = dict(connection.split(" -> ")[::-1] for connection in content.splitlines())
 
     @cache
@@ -13,20 +13,19 @@ def solve(content: str, part2: bool = False) -> int:
             if " AND " in op:
                 a, b = op.split(" AND ")
                 return evaluate(a) & evaluate(b)
-            elif " OR " in op:
+            if " OR " in op:
                 a, b = op.split(" OR ")
                 return evaluate(a) | evaluate(b)
-            elif " LSHIFT " in op:
+            if " LSHIFT " in op:
                 a, b = op.split(" LSHIFT ")
                 return evaluate(a) << evaluate(b)
-            elif " RSHIFT " in op:
+            if " RSHIFT " in op:
                 a, b = op.split(" RSHIFT ")
                 return evaluate(a) >> evaluate(b)
-            elif "NOT" in op:
+            if "NOT" in op:
                 a = op.removeprefix("NOT ")
                 return ~evaluate(a)
-            else:
-                return evaluate(op)
+            return evaluate(op)
 
     if part2:
         gates["b"] = str(evaluate("a"))

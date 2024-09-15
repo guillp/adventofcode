@@ -8,10 +8,7 @@ class Rule:
         self.ranges = tuple(tuple(int(x) for x in r.split("-")) for r in ranges.split(" or "))
 
     def __call__(self, number: int) -> bool:
-        for bottom, top in self.ranges:
-            if bottom <= number <= top:
-                return True
-        return False
+        return any(bottom <= number <= top for bottom, top in self.ranges)
 
     def __repr__(self) -> str:
         return f"{self.name}: {' or '.join(f'{bottom}-{top}' for bottom, top in self.ranges)}"
@@ -20,7 +17,7 @@ class Rule:
 def solve(content: str) -> Iterator[int]:
     rules_str, my_ticket_str, nearby_tickets_str = content.split("\n\n")
 
-    rules = set(Rule(rule) for rule in rules_str.splitlines())
+    rules = {Rule(rule) for rule in rules_str.splitlines()}
     my_ticket = tuple(int(x) for x in my_ticket_str.splitlines()[1].split(","))
     nearby_tickets = tuple(tuple(int(x) for x in ticket.split(",")) for ticket in nearby_tickets_str.splitlines()[1:])
 
@@ -52,9 +49,7 @@ def solve(content: str) -> Iterator[int]:
                     m *= my_ticket[i]
             yield m
             break
-        for rule in rules - set(first_rules):
-            if evaluate(rule, i):
-                pool.append(first_rules + (rule,))
+        pool.extend((*first_rules, rule) for rule in rules - set(first_rules) if evaluate(rule, i))
 
 
 assert (
@@ -72,7 +67,7 @@ nearby tickets:
 40,4,50
 55,2,20
 38,6,12
-""")
+"""),
     )
     == 71
 )

@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-slopes = defaultdict(float)
+slopes: dict[int, float] = defaultdict(float)
 "this will contain every derivative (slope) at any integer X coordinate"
 
 # read the upper part, calc the slopes at each X integer coordinate
@@ -36,7 +36,7 @@ for x, slope in slopes.items():
 def solve(target_area: float) -> float:
     """Calc the X coordinate where we need to cut to get a given target area"""
 
-    for area, (x, y, slope) in reversed(areas.items()):
+    for area in reversed(areas):
         if area < target_area:
             break
     remaining = target_area - area
@@ -48,9 +48,9 @@ def solve(target_area: float) -> float:
     # there are 2 possible values for x
     x1 = (-y + delta) / slope
     x2 = (-y - delta) / slope
-    
+
     # we take the one that is between 0.0 and 1.0
-    return x + x1 if 0 <= x1 < 1 else x2
+    return x + x1 if 0 <= x1 < 1 else x2  # type: ignore[no-any-return]
 
 
 print(solve(total_area / 3))

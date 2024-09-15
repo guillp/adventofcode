@@ -44,12 +44,12 @@ def solve(X: int, Y: int, urdl: str) -> int | None:
         divx, modx = divmod(X - x, dx)
         divy, mody = divmod(Y - y, dy)
         if modx == mody == 0 and divx == divy:
-            N = divx
+            n = divx
             # if the pattern creates loops, it may visit the target before the last pattern is finished
             if (x + dx, y + dy) in revs:
-                return (N - 1) * len(urdl) + min(revs[x + dx, y + dy])
+                return (n - 1) * len(urdl) + min(revs[x + dx, y + dy])
             # otherwise we need N loops plus i steps of the pattern
-            return N * len(urdl) + i
+            return n * len(urdl) + i
 
     return None
 

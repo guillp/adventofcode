@@ -21,7 +21,7 @@ def solve(content: str) -> tuple[int, int]:
             if left > next_connector:
                 break  # avoid iterating over components with too many connectors
             next_score = score + left + right
-            heappush(pool, (next_score, bridge + (i,), left if right == next_connector else right))
+            heappush(pool, (next_score, (*bridge, i), left if right == next_connector else right))
             part1 = max(part1, next_score)
             part2 = max(part2, (len(bridge) + 1, next_score))
 

@@ -1,12 +1,12 @@
 import re
 
 
-def evaluate(operation: str, advanced: bool = False) -> int:
+def evaluate(operation: str, *, advanced: bool = False) -> int:
     operation = operation.replace(" ", "")
     while "(" in operation:
         operation = re.sub(
             r"\(([^\(]+?)\)",
-            lambda m: str(evaluate(m.group(1), advanced)),
+            lambda m: str(evaluate(m.group(1), advanced=advanced)),
             operation,
             count=1,
         )
@@ -22,7 +22,7 @@ def part1(content: str) -> int:
 
 
 def part2(content: str) -> int:
-    return sum(evaluate(operation, True) for operation in content.splitlines())
+    return sum(evaluate(operation, advanced=True) for operation in content.splitlines())
 
 
 assert part1("2 * 3 + (4 * 5)") == 26

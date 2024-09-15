@@ -34,14 +34,14 @@ def face(pos: complex, face_size: int) -> int:
     if 0 <= pos.real < face_size:
         if face_size * 2 <= pos.imag < face_size * 3:
             return 4
-        elif face_size * 3 <= pos.imag < face_size * 4:
+        if face_size * 3 <= pos.imag < face_size * 4:
             return 6
     elif face_size <= pos.real < face_size * 2:
         if 0 <= pos.imag < face_size:
             return 1
-        elif face_size <= pos.imag < face_size * 2:
+        if face_size <= pos.imag < face_size * 2:
             return 3
-        elif face_size * 2 <= pos.imag < face_size * 3:
+        if face_size * 2 <= pos.imag < face_size * 3:
             return 5
     elif face_size * 2 <= pos.real < face_size * 3 and 0 <= pos.imag < face_size:
         return 2
@@ -83,7 +83,8 @@ def part2_wrap(pos: complex, heading: complex, grid: dict[complex, str], face_si
     }[current_face][heading]
 
     assert next_face == face(
-        next_pos, face_size
+        next_pos,
+        face_size,
     ), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
     assert (
         next_pos in grid

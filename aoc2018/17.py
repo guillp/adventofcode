@@ -51,7 +51,7 @@ def solve(content: str) -> Iterator[int]:
             return
         flow_side(x, y)
 
-    def flow_side(x: int, y: int) -> bool:
+    def flow_side(x: int, y: int) -> None:
         while True:
             grid[x, y] = Cell.FLOW
             left = right = x

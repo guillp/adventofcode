@@ -3,7 +3,11 @@ from collections.abc import Iterable
 
 
 def part1(
-    content: str, factor_a: int = 16807, factor_b: int = 48271, modulo: int = 2147483647, nb: int = 40_000_000
+    content: str,
+    factor_a: int = 16807,
+    factor_b: int = 48271,
+    modulo: int = 2147483647,
+    nb: int = 40_000_000,
 ) -> int:
     start_a, start_b = map(int, re.findall(r"\d+", content))
 
@@ -19,7 +23,11 @@ def part1(
 
 
 def part2(
-    content: str, factor_a: int = 16807, factor_b: int = 48271, modulo: int = 2147483647, nb: int = 5_000_000
+    content: str,
+    factor_a: int = 16807,
+    factor_b: int = 48271,
+    modulo: int = 2147483647,
+    nb: int = 5_000_000,
 ) -> int:
     start_a, start_b = map(int, re.findall(r"\d+", content))
 

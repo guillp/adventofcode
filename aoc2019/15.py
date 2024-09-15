@@ -25,9 +25,9 @@ class Computer:
         self.pointer += 1
         if mode == ParamMode.IMMEDIATE:
             return value
-        elif mode == ParamMode.POSITION:
+        if mode == ParamMode.POSITION:
             return self.instructions.get(value, 0)
-        elif mode == ParamMode.RELATIVE:
+        if mode == ParamMode.RELATIVE:
             return self.instructions[self.relative_base + value]
         assert False, f"Unknown mode {mode}"
 
@@ -51,7 +51,7 @@ class Computer:
         raise OutputSignal(value)
 
     def stop(self) -> None:
-        raise StopIteration()
+        raise StopIteration
 
     def get_instruction(self) -> tuple[int, str, tuple[ParamMode, ...]]:
         pointer = self.pointer
@@ -160,7 +160,7 @@ def print_grid(grid: dict[complex, str], pos: complex) -> None:
             "".join(
                 grid.get(complex(x, y), UNKNOWN) if not x == y == 0 else DROID if complex(x, y) == pos else "@"
                 for x in range(x_min, x_max + 1)
-            )
+            ),
         )
 
 
@@ -181,7 +181,7 @@ def solve(content: str) -> Iterator[int]:
                         SOUTH: MOVE_SOUTH,
                         WEST: MOVE_WEST,
                         EAST: MOVE_EAST,
-                    }[direction]
+                    }[direction],
                 )
                 if output == HIT_WALL:
                     grid[pos + direction] = WALL
@@ -222,10 +222,15 @@ def solve(content: str) -> Iterator[int]:
                 continue
             elif grid[pos + direction] == OXYGEN:
                 if len(path) + 2 < len(best_path):
-                    best_path = list(path + (pos + direction,))
+                    best_path = [*path, pos + direction]
                     print(len(best_path))
             else:
-                pool.append(path + (pos + direction,))
+                pool.append(
+                    (
+                        *path,
+                        pos + direction,
+                    ),
+                )
 
     yield len(best_path) - 1
 

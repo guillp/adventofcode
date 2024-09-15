@@ -1,14 +1,14 @@
 def gear_balance(n_gears: int, connections: list[list[int]]) -> list[int]:
-    G = {x: set() for x in range(n_gears)}
+    G: dict[int, set[int]] = {x: set() for x in range(n_gears)}
     for a, b in connections:
         G[a].add(b)
         G[b].add(a)
 
     R = {0: True}
-    checked = set()
+    checked = set[int]()
 
     while set(R) - checked:
-        for x in set(R)-checked:
+        for x in set(R) - checked:
             clockwise = R[x]
             for next_gear in G[x]:
                 if next_gear in R and R[next_gear] == clockwise:
@@ -16,4 +16,4 @@ def gear_balance(n_gears: int, connections: list[list[int]]) -> list[int]:
                 R[next_gear] = not clockwise
             checked.add(x)
 
-    return [sum(R.values()), len(R)-sum(R.values())]
+    return [sum(R.values()), len(R) - sum(R.values())]

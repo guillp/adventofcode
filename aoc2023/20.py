@@ -7,7 +7,7 @@ LOW = False
 HIGH = True
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     flipflops: dict[str, bool] = {}
     conjuctions: dict[str, dict[str, Signal]] = {}
     sources: dict[str, tuple[str, ...]] = {}
@@ -68,10 +68,7 @@ def solve(content: str, part2: bool = False) -> int:
                 inputs = conjuctions[module]
                 assert source is not None
                 inputs[source] = signal
-                if all(inputs.get(s, LOW) == HIGH for s in sources[module]):
-                    new_signal = LOW
-                else:
-                    new_signal = HIGH
+                new_signal = LOW if all(inputs.get(s, LOW) == HIGH for s in sources[module]) else HIGH
             else:
                 if part2 and module == "rx" and signal is LOW:
                     print("rx", i)

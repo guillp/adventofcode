@@ -2,7 +2,7 @@ from itertools import combinations
 from math import prod
 
 
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     weights = [int(line) for line in content.splitlines()]
 
     total_weight = sum(weights)

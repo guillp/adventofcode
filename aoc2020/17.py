@@ -38,9 +38,8 @@ def part1(content: str) -> int:
             if state:
                 if sum(nb in previous_cubes for nb in neighbors(x, y, z)) in (2, 3):
                     new_cubes.add((x, y, z))
-            else:
-                if sum(nb in previous_cubes for nb in neighbors(x, y, z)) == 3:
-                    new_cubes.add((x, y, z))
+            elif sum(nb in previous_cubes for nb in neighbors(x, y, z)) == 3:
+                new_cubes.add((x, y, z))
 
         return new_cubes
 
@@ -90,9 +89,8 @@ def part2(content: str) -> int:
                     3,
                 ):
                     new_cubes.add((w, x, y, z))
-            else:
-                if sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) == 3:
-                    new_cubes.add((w, x, y, z))
+            elif sum(nb in previous_cubes for nb in hyperneighbors(w, x, y, z)) == 3:
+                new_cubes.add((w, x, y, z))
 
         return new_cubes
 

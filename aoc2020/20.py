@@ -53,7 +53,7 @@ class Tile:
         )
 
     @cache
-    def flip(self, horizontal: bool = False, vertical: bool = False) -> "Tile":
+    def flip(self, *, horizontal: bool = False, vertical: bool = False) -> "Tile":
         if vertical:
             pixels = frozenset(complex(self.size - pos.real - 1, pos.imag) for pos in self.pixels)
         elif horizontal:
@@ -69,21 +69,22 @@ class Tile:
 
     @cache
     def border(self, side: Direction) -> str:
-        if side == Direction.UP:
-            return "".join("#" if complex(x, 0) in self.pixels else "." for x in range(self.size))
-        if side == Direction.RIGHT:
-            return "".join("#" if complex(self.size - 1, y) in self.pixels else "." for y in range(self.size))
-        if side == Direction.DOWN:
-            return "".join("#" if complex(x, self.size - 1) in self.pixels else "." for x in range(self.size))
-        if side == Direction.LEFT:
-            return "".join("#" if complex(0, y) in self.pixels else "." for y in range(self.size))
+        match side:
+            case Direction.UP:
+                return "".join("#" if complex(x, 0) in self.pixels else "." for x in range(self.size))
+            case Direction.RIGHT:
+                return "".join("#" if complex(self.size - 1, y) in self.pixels else "." for y in range(self.size))
+            case Direction.DOWN:
+                return "".join("#" if complex(x, self.size - 1) in self.pixels else "." for x in range(self.size))
+            case Direction.LEFT:
+                return "".join("#" if complex(0, y) in self.pixels else "." for y in range(self.size))
 
     def __repr__(self) -> str:
         return f"Tile {self.id}{self.transformations}"
 
     def __iter__(self) -> Iterator[tuple[bool, ...]]:
-        for y in range(0, self.size):
-            yield tuple(complex(x, y) in self.pixels for x in range(0, self.size))
+        for y in range(self.size):
+            yield tuple(complex(x, y) in self.pixels for x in range(self.size))
 
     def __str__(self) -> str:
         return repr(self) + ":\n" + "\n".join("".join("#" if pixel else "." for pixel in line) for line in self)
@@ -103,7 +104,7 @@ def solve(content: str) -> Iterator[int]:
                 for other_tile in tiles
                 if other_tile.id != tile.id
                 for transformed_other_tile in (
-                    other_tile.rotate(rotation).flip(h, v)
+                    other_tile.rotate(rotation).flip(horizontal=h, vertical=v)
                     for rotation in Rotation
                     for h, v in ((False, False), (True, False), (False, True))
                 )
@@ -168,9 +169,9 @@ def solve(content: str) -> Iterator[int]:
             Rotation.ANTICLOCKWISE,
         ):
             for hflip, vflip in ((False, False), (True, False), (False, True)):
-                lines = list(image.rotate(rotation).flip(hflip, vflip))
+                lines = list(image.rotate(rotation).flip(horizontal=hflip, vertical=vflip))
                 for y, (line1, line2, line3) in enumerate(zip(lines, lines[1:], lines[2:])):
-                    for x in range(0, image.size - 20):
+                    for x in range(image.size - 20):
                         if all(
                             line1[x + 18 : x + 19]
                             + line2[x : x + 1]
@@ -182,7 +183,7 @@ def solve(content: str) -> Iterator[int]:
                             + line3[x + 7 : x + 8]
                             + line3[x + 10 : x + 11]
                             + line3[x + 13 : x + 14]
-                            + line3[x + 16 : x + 17]
+                            + line3[x + 16 : x + 17],
                         ):
                             yield rotation, hflip, vflip, x, y
 

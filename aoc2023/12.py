@@ -30,9 +30,11 @@ def arrange(positions: str, groups: tuple[int]) -> int:
         return 0  # fail fast on impossible cases
 
     s = 0
-    if "." not in positions[: groups[0]]:  # the next group fits
-        if positions[groups[0]] in ".?":  # there is a separator after the group
-            s += arrange(positions[groups[0] + 1 :], groups[1:])
+    if (
+        "." not in positions[: groups[0]]  # the next group fits
+        and positions[groups[0]] in ".?"
+    ):  # there is a separator after the group
+        s += arrange(positions[groups[0] + 1 :], groups[1:])
 
     if positions[0] in ".?":  # try the same alg without the leading . or ?
         s += arrange(positions[1:], groups)

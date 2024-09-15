@@ -14,8 +14,7 @@ def solve(content: str) -> Iterator[int]:
     def orbits(leave: str) -> int:
         if leave not in G:
             return 0
-        else:
-            return 1 + orbits(G[leave])
+        return 1 + orbits(G[leave])
 
     yield sum(orbits(leave) for leave in G)
 
@@ -52,7 +51,7 @@ G)H
 D)I
 E)J
 J)K
-K)L""")
+K)L"""),
     )
     == 42
 )
@@ -72,7 +71,7 @@ E)J
 J)K
 K)L
 K)YOU
-I)SAN""")
+I)SAN"""),
 ) == (54, 4)
 
 

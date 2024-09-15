@@ -38,10 +38,7 @@ def grid_to_graph(grid: dict[complex, str], paths: str = ".") -> dict[str, dict[
     return G
 
 
-def solve(
-    content: str,
-    part2: bool = False,
-) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     grid = {complex(x, y): c for y, line in enumerate(content.splitlines()) for x, c in enumerate(line) if c != "#"}
     G = grid_to_graph(grid)
     targets = frozenset(G)
@@ -61,7 +58,7 @@ def solve(
         else:
             for next_target in targets.difference(visited):
                 next_cost = G[visited[-1]][next_target]
-                pool.append((cost + next_cost, visited + (next_target,)))
+                pool.append((cost + next_cost, (*visited, next_target)))
 
     if best is None:
         raise ValueError("Solution not found!")

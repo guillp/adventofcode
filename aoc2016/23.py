@@ -1,4 +1,4 @@
-def solve(content: str, part2: bool = False) -> int:
+def solve(content: str, *, part2: bool = False) -> int:
     registers = {"a": 12 if part2 else 7, "b": 0, "c": 0}
 
     def val(x: str) -> int:
