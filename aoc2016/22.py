@@ -51,8 +51,8 @@ def part2(content: str) -> int:
         y_max = max(y_max, y)
 
     G[x_max, 0] = "T"
-    W, H = x_max + 1, y_max + 1
-    print_grid(G, W, H)
+    # W, H = x_max + 1, y_max + 1
+    # print_grid(G, W, H)
 
     for _ in range(6):
         move(G, "LEFT")
@@ -66,7 +66,7 @@ def part2(content: str) -> int:
         move(G, "LEFT")
         move(G, "UP")
         move(G, "RIGHT")
-    print_grid(G, W, H)
+    # print_grid(G, W, H)
 
     return 6 + 6 + 22 + 35 * 5
 
