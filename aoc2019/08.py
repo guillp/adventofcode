@@ -6,7 +6,7 @@ def solve(content: str) -> Iterator[int | str]:
     HEIGHT = 6
     LAYER_SIZE = WIDTH * HEIGHT
 
-    assert len(content) % LAYER_SIZE == 0
+    assert len(content.strip()) % LAYER_SIZE == 0
 
     layers = [content[LAYER_SIZE * i : LAYER_SIZE * (i + 1)] for i in range(len(content) // LAYER_SIZE)]
 

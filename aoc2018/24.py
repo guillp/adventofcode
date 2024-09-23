@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 from __future__ import annotations
 
 import re
@@ -50,7 +51,7 @@ def iter_groups(part: str) -> Iterator[tuple[Group, int]]:
             r"(\d+) units each with (\d+) hit points (.*?) ?with an attack that does (\d+) (.*?) damage at initiative (\d+)",
             part,
             re.MULTILINE,
-        )
+        ),
     ):
         immune_to: tuple[str, ...] = ()
         weak_to: tuple[str, ...] = ()
@@ -77,7 +78,7 @@ def iter_groups(part: str) -> Iterator[tuple[Group, int]]:
 assert next(
     iter_groups("""\
 Immune System:
-18 units each with 729 hit points (weak to fire; immune to cold, slashing) with an attack that does 8 radiation damage at initiative 10""")
+18 units each with 729 hit points (weak to fire; immune to cold, slashing) with an attack that does 8 radiation damage at initiative 10"""),
 ) == (
     Group(
         id=1,
@@ -144,7 +145,7 @@ def fight(groups: dict[Group, int], boost: int = 0) -> dict[Group, int]:
 def solve(content: str) -> Iterator[int]:
     immune_part, infection_part = content.split("\n\n")
 
-    groups = {g: n for g, n in chain(iter_groups(immune_part), iter_groups(infection_part))}
+    groups = dict(chain(iter_groups(immune_part), iter_groups(infection_part)))
 
     yield sum(fight(dict(groups)).values())
 
