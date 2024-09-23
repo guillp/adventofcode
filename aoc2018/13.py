@@ -1,12 +1,5 @@
 from collections.abc import Iterator
-
-test_content = r"""/->-\
-|   |  /----\
-| /-+--+-\  |
-| | |  | v  |
-\-+-/  \-+--/
-  \------/
-  """
+from itertools import count
 
 
 def solve(content: str) -> Iterator[str]:
@@ -20,7 +13,8 @@ def solve(content: str) -> Iterator[str]:
             grid[x, y] = "|"
             carts[y, x] = c, 0
 
-        # for tick in count():
+    first_crash = True
+    for tick in count():
         #    for y in range(0, len(content.splitlines())):
         #       print("".join(
         #           carts[y,x][0] if (y,x) in carts else grid.get((x,y)," ")
@@ -35,58 +29,51 @@ def solve(content: str) -> Iterator[str]:
             track = grid[x, y]
 
             if track == "+":
-                track = {"^": "\\|/", "v": "\\|/", ">": "/-\\", "<": "/-\\"}[direction][intersections % 3]
+                track = {
+                    "^": r"\|/",
+                    "v": r"\|/",
+                    ">": "/-\\",
+                    "<": "/-\\",
+                }[direction][intersections % 3]
                 intersections += 1
-            match track, direction:
-                case "|", "^":
-                    y -= 1
-                case "|", "v":
-                    y += 1
-                case "-", ">":
-                    x += 1
-                case "-", "<":
-                    x -= 1
-                case "/", "^":
-                    x += 1
-                    direction = ">"
-                case "/", "<":
-                    y += 1
-                    direction = "v"
-                case "/", ">":
-                    y -= 1
-                    direction = "^"
-                case "/", "v":
-                    x -= 1
-                    direction = "<"
-                case "\\", ">":
-                    y += 1
-                    direction = "v"
-                case "\\", "<":
-                    y -= 1
-                    direction = "^"
-                case "\\", "v":
-                    x += 1
-                    direction = ">"
-                case "\\", "^":
-                    x -= 1
-                    direction = "<"
-                case _:
-                    assert False
+            x, y, direction = {
+                "|^": (x, y - 1, "^"),
+                "|v": (x, y + 1, "v"),
+                "->": (x + 1, y, ">"),
+                "-<": (x - 1, y, "<"),
+                "/^": (x + 1, y, ">"),
+                "/<": (x, y + 1, "v"),
+                "/>": (x, y - 1, "^"),
+                "/v": (x - 1, y, "<"),
+                r"\<": (x, y - 1, "^"),
+                r"\>": (x, y + 1, "v"),
+                r"\v": (x + 1, y, ">"),
+                r"\^": (x - 1, y, "<"),
+            }[f"{track}{direction}"]
 
             if (y, x) in carts:  # collision
-                yield f"{x},{y}"
+                if first_crash:
+                    yield f"{x},{y}"
+                    first_crash = False
                 del carts[(y, x)]
-                if len(carts) == 0:
-                    return
                 if len(carts) == 1:
                     (y, x) = next(iter(carts))
                     yield f"{x},{y}"
+                    return
             else:
                 carts[y, x] = direction, intersections
     assert False
 
 
-# assert next(solve(test_content)) == "7,3"
+test_content = r"""/->-\
+|   |  /----\
+| /-+--+-\  |
+| | |  | v  |
+\-+-/  \-+--/
+  \------/
+  """
+
+assert next(solve(test_content)) == "7,3"
 
 with open("13.txt") as f:
     content = f.read()

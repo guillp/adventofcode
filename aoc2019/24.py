@@ -124,9 +124,9 @@ def part2(content: str, minutes: int = 200) -> int:
     for _ in range(minutes):
         grid = step(grid)
 
-    for layer in sorted(grid):
-        print(layer, len(grid[layer]))
-        print_grid(grid[layer])
+    # for layer in sorted(grid):
+    #    print(layer, len(grid[layer]))
+    #    print_grid(grid[layer])
 
     return sum(len(layer) for layer in grid.values())
 

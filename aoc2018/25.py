@@ -1,3 +1,7 @@
+from collections import defaultdict
+from itertools import combinations
+
+
 def manhattan(a: tuple[int, ...], b: tuple[int, ...]) -> int:
     return sum(abs(x - y) for x, y in zip(a, b))
 
@@ -5,19 +9,23 @@ def manhattan(a: tuple[int, ...], b: tuple[int, ...]) -> int:
 def part1(content: str) -> int:
     points = {tuple(int(x) for x in line.split(",")) for line in content.strip().splitlines()}
 
-    constellations = set()
-    while points:
-        constellation = {points.pop()}
-        while True:
-            for candidate in tuple(points):
-                if any(manhattan(point, candidate) <= 3 for point in constellation):
-                    constellation.add(candidate)
-                    points.remove(candidate)
-                    break
-            else:
-                break
+    distances = defaultdict[tuple[int, ...], set[tuple[int, ...]]](set)
+    for a, b in combinations(points, r=2):
+        if manhattan(a, b) <= 3:
+            distances[a].add(b)
+            distances[b].add(a)
 
-        constellations.add(tuple(constellation))
+    constellations = set[frozenset[tuple[int, ...]]]()
+    while points:
+        starting_point = points.pop()
+        constellation = {starting_point}
+        remaining = {starting_point}
+        while remaining:
+            remaining |= distances[remaining.pop()] - constellation
+            constellation |= remaining
+
+        constellations.add(frozenset(constellation))
+        points -= constellation
 
     return len(constellations)
 

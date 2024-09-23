@@ -195,8 +195,8 @@ def solve(content: str) -> Iterator[int]:
                 return path
         assert False, "Solution not found!"
 
-    path = ",".join(str(x) for x in dfs())
-    print(path)
+    # path = ",".join(str(x) for x in dfs())
+    # print(path)
     # MANUALLY INSPECT FOR REPEATING FUNCTIONS
 
     A = "R,10,R,8,L,10,L,10"
