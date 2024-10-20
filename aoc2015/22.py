@@ -1,126 +1,154 @@
 from __future__ import annotations
 
 import re
-from copy import deepcopy
-from dataclasses import dataclass
+from collections.abc import Iterator
+from dataclasses import dataclass, field, replace
+from heapq import heappop, heappush
 
 
-@dataclass(unsafe_hash=True, eq=False)
-class Spell:
-    name: str
-    cost: int
-    damage: int = 0
+@dataclass(kw_only=True, order=True)
+class State:
+    boss_health: int = field(compare=True)
+    boss_damage: int = field(compare=True)
+    mana_spent: int = 0
+    player_health: int = 50
+    player_mana: int = 500
+    shield_turns: int = 0
+    poison_turns: int = 0
+    recharge_turns: int = 0
     armor: int = 0
-    health: int = 0
-    mana: int = 0
-    effect: int = 0
+    parent: State | None = None
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Spell):
-            return self.name == other.name
-        return super().__eq__(other)
+    def apply_active_spells(self) -> None:
+        self.armor = 0
+        if self.shield_turns > 0:
+            self.armor = 7
+            self.shield_turns -= 1
+        if self.poison_turns > 0:
+            self.poison_turns -= 1
+            self.boss_health -= 3
+        if self.recharge_turns > 0:
+            self.recharge_turns -= 1
+            self.player_mana += 101
+
+    def player_turns(self) -> Iterator[State]:
+        self.apply_active_spells()
+        if self.player_mana >= 53:
+            yield replace(
+                self,
+                boss_health=self.boss_health - 4,
+                mana_spent=self.mana_spent + 53,
+                player_mana=self.player_mana - 53,
+                parent=self,
+            )
+        if self.player_mana >= 73:
+            yield replace(
+                self,
+                boss_health=self.boss_health - 2,
+                mana_spent=self.mana_spent + 73,
+                player_health=self.player_health + 2,
+                player_mana=self.player_mana - 73,
+                parent=self,
+            )
+        if self.player_mana >= 113 and self.shield_turns == 0:
+            yield replace(
+                self,
+                mana_spent=self.mana_spent + 113,
+                player_mana=self.player_mana - 113,
+                shield_turns=6,
+                parent=self,
+            )
+        if self.player_mana >= 173 and self.poison_turns == 0:
+            yield replace(
+                self,
+                mana_spent=self.mana_spent + 173,
+                player_mana=self.player_mana - 173,
+                poison_turns=6,
+                parent=self,
+            )
+        if self.player_mana >= 229 and self.recharge_turns == 0:
+            yield replace(
+                self,
+                mana_spent=self.mana_spent + 229,
+                player_mana=self.player_mana - 229,
+                recharge_turns=5,
+                parent=self,
+            )
+
+    def boss_turn(self) -> None:
+        self.apply_active_spells()
+
+        if self.boss_health > 0:
+            self.player_health -= max(self.boss_damage - self.armor, 1)
 
 
-spells = (
-    Spell("Magic Missile", 53, damage=4),
-    Spell("Drain", 73, damage=2, health=2),
-    Spell("Shield", 113, armor=7, effect=6),
-    Spell("Poison", 173, damage=3, effect=6),
-    Spell("Recharge", 229, mana=101, effect=5),
-)
+def solve(content: str, *, part2: bool = False, initial_player_health: int = 50, initial_player_mana: int = 500) -> int:
+    boss_health, damage = map(int, re.findall(r"\d+", content, re.MULTILINE))
+    pool = [
+        State(
+            boss_health=boss_health,
+            boss_damage=damage,
+            player_health=initial_player_health,
+            player_mana=initial_player_mana,
+        ),
+    ]
 
-
-@dataclass(unsafe_hash=True)
-class GameState:
-    boss_health: int
-    boss_damage: int
-    health: int
-    mana: int
-    active_spells: tuple[Spell, ...] = ()
-    used_spells: tuple[Spell, ...] = ()
-    previous_states: tuple[GameState, ...] = ()
-    hard: bool = False
-
-    @property
-    def mana_spent(self) -> int:
-        return sum(spell.cost for spell in self.used_spells)
-
-
-def solve(content: str, *, part2: bool = False) -> int:
-    hit_points, damage = map(int, re.findall(r"\d+", content, re.MULTILINE))
-    pool = [GameState(hit_points, damage, 50, 500, hard=part2)]
-
-    s: GameState | None = None
+    best_state: State | None = None
     while pool:
-        state = min(
-            pool,
-            key=lambda state: (
-                state.boss_health,
-                len(state.used_spells),
-                -state.health,
-                -state.mana,
-            ),
-        )
-        pool.remove(state)
+        state = heappop(pool)
 
-        if s and state.mana_spent > s.mana_spent:
+        if best_state is not None and state.mana_spent > best_state.mana_spent:
             continue
 
-        if state.hard:
-            state.health -= 1
-            if state.health <= 0:
+        if part2:
+            state.player_health -= 1
+            if state.player_health <= 0:
                 continue
 
-        # apply active effects
-        for spell in state.active_spells[::]:
-            state.health += spell.health
-            state.mana += spell.mana
-            state.boss_health -= spell.damage
+        for next_state in state.player_turns():
+            if next_state.boss_health <= 0:
+                if best_state is None or next_state.mana_spent < best_state.mana_spent:
+                    best_state = next_state
+                continue
 
-            if spell.effect > 1:
-                spell.effect -= 1
-            else:
-                state.active_spells = tuple(s for s in state.active_spells if s != spell)
+            next_state.boss_turn()
+            if next_state.player_health <= 0:
+                continue
 
-        # cast all possible spells, leading to new states
-        for spell in spells:
-            if spell not in state.active_spells and spell.cost < state.mana:
-                new_state = deepcopy(state)
-                new_state.mana -= spell.cost
-                if spell.effect:
-                    new_state.active_spells += (deepcopy(spell),)
-                else:
-                    new_state.boss_health -= spell.damage
-                    new_state.health += spell.health
+            if next_state.boss_health <= 0:
+                if best_state is None or next_state.mana_spent < best_state.mana_spent:
+                    best_state = next_state
+                continue
 
-                new_state.used_spells += (spell,)
-                new_state.previous_states += (deepcopy(new_state),)
+            heappush(pool, next_state)
 
-                # boss turn, apply all active effects again
-                armor = 0
-                for spell in new_state.active_spells[::]:
-                    new_state.health += spell.health
-                    new_state.mana += spell.mana
-                    new_state.boss_health -= spell.damage
-                    armor += spell.armor
+    assert best_state is not None, "Solution not found!"
+    return best_state.mana_spent
 
-                    if spell.effect >= 1:
-                        spell.effect -= 1
-                    else:
-                        new_state.active_spells = tuple(s for s in new_state.active_spells if s != spell)
 
-                if new_state.boss_health <= 0:
-                    if s is None or new_state.mana_spent < s.mana_spent:
-                        s = new_state
-                else:
-                    new_state.health -= max(state.boss_damage - armor, 1)
-                    if new_state.health > 0:
-                        pool.append(new_state)
+assert (
+    solve(
+        """\
+        Hit Points: 13
+        Damage: 8
+        """,
+        initial_player_health=10,
+        initial_player_mana=250,
+    )
+    == 226
+)
 
-    if s is None:
-        raise ValueError("Solution not found!")
-    return s.mana_spent
-
+assert (
+    solve(
+        """\
+        Hit Points: 14
+        Damage: 8
+        """,
+        initial_player_health=10,
+        initial_player_mana=250,
+    )
+    == 641
+)
 
 with open("22.txt") as f:
     content = f.read()
