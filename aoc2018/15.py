@@ -14,7 +14,7 @@ class Team(Enum):
 @dataclass(slots=True)
 class Unit:
     position: complex
-    type: Team
+    team: Team
     attack_power: int = 3
     hp: int = 200
 
@@ -53,7 +53,7 @@ class Unit:
                         ):  # walking to a free cell
                             next_to_visit.append((*path, next_pos))
                         case _ if any(
-                            u.position == next_pos for u in units if u.type != self.type and u.is_alive
+                            u.position == next_pos for u in units if u.team != self.team and u.is_alive
                         ):  # walking to a foe
                             targets.append(path)
             if targets:
@@ -70,7 +70,7 @@ class Unit:
             u
             for u in units
             if u.is_alive
-            and u.type != self.type
+            and u.team != self.team
             and u.position in (self.position - 1j, self.position - 1, self.position + 1, self.position + 1j)
         ]
         if not targets:
@@ -87,7 +87,7 @@ def solve(content: str) -> Iterator[int]:
 
     for elf_attack_power in range(30, 100):
         rounds, units = fight(grid, elf_attack_power, part2=True)
-        if all(u.is_alive for u in units if u.type == Team.ELF):
+        if all(u.is_alive for u in units if u.team == Team.ELF):
             yield rounds * sum(u.hp for u in units if u.is_alive)
             break
 
@@ -99,10 +99,10 @@ def fight(grid: dict[complex, str], elf_attack_power: int = 3, *, part2: bool = 
         units = sorted(filter(lambda u: u.is_alive, units), key=lambda u: (u.position.imag, u.position.real))
         for unit in units:
             unit.fight(grid, units)
-            if part2 and any(u.type == Team.ELF and not u.is_alive for u in units):
+            if part2 and any(u.team == Team.ELF and not u.is_alive for u in units):
                 return rounds, units
-            if all(not u.is_alive for u in units if u.type == Team.ELF) or all(
-                not u.is_alive for u in units if u.type == Team.GOBLIN
+            if all(not u.is_alive for u in units if u.team == Team.ELF) or all(
+                not u.is_alive for u in units if u.team == Team.GOBLIN
             ):
                 if unit == units[-1]:  # if it is the last unit to play, this is considered as a full round
                     rounds += 1
