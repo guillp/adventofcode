@@ -22,8 +22,6 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN101",
-    "ANN102",
     "ARG001",
     "B007",
     "B011",
@@ -57,7 +55,7 @@ ignore = [
     "RET504",
     "S",
     "T201",
-    "TCH003",
+    "TC003",
     "TD",
     "TRY003"
 ]

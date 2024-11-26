@@ -23,8 +23,7 @@ def part1(content: str) -> int:
                 (nb := sum((xn, yn) in grid for xn, yn in ((x, y - 1), (x + 1, y), (x, y + 1), (x - 1, y)))) == 1
                 and (x, y) in grid
             )
-            or nb in (1, 2)
-            and (x, y) not in grid
+            or (nb in (1, 2) and (x, y) not in grid)
         )
 
     history = set()
