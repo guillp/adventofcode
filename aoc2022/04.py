@@ -5,9 +5,9 @@ from collections.abc import Iterator
 def solve(content: str) -> Iterator[int]:
     pairs = [tuple(int(x) for x in re.findall(r"\d+", line)) for line in content.splitlines()]
 
-    yield sum(a <= c and b >= d or c <= a and d >= b for a, b, c, d in pairs)
+    yield sum((a <= c and b >= d) or (c <= a and d >= b) for a, b, c, d in pairs)
     yield sum(
-        b >= c >= a or b >= d and a <= c or b >= d >= a or d >= a >= c or d >= b and c <= a or d >= b >= c
+        b >= c >= a or (b >= d and a <= c) or b >= d >= a or d >= a >= c or (d >= b and c <= a) or d >= b >= c
         for a, b, c, d in pairs
     )
 

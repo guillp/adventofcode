@@ -7,15 +7,9 @@ def surface_area(cubes: set[tuple[int, int, int]]) -> int:
     surface = len(cubes) * 6
     for (x1, y1, z1), (x2, y2, z2) in combinations(cubes, 2):
         if (
-            x1 == x2
-            and y1 == y2
-            and abs(z1 - z2) == 1
-            or x1 == x2
-            and abs(y1 - y2) == 1
-            and z1 == z2
-            or abs(x1 - x2) == 1
-            and y1 == y2
-            and z1 == z2
+            (x1 == x2 and y1 == y2 and abs(z1 - z2) == 1)
+            or (x1 == x2 and abs(y1 - y2) == 1 and z1 == z2)
+            or (abs(x1 - x2) == 1 and y1 == y2 and z1 == z2)
         ):
             surface -= 2
     return surface
