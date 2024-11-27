@@ -3,9 +3,7 @@ def part1(content: str) -> int:
     pointer = 0
     instructions = content.strip().splitlines()
     visited = set()
-    while True:
-        if pointer in visited:
-            return acc
+    while pointer not in visited:
         instruction = instructions[pointer]
         visited.add(pointer)
         match instruction.split():
@@ -16,6 +14,7 @@ def part1(content: str) -> int:
             case "nop", val:
                 pass
         pointer += 1
+    return acc
 
 
 def part2(content: str) -> int:
@@ -24,24 +23,18 @@ def part2(content: str) -> int:
         acc = 0
         pointer = 0
         visited = set()
-        while True:
+        while pointer not in visited:
             if pointer == len(instructions):
                 return acc
-            if pointer in visited:
-                break
             instruction = instructions[pointer]
             visited.add(pointer)
             match instruction.split():
                 case "acc", val:
                     acc += int(val)
-                case "jmp", val if instruction == corrupted_instruction:
-                    pass
-                case "jmp", val:
+                case "jmp", val if instruction != corrupted_instruction:
                     pointer += int(val) - 1
                 case "nop", val if instruction == corrupted_instruction:
                     pointer += int(val) - 1
-                case "nop", val:
-                    pass
             pointer += 1
 
     assert False, "Solution not found!"

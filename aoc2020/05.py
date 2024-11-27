@@ -2,10 +2,8 @@ from collections.abc import Iterator
 
 
 def calc_row_id(seat: str) -> int:
-    front = 0
-    back = 127
-    left = 0
-    right = 7
+    front, back = 0, 127
+    left, right = 0, 7
     for char in seat:
         depth = back - front + 1
         width = right - left + 1

@@ -15,25 +15,21 @@ with open("12.txt") as f:
 
 @cache
 def arrange(positions: str, groups: tuple[int]) -> int:
-    while positions and positions[0] == ".":  # remove unwanted leading dots
-        positions = positions[1:]
+    positions = positions.strip(".")
 
-    while positions and positions.endswith(".."):  # remove trailing dots
-        positions = positions[:-1]
-
-    if positions and positions[-1] != ".":
+    if positions:
         positions += "."  # add an extra dot at the end to simplify our logic
 
     if not groups and "#" not in positions:
-        return 1
+        return 1  # return fast when there is a single solution
     if sum(groups) > len(positions) or (not groups and "#" in positions):
         return 0  # fail fast on impossible cases
 
     s = 0
     if (
         "." not in positions[: groups[0]]  # the next group fits
-        and positions[groups[0]] in ".?"
-    ):  # there is a separator after the group
+        and positions[groups[0]] in ".?"  # there is a separator after the group
+    ):
         s += arrange(positions[groups[0] + 1 :], groups[1:])
 
     if positions[0] in ".?":  # try the same alg without the leading . or ?
