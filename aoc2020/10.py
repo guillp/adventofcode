@@ -6,8 +6,7 @@ from itertools import pairwise
 def solve(content: str) -> Iterator[int]:
     adapters = tuple(sorted(int(x) for x in content.strip().splitlines()))
     diff1 = diff3 = 0
-    device_joltage = max(adapters) + 3
-    all_nodes = (0, *adapters, device_joltage)
+    all_nodes = (0, *adapters, max(adapters) + 3)
     for a, b in pairwise(all_nodes):
         match b - a:
             case 1:

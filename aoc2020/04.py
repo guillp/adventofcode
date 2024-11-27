@@ -2,10 +2,12 @@ import re
 
 
 def solve(content: str) -> tuple[int, int]:
+    required_fields = {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
     part1 = part2 = 0
     for passport in content.strip().split("\n\n"):
         fields = dict(field.split(":") for field in passport.split())
-        if not {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}.issubset(fields):
+
+        if not required_fields.issubset(fields):
             continue
 
         part1 += 1

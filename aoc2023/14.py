@@ -4,7 +4,7 @@ type Grid = dict[tuple[int, int], str]
 
 
 def roll(grid: Grid, height: int, width: int) -> Grid:
-    target = dict(grid)
+    target = grid.copy()
     for x in range(width):
         stop = 0
         for y in range(height):
@@ -31,12 +31,7 @@ def part1(content: str) -> int:
 
 
 def get_load(grid: Grid, height: int, width: int) -> int:
-    load = 0
-    for x in range(width):
-        for y in range(height):
-            if grid[x, y] == "O":
-                load += height - y
-    return load
+    return sum(height - y for x in range(width) for y in range(height) if grid[x, y] == "O")
 
 
 def rotate(grid: Grid, height: int) -> Grid:
@@ -45,26 +40,23 @@ def rotate(grid: Grid, height: int) -> Grid:
 
 def part2(content: str) -> int:
     lines = content.splitlines()
-    H = len(lines)
-    W = len(lines[0])
+    height = len(lines)
+    width = len(lines[0])
     grid = {(x, y): c for y, line in enumerate(lines) for x, c in enumerate(line)}
     states = [grid]
     for i in count(1):
-        grid = roll(grid, H, W)  # north
-        grid = rotate(grid, H)
-        grid = roll(grid, W, H)  # west
-        grid = rotate(grid, W)
-        grid = roll(grid, H, W)  # south
-        grid = rotate(grid, H)
-        grid = roll(grid, W, H)  # east
-        grid = rotate(grid, W)
+        for _ in range(4):
+            grid = roll(grid, height, width)
+            grid = rotate(grid, height)
+            height, width = width, height
 
         try:
             j = states.index(grid)  # loop found
-            k = (1000000000 - j) % (i - j) + j
-            return get_load(states[k], H, W)
         except ValueError:
             states.append(grid)
+        else:
+            k = (1000000000 - j) % (i - j) + j
+            return get_load(states[k], height, width)
 
     assert False, "Solution not found!"
 

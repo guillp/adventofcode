@@ -10,32 +10,17 @@ def solve(content: str, *, part2: bool = False) -> int:
     assert False, "solution not found"
 
 
-assert (
-    solve("""\
+test_content = """\
 1721
 979
 366
 299
 675
 1456
-""")
-    == 514579
-)
+"""
 
-assert (
-    solve(
-        """\
-1721
-979
-366
-299
-675
-1456
-""",
-        part2=True,
-    )
-    == 241861950
-)
+assert solve(test_content) == 514579
+assert solve(test_content, part2=True) == 241861950
 
 with open("01.txt") as f:
     content = f.read()
