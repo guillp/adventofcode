@@ -2,16 +2,14 @@ def solve(content: str, *, part2: bool = False) -> int:
     stack = dict[int, list[int]]()
     initial_numbers = tuple(int(x) for x in content.split(","))
     for i, x in enumerate(initial_numbers):
-        stack.setdefault(x, []).append(i+1)
+        stack.setdefault(x, []).append(i + 1)
 
     latest = initial_numbers[-1]
-    for i in range(len(initial_numbers)+1, 30000001 if part2 else 2021):
-        if len(stack[latest]) == 1:
-            latest = 0
-        else:
-            latest = stack[latest][-1] - stack[latest][-2]
+    for i in range(len(initial_numbers) + 1, 30000001 if part2 else 2021):
+        latest = 0 if len(stack[latest]) == 1 else stack[latest][-1] - stack[latest][-2]
         stack.setdefault(latest, []).append(i)
     return latest
+
 
 assert solve("0,3,6") == 436
 assert solve("1,3,2") == 1
