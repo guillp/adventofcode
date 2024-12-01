@@ -1,9 +1,8 @@
-import re
 from collections.abc import Iterator
 
 
 def solve(content: str) -> Iterator[int]:
-    numbers = [int(x) for x in re.findall(r"\d+", content, re.MULTILINE)]
+    numbers = [int(x) for x in content.split()]
     left_list = sorted(numbers[::2])
     right_list = sorted(numbers[1::2])
 
