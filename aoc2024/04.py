@@ -11,18 +11,19 @@ def solve(content: str) -> tuple[int, int]:
     for x, y in product(range(height), repeat=2):
         pos = complex(x, y)
         for direction in (-1j, 1 - 1j, 1, 1 + 1j, 1j, -1 + 1j, -1, -1 - 1j):
-            if (
-                grid.get(pos) == "X"
-                and grid.get(pos + direction) == "M"
-                and grid.get(pos + 2 * direction) == "A"
-                and grid.get(pos + 3 * direction) == "S"
-            ):
+            if "".join(grid.get(pos + i * direction, ".") for i in range(4)) == "XMAS":
                 part1 += 1
 
-        if grid.get(pos) == "A" and {grid.get(pos - 1 - 1j), grid.get(pos + 1 + 1j)} == {
+        if grid.get(pos) == "A" and {
+            grid.get(pos - 1 - 1j),
+            grid.get(pos + 1 + 1j),
+        } == {
             grid.get(pos + 1 - 1j),
             grid.get(pos - 1 + 1j),
-        } == {"M", "S"}:
+        } == {
+            "M",
+            "S",
+        }:
             part2 += 1
     return part1, part2
 
