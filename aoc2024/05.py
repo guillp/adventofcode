@@ -10,24 +10,18 @@ def solve(content: str) -> tuple[int, int]:
         predecessors[int(after)].add(int(before))
 
     def sortorder(left: int, right: int) -> int:
-        if right in predecessors[left]:
+        if left in predecessors[right]:
             return -1
         return 0
 
     part1 = part2 = 0
     for update in updates_part.splitlines():
         pages = [int(x) for x in update.split(",")]
-        seen = set[int]()
-        for page in pages:
-            required_pages = predecessors.get(page, set())
-            if any(predecessor in pages and predecessor not in seen for predecessor in required_pages):
-                fixed = sorted(pages, key=cmp_to_key(sortorder))
-                part2 += fixed[len(fixed) // 2]
-                break
-            seen.add(page)
-        else:
-            assert len(pages) % 2 == 1
+        fixed = sorted(pages, key=cmp_to_key(sortorder))
+        if pages == fixed:
             part1 += pages[len(pages) // 2]
+        else:
+            part2 += fixed[len(pages) // 2]
 
     return part1, part2
 
@@ -62,7 +56,7 @@ test_content = """\
 61,13,29
 97,13,75,29,47
 """
-assert tuple(solve(test_content)) == (143, 123)
+assert solve(test_content) == (143, 123)
 
 with open("05.txt") as f:
     content = f.read()
