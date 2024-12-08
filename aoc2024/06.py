@@ -7,38 +7,30 @@ def solve(content: str) -> Iterator[int]:
     init_guard = guard = next(pos for pos, c in grid.items() if c == "^")
     grid[guard] = "."
     direction = -1j
-    visited = {guard}
 
+    visited = set()
     while guard in grid:
-        next_pos = guard + direction
-        if next_pos not in grid:
-            yield len(visited)
-            break
-        if grid[next_pos] == "#":
+        visited.add(guard)
+        if grid.get(guard + direction) == "#":
             direction *= 1j
-        else:
-            guard = next_pos
-            visited.add(next_pos)
+        guard += direction
+
+    yield len(visited)
 
     possible_locations = set()
     for location in visited.copy():
-        new_grid = grid.copy()
-        new_grid[location] = "#"
+        new_grid = grid | {location: "#"}
         guard = init_guard
         direction = -1j
-        visited = {(guard, direction)}
-        while guard in grid:
-            next_pos = guard + direction
-            if (next_pos, direction) in visited:
+        visited2 = set()
+        while guard in new_grid:
+            if (guard, direction) in visited2:
                 possible_locations.add(location)
                 break
-            if next_pos not in new_grid:
-                break
-            if new_grid[next_pos] == "#":
+            visited2.add((guard, direction))
+            if new_grid.get(guard + direction) == "#":
                 direction *= 1j
-            else:
-                guard = next_pos
-                visited.add((next_pos, direction))
+            guard += direction
 
     yield len(possible_locations)
 
@@ -54,7 +46,6 @@ test_content = """\
 ........#.
 #.........
 ......#...
-
 """
 
 assert tuple(solve(test_content)) == (41, 6)
