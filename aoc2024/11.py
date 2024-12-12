@@ -2,14 +2,13 @@ from collections.abc import Iterator
 from functools import cache
 
 
+@cache
 def blink(stone: int) -> tuple[int, ...]:
-    match stone:
-        case 0:
-            return (1,)
-        case _ if (l := len(s := str(stone))) % 2 == 0:
-            return int(s[: l // 2]), int(s[l // 2 :])
-        case _:
-            return (stone * 2024,)
+    if stone == 0:
+        return (1,)
+    if (l := len(s := str(stone))) % 2 == 0:
+        return int(s[: l // 2]), int(s[l // 2 :])
+    return (stone * 2024,)
 
 
 @cache
