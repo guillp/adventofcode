@@ -4,32 +4,33 @@ from contextlib import suppress
 
 
 def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int, int]:  # noqa: PLR0913
+    # let A and B be the number of presses for each button
     # we know that `A * xa + B * xb = xt` and `A * ya + B * yb = yt`.
-    # so B = (xt - A * xa) / xb
-    # replace B in the second equation: A * ya + (xt - A * xa) / xb * yb = yt
-    # so A = (yt - xt * yb / xb) / (ya - xa * yb / xb)
+    # so, based on the first equation: `B = (xt - A * xa) / xb`
+    # replace B in the second equation: `A * ya + (xt - A * xa) / xb * yb = yt`
+    # so `A = (yt - xt * yb / xb) / (ya - xa * yb / xb)`
 
     top = yt - xt * yb / xb
     bottom = ya - xa * yb / xb
 
     a, mod = divmod(top, bottom)
-    # due to floating point precision, we need to check if the result is close to an integer
+    # due to floating point precision, modulo may be slightly off
     if math.isclose(mod, 0, abs_tol=1e-2):
         mod = 0
-    if mod != 0 and math.isclose(bottom - mod, 0, abs_tol=1e-2):
+    elif math.isclose(bottom, mod, abs_tol=1e-2):
         a += 1
         mod = 0
     if mod == 0:
         b = (xt - a * xa) / xb
         return int(a), int(b)
 
-    raise ValueError("Solution not found!")
+    raise ValueError
 
 
 def solve(content: str) -> tuple[int, int]:
     part1 = part2 = 0
     for machine in content.split("\n\n"):
-        xa, ya, xb, yb, xt, yt = map(int, re.findall(r"(\d+)", machine, re.MULTILINE))
+        xa, ya, xb, yb, xt, yt = map(int, re.findall(r"\d+", machine, re.MULTILINE))
         with suppress(ValueError):
             a, b = optimize(xa, ya, xb, yb, xt, yt)
             part1 += a * 3 + b
