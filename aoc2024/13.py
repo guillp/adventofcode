@@ -1,9 +1,9 @@
 import math
 import re
-from itertools import product
+from contextlib import suppress
 
 
-def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int, int]:
+def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int, int]:  # noqa: PLR0913
     # we know that `A * xa + B * xb = xt` and `A * ya + B * yb = yt`.
     # so B = (xt - A * xa) / xb
     # replace B in the second equation: A * ya + (xt - A * xa) / xb * yb = yt
@@ -14,9 +14,9 @@ def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int,
 
     a, mod = divmod(top, bottom)
     # due to floating point precision, we need to check if the result is close to an integer
-    if math.isclose(mod, 0 ,abs_tol=1e-2):
+    if math.isclose(mod, 0, abs_tol=1e-2):
         mod = 0
-    if mod != 0 and math.isclose(bottom-mod, 0 ,abs_tol=1e-2):
+    if mod != 0 and math.isclose(bottom - mod, 0, abs_tol=1e-2):
         a += 1
         mod = 0
     if mod == 0:
@@ -25,22 +25,20 @@ def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int,
 
     raise ValueError("Solution not found!")
 
+
 def solve(content: str) -> tuple[int, int]:
     part1 = part2 = 0
     for machine in content.split("\n\n"):
         xa, ya, xb, yb, xt, yt = map(int, re.findall(r"(\d+)", machine, re.MULTILINE))
-        part1 += min(
-            (a * 3 + b for a, b in product(range(100), repeat=2) if a * xa + b * xb == xt and a * ya + b * yb == yt),
-            default=0,
-        )
+        with suppress(ValueError):
+            a, b = optimize(xa, ya, xb, yb, xt, yt)
+            part1 += a * 3 + b
 
-        try:
+        with suppress(ValueError):
             a, b = optimize(xa, ya, xb, yb, xt + 10000000000000, yt + 10000000000000)
-            assert a* xa + b*xb == xt + 10000000000000
-            assert a* ya + b*yb == yt + 10000000000000
+            assert a * xa + b * xb == xt + 10000000000000
+            assert a * ya + b * yb == yt + 10000000000000
             part2 += a * 3 + b
-        except ValueError:
-            continue
 
     return part1, part2
 
