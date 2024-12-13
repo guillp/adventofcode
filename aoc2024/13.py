@@ -1,8 +1,29 @@
+import math
 import re
 from itertools import product
 
-from z3 import Ints, Optimize, sat  # type: ignore[import-untyped]
 
+def optimize(xa: int, ya: int, xb: int, yb: int, xt: int, yt: int) -> tuple[int, int]:
+    # we know that `A * xa + B * xb = xt` and `A * ya + B * yb = yt`.
+    # so B = (xt - A * xa) / xb
+    # replace B in the second equation: A * ya + (xt - A * xa) / xb * yb = yt
+    # so A = (yt - xt * yb / xb) / (ya - xa * yb / xb)
+
+    top = yt - xt * yb / xb
+    bottom = ya - xa * yb / xb
+
+    a, mod = divmod(top, bottom)
+    # due to floating point precision, we need to check if the result is close to an integer
+    if math.isclose(mod, 0 ,abs_tol=1e-2):
+        mod = 0
+    if mod != 0 and math.isclose(bottom-mod, 0 ,abs_tol=1e-2):
+        a += 1
+        mod = 0
+    if mod == 0:
+        b = (xt - a * xa) / xb
+        return int(a), int(b)
+
+    raise ValueError("Solution not found!")
 
 def solve(content: str) -> tuple[int, int]:
     part1 = part2 = 0
@@ -13,16 +34,13 @@ def solve(content: str) -> tuple[int, int]:
             default=0,
         )
 
-        a, b = Ints("a b")
-        o = Optimize()
-        o.add(a * xa + b * xb == xt + 10_000_000_000_000)
-        o.add(a * ya + b * yb == yt + 10_000_000_000_000)
-        o.add(a >= 0)
-        o.add(b >= 0)
-        o.minimize(a + b)
-        if o.check() == sat:
-            m = o.model()
-            part2 += m[a].as_long() * 3 + m[b].as_long()
+        try:
+            a, b = optimize(xa, ya, xb, yb, xt + 10000000000000, yt + 10000000000000)
+            assert a* xa + b*xb == xt + 10000000000000
+            assert a* ya + b*yb == yt + 10000000000000
+            part2 += a * 3 + b
+        except ValueError:
+            continue
 
     return part1, part2
 
