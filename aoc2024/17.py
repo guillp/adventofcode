@@ -9,9 +9,9 @@ def solve(content: str) -> Iterator[str|int]:
     # On each iteration, the computer divides `a` by 8 so it becomes smaller and smaller until it reaches 0.
     # There is 1 output instruction for each iteration.
     # There are 15 instructions so `8**15 <= a < 8**16`.
-    # We'll work backwards to find the initial value of `a`.
-    # On every step `i`:
-    #  - value of `a` is multiplied by 8 and added a number m that is less than 8**(i+1),
+    # We'll work backwards starting at `a=0` to find the initial value of `a`.
+    # On every step `i` (0-indexed):
+    #  - value of `a` is multiplied by 8 and added a number `m` that is less than 8**(i+1),
     #    so that the output matches the last `i` instructions.
     #  - value of `a` will then always be 8**i <= a < 8**(i+1)
     a = 0
