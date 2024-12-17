@@ -39,30 +39,25 @@ def part2(content: str, *, debug: bool = False) -> int:
 
     for movement in "".join(movements_part.splitlines()):
         direction = {">": 1, "<": -1, "^": -1j, "v": 1j}[movement]
-        pushes = {robot}
-        while pushes:
-            for push in pushes.copy():
-                match grid.get(push + direction):
-                    case "#":
-                        pushes.clear()
-                        break
-                    case "[" if push + direction not in pushes:
-                        pushes |= {push + direction, push + direction + 1}
-                        break
-                    case "]" if push + direction not in pushes:
-                        pushes |= {push + direction, push + direction - 1}
-                        break
-            else:
-                break
-
-        if not pushes:
-            continue
-        for push in sorted(pushes, key=lambda c: (c.real, c.imag) if movement in "<^" else (-c.real, -c.imag)):
-            grid[push + direction] = grid[push]
-            grid[push] = "."
-        grid[robot] = "."
-        robot += direction
-        grid[robot] = "@"
+        pushes = set()
+        new_pushes = {robot}
+        while new_pushes:
+            push = new_pushes.pop()
+            pushes.add(push)
+            match grid.get(push + direction):
+                case "#":
+                    break
+                case "[" if push + direction not in pushes:
+                    new_pushes |= {push + direction, push + direction + 1}
+                case "]" if push + direction not in pushes:
+                    new_pushes |= {push + direction, push + direction - 1}
+        else:
+            for push in sorted(pushes, key=lambda c: (c.real, c.imag) if movement in "<^" else (-c.real, -c.imag)):
+                grid[push + direction] = grid[push]
+                grid[push] = "."
+            grid[robot] = "."
+            robot += direction
+            grid[robot] = "@"
 
         if debug:
             print("after movement", movement)
