@@ -2,7 +2,7 @@ import re
 from collections.abc import Iterator
 
 
-def solve(content: str) -> Iterator[str|int]:
+def solve(content: str) -> Iterator[str | int]:
     a, b, c, *instructions = map(int, re.findall(r"\d+", content, re.MULTILINE))
     yield ",".join(map(str, computer(a, b, c, *instructions)))
 
@@ -16,13 +16,13 @@ def solve(content: str) -> Iterator[str|int]:
     #  - value of `a` will then always be 8**i <= a < 8**(i+1)
     a = 0
     for i in range(len(instructions)):
-        for m in range(8**(i+1)):
-            if list(computer(a * 8 + m, 0, 0, *instructions)) == instructions[-i-1:]:
+        for m in range(8 ** (i + 1)):
+            if list(computer(a * 8 + m, 0, 0, *instructions)) == instructions[-i - 1 :]:
                 a = a * 8 + m
                 break
         else:
             assert False, "Solution not found :("
-        assert 8 ** i <= a < 8 ** (i + 1)
+        assert 8**i <= a < 8 ** (i + 1)
 
     assert tuple(computer(a, 0, 0, *instructions)) == tuple(instructions)
     yield a
