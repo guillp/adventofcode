@@ -45,15 +45,13 @@ def best_path(
         if pos.real < target_pos.real and pos + 1 in keypad.values():
             yield from greedy(pos + 1, *keys, ">")
 
-    return "".join(
-        min(
+    return min(
             greedy(current_pos),
             key=lambda path: (
                 len(path),  # type: ignore[arg-type]  # favor shortest path
                 sum(a != b for a, b in pairwise(path)),  # with the least number of key changes
             ),
-        ),
-    )
+        )
 
 
 @cache
