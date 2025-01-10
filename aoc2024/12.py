@@ -29,20 +29,18 @@ def solve(content: str) -> Iterator[int]:
 
     yield sum(len(region) * perimeter for region, perimeter in regions.items())
 
-    part2 = 0
-    for region in regions:
-        # number of sides is equal to the number of corners
-        # so let's count corners instead of sides !
-        corners = [
-            (x+xd, y+yd)
-            for x, y in region
+    # number of sides is equal to the number of corners
+    # so let's count corners instead of sides !
+    yield sum(
+        len(r)
+        * sum(
+            {(x, y + yd), (x + xd, y)}.isdisjoint(r)  # outer corners
+            or ((x + xd, y + yd) not in r and {(x + xd, y), (x, y + yd)}.issubset(r))  # inner corners
+            for x, y in r
             for xd, yd in product((-1, 1), repeat=2)
-            if {(x, y+yd), (x+xd, y)}.isdisjoint(region) # outer corners
-            or ((x+xd, y+yd) not in region and {(x+xd, y), (x,y+yd)}.issubset(region)) # inner corners
-        ]
-
-        part2 += len(region) * len(corners)
-    yield part2
+        )
+        for r in regions
+    )
 
 
 test_content = """\

@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 )
             else:
                 if "-v" in sys.argv:
-                    print(f"{year} day {day}: OK in {time.perf_counter()-t0} s")
+                    print(f"{year} day {day}: OK in {time.perf_counter() - t0} s")
                 with day_hash.open("wt") as f:
                     f.write(current_filehash)
 
