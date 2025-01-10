@@ -86,9 +86,9 @@ def part2_wrap(pos: complex, heading: complex, grid: dict[complex, str], face_si
         next_pos,
         face_size,
     ), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
-    assert (
-        next_pos in grid
-    ), f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
+    assert next_pos in grid, (
+        f"{current_face} -> {next_face}, {pos} -> {next_pos}, {heading} -> {next_heading}, {x=}, {y=}"
+    )
     return next_pos, next_heading
 
 

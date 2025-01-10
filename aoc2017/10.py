@@ -31,7 +31,7 @@ def part2(content: str, nb: int = 256, rounds: int = 64) -> str:
     numbers.rotate(sum(lengths) * rounds + sum(range(skip_size)))
     numbers_lst = list(numbers)
 
-    return "".join(f"{tuple(accumulate(numbers_lst[i*16:(i+1)*16], xor))[-1]:02x}" for i in range(16))
+    return "".join(f"{tuple(accumulate(numbers_lst[i * 16 : (i + 1) * 16], xor))[-1]:02x}" for i in range(16))
 
 
 assert part1("3,4,1,5", 5) == 12

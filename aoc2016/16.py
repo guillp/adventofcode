@@ -5,7 +5,7 @@ def dragon_curve(content: str, length: int = 272) -> str:
     if len(content) >= length:
         return content[:length]
 
-    return dragon_curve(f'{content}0{"".join("01"[c=="0"] for c in content[::-1])}', length)
+    return dragon_curve(f"{content}0{''.join('01'[c == '0'] for c in content[::-1])}", length)
 
 
 def checksum(content: str) -> str:

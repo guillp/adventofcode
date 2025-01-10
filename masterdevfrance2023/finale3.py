@@ -30,15 +30,15 @@ else:
                     s[current_stand][current_theme] += s[current_stand - 1][previous_theme]
                     debug(
                         f"... can do theme {themes[current_stand][current_theme]}"
-                        f" after previous theme {themes[current_stand-1][previous_theme]}, {s=}",
+                        f" after previous theme {themes[current_stand - 1][previous_theme]}, {s=}",
                     )
 
         for last_theme in (0, 1):
             if themes[N - 1][last_theme] != themes[0][first_theme]:
                 debug(
                     f"... can do first theme {themes[0][first_theme]}"
-                    f" after last_theme {themes[N-1][last_theme]},"
-                    f" adding {s[N-1][last_theme]} possibilities",
+                    f" after last_theme {themes[N - 1][last_theme]},"
+                    f" adding {s[N - 1][last_theme]} possibilities",
                 )
                 total += s[N - 1][last_theme]
 

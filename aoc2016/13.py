@@ -1,5 +1,5 @@
 def is_wall(x: int, y: int, n: int) -> bool:
-    return f"{x*x + 3*x + 2*x*y + y + y*y + n:b}".count("1") % 2 == 1
+    return f"{x * x + 3 * x + 2 * x * y + y + y * y + n:b}".count("1") % 2 == 1
 
 
 assert not is_wall(0, 0, 10)

@@ -18,7 +18,7 @@ def part1(content: str) -> int:
 
 def part2(content: str) -> int:
     lines = content.splitlines()
-    return part1(content + f"Disc #{len(lines)+1} has 11 positions; at time=0, it is at position 0.")
+    return part1(content + f"Disc #{len(lines) + 1} has 11 positions; at time=0, it is at position 0.")
 
 
 test_content = """\
