@@ -17,7 +17,7 @@ def calc_file_hash(filepath: Path) -> str:
 
 
 if __name__ == "__main__":
-    for year in range(2015, 2024):
+    for year in range(2015, 2025):
         root = Path(f"aoc{year}")
         os.chdir(root)
         for day in range(1, 26):
