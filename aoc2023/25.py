@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt  # type: ignore[import-not-found]
-import networkx as nx  # type: ignore[import-not-found]
+import networkx as nx
 
 
 def part1(content: str) -> int:
@@ -12,7 +12,7 @@ def part1(content: str) -> int:
     nx.draw(G, with_labels=True)
     plt.show()
 
-    # adapt to your input based on
+    # adapt to your input based on what you see
     for a, b in (("klk", "xgz"), ("nvf", "bvz"), ("cbl", "vmq")):
         G.remove_edge(a, b)
 
