@@ -19,9 +19,9 @@ repos:
         - --show-error-context
         - --show-column-numbers
         - --explicit-package-bases
-        - --enable-incomplete-feature=NewGenericSyntax
         additional_dependencies:
-            - types-requests
             - pandas-stubs
             - sympy
+            - types-networkx
+            - types-requests
             - z3

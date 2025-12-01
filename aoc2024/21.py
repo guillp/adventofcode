@@ -48,7 +48,7 @@ def best_path(
     return min(
         greedy(current_pos),
         key=lambda path: (
-            len(path),  # type: ignore[arg-type]  # favor shortest path
+            len(path),  # favor the shortest path
             sum(a != b for a, b in pairwise(path)),  # with the least number of key changes
         ),
     )
