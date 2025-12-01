@@ -123,7 +123,7 @@ def solve(content: str) -> Iterator[int]:
             eqrr,
         },
     )
-    instructions_map = {i: all_opcodes for i in range(16)}
+    instructions_map = dict.fromkeys(range(16), all_opcodes)
     part1 = 0
     for sample in samples:
         br0, br1, br2, br3, i, a, b, c, ar0, ar1, ar2, ar3 = map(int, re.findall(r"\d+", sample))

@@ -46,12 +46,12 @@ def best_path(
             yield from greedy(pos + 1, *keys, ">")
 
     return min(
-            greedy(current_pos),
-            key=lambda path: (
-                len(path),  # type: ignore[arg-type]  # favor shortest path
-                sum(a != b for a, b in pairwise(path)),  # with the least number of key changes
-            ),
-        )
+        greedy(current_pos),
+        key=lambda path: (
+            len(path),  # type: ignore[arg-type]  # favor shortest path
+            sum(a != b for a, b in pairwise(path)),  # with the least number of key changes
+        ),
+    )
 
 
 @cache

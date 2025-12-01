@@ -26,7 +26,7 @@ def solve(content: str) -> Iterator[int]:
                 for x in range(b, c + 1):
                     yield x, a
 
-    grid = defaultdict(lambda: Cell.SAND, {(x, y): Cell.CLAY for x, y in iter_clays()})
+    grid = defaultdict(lambda: Cell.SAND, dict.fromkeys(iter_clays(), Cell.CLAY))
 
     x_min = min(x for x, y in grid) - 1
     x_max = max(x for x, y in grid) + 1
