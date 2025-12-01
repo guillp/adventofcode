@@ -19,7 +19,7 @@ def part1(content: str) -> int:
 
 def part2(content: str) -> int:
     cards = dict(score_card(line) for line in content.splitlines())
-    cards_qty = {card_id: 1 for card_id in cards}
+    cards_qty = dict.fromkeys(cards, 1)
 
     for card_id, matches in cards.items():  # cards dict is already sorted
         qty = cards_qty[card_id]

@@ -22,8 +22,8 @@ def solve(content: str, seconds: int = 2503) -> Iterator[int]:
 
     yield part1
 
-    state = {name: 0 for name in reindeers}
-    scores = {name: 0 for name in reindeers}
+    state = dict.fromkeys(reindeers, 0)
+    scores = dict.fromkeys(reindeers, 0)
 
     for i in range(seconds):
         max_dist = 0

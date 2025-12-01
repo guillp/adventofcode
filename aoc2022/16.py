@@ -12,7 +12,7 @@ def solve(content: str) -> Iterator[int]:
         content,
         re.MULTILINE,
     ):
-        G[name] = {valve: 1 for valve in next_valves.split(", ")}
+        G[name] = dict.fromkeys(next_valves.split(", "), 1)
         flows[name] = int(flow)
 
     for k, i, j in itertools.permutations(G, 3):

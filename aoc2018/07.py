@@ -34,8 +34,7 @@ def solve(content: str, nb_workers: int = 5, base_time: int = 60) -> Iterator[st
                 completed.add(step)
 
         for step in completed:
-            if step in in_progress:
-                del in_progress[step]
+            in_progress.pop(step, None)
 
         required_seconds += 1
         for visitable in sorted(

@@ -21,7 +21,7 @@ def solve(content: str) -> Iterator[int]:
 
     yield len(part1)
 
-    scores = {bag: 0 for bag in set(containers) - set(rules)}
+    scores = dict.fromkeys(set(containers) - set(rules), 0)
     while set(rules) - set(scores):
         for inner_color, bags in rules.items():
             if all(outer_color in scores for outer_color, qty in bags.items()):
