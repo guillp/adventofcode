@@ -1,14 +1,9 @@
-from itertools import combinations
-
-
 def solve(content: str) -> tuple[int, int]:
     part1 = part2 = 0
-    for line in content.strip().splitlines():
-
-        numbers = list(line)
+    for numbers in content.strip().splitlines():
         while len(numbers) > 12:
             for i, number in enumerate(numbers):
-                if int("".join(numbers[:-1])) < int("".join(numbers[:i] + numbers[i + 1 :])):
+                if numbers[:-1] < numbers[:i] + numbers[i + 1 :]:
                     numbers = numbers[:i] + numbers[i + 1 :]
                     break
             else:
@@ -17,7 +12,7 @@ def solve(content: str) -> tuple[int, int]:
 
         while len(numbers) > 2:
             for i, number in enumerate(numbers):
-                if int("".join(numbers[:-1])) < int("".join(numbers[:i] + numbers[i + 1 :])):
+                if numbers[:-1] < numbers[:i] + numbers[i + 1 :]:
                     numbers = numbers[:i] + numbers[i + 1 :]
                     break
             else:
