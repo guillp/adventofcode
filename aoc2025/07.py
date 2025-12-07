@@ -7,25 +7,23 @@ def solve(content: str) -> tuple[int, int]:
 
     to_visit = defaultdict[int, defaultdict[int, int]](lambda: defaultdict(int))
     to_visit[start_y][start_x] = 1
-    visited_splits = set()
-    part2 = 0
+    part1 = part2 = 0
     while to_visit:
         y = min(to_visit)
         while to_visit[y]:
             x, count = to_visit[y].popitem()
-            below = grid.get((x, y + 1))
-            match below:
-                case "." | "|":
+            match grid.get((x, y + 1)):
+                case ".":
                     to_visit[y + 1][x] += count
                 case "^":
-                    visited_splits.add((x, y))
+                    part1 += 1
                     to_visit[y][x - 1] += count
                     to_visit[y][x + 1] += count
                 case None:
                     part2 += count
         del to_visit[y]
 
-    return len(visited_splits), part2
+    return part1, part2
 
 
 test_content = """\
