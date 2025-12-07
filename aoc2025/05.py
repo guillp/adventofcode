@@ -9,7 +9,7 @@ def solve(content: str) -> Iterator[int]:
         left, right = r.split("-")
         return int(left), int(right)
 
-    ranges = set(str_to_range(range_) for range_ in ranges_part.splitlines())
+    ranges = {str_to_range(range_) for range_ in ranges_part.splitlines()}
 
     yield sum(
         any(left <= ingredient <= right for left, right in ranges)

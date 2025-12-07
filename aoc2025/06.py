@@ -23,14 +23,14 @@ def part2(content: str) -> int:
         if operator == " ":
             continue
 
-        def iter_numbers() -> Iterator[int]:
+        def iter_numbers(x: int) -> Iterator[int]:
             for i in range(x, len(lines[0])):
                 chars = "".join(line[i] for line in lines).strip()
                 if not chars:
                     return
                 yield int(chars)
 
-        numbers = list(iter_numbers())
+        numbers = list(iter_numbers(x))
         if operator == "+":
             total += sum(numbers)
         elif operator == "*":
@@ -44,7 +44,7 @@ test_content = """\
  45 64  387 23 
   6 98  215 314
 *   +   *   +  
-"""
+"""  # noqa: W291
 
 assert part1(test_content) == 4277556
 assert part2(test_content) == 3263827
