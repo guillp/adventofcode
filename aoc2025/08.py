@@ -1,15 +1,9 @@
 from itertools import combinations
 
-type Box = tuple[int, ...]
-
-
-def dist(a: Box, b: Box) -> float:
-    return float(sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5)
-
 
 def solve(content: str, nb_connections: int) -> tuple[int, int]:
     boxes = {tuple(map(int, line.split(","))) for line in content.strip().splitlines()}
-    distances = sorted([(dist(a, b), a, b) for a, b in combinations(boxes, 2)])
+    distances = sorted([(sum((x - y) ** 2 for x, y in zip(a, b)), a, b) for a, b in combinations(boxes, 2)])
 
     connections = {box: {box} for box in boxes}
     for distance, a, b in distances[:nb_connections]:
