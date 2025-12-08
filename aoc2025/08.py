@@ -1,27 +1,22 @@
+from collections.abc import Iterator
 from itertools import combinations
 
 
-def solve(content: str, nb_connections: int) -> tuple[int, int]:
+def solve(content: str, nb_connections: int) -> Iterator[int]:
     boxes = {tuple(map(int, line.split(","))) for line in content.strip().splitlines()}
     distances = sorted([(sum((x - y) ** 2 for x, y in zip(a, b)), a, b) for a, b in combinations(boxes, 2)])
 
     connections = {box: {box} for box in boxes}
-    for distance, a, b in distances[:nb_connections]:
+    for i, (distance, a, b) in enumerate(distances):
         connections[a].update(connections[b])
-        for box in connections[a]:
+        if connections[a] == boxes:  # all boxes connected together, yield part2
+            yield a[0] * b[0]
+            return
+        for box in connections[a]:  # points all boxes to the same circuit
             connections[box] = connections[a]
-
-    circuits = sorted({frozenset(circuit) for circuit in connections.values()}, key=lambda c: len(c), reverse=True)
-    part1 = len(circuits[0]) * len(circuits[1]) * len(circuits[2])
-
-    for distance, a, b in distances[nb_connections:]:
-        connections[a].update(connections[b])
-        if connections[a] == boxes:
-            return part1, a[0] * b[0]
-        for box in connections[a]:
-            connections[box] = connections[a]
-
-    assert False
+        if i == nb_connections - 1:  # once we made the required number of connections, yield part1
+            circuits = sorted({frozenset(circuit) for circuit in connections.values()}, key=lambda c: len(c))
+            yield len(circuits[-1]) * len(circuits[-2]) * len(circuits[-3])
 
 
 test_content = """\
@@ -47,7 +42,7 @@ test_content = """\
 425,690,689
 """
 
-assert solve(test_content, 10) == (40, 25272)
+assert tuple(solve(test_content, 10)) == (40, 25272)
 
 with open("08.txt") as f:
     content = f.read()
