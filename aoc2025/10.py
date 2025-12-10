@@ -1,8 +1,13 @@
 import re
+from collections.abc import Iterator
 from itertools import count
 
+type Indicators = tuple[bool, ...]
+type Wires = tuple[int, ...]
+type Joltages = tuple[int, ...]
 
-def parse_input(machine: str) -> tuple[tuple[bool, ...], tuple[tuple[int, ...]], tuple[int, ...]]:
+
+def parse_input(machine: str) -> tuple[Indicators, tuple[Wires, ...], Joltages]:
     indicators_str, *wires_str, joltage_str = re.findall(r"[\.#]+|(?:\d+,?)+", machine)
     indicators = tuple(c == "#" for c in indicators_str)
     wires = tuple(tuple(int(n) for n in wiring_str.split(",")) for wiring_str in wires_str)
@@ -10,7 +15,9 @@ def parse_input(machine: str) -> tuple[tuple[bool, ...], tuple[tuple[int, ...]],
     return indicators, wires, joltages
 
 
-def step(wires, pool):
+def step(
+    wires: tuple[Wires, ...], pool: dict[tuple[int, ...], Indicators]
+) -> Iterator[tuple[tuple[int, ...], Indicators]]:
     for path, state in pool.items():
         for i, button in enumerate(wires):
             if path and i == path[-1]:
@@ -19,8 +26,8 @@ def step(wires, pool):
             yield (*path, i), new_state
 
 
-def bfs(target, wires):
-    pool = {(): (False,) * len(target)}
+def bfs(target: Indicators, wires: tuple[Wires, ...]) -> int:
+    pool = {tuple[int](): (False,) * len(target)}
     for n in count(1):
         new_pool = {}
         for path, state in step(wires, pool):
@@ -28,9 +35,10 @@ def bfs(target, wires):
                 return n
             new_pool[path] = state
         pool = new_pool
+    assert False
 
 
-def solve(content: str):
+def solve(content: str) -> int:
     part1 = 0
     for machine in content.splitlines():
         target, wires, joltages = parse_input(machine)
